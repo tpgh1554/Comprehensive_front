@@ -12,10 +12,10 @@ const Section = () => {
             <div>언제 어디서나 원하는 스킬을 가진 사람 PICK!</div>
           </Item2>
         </Box>
-        <ImageBox></ImageBox>
+        <ImageBox>이미지영역</ImageBox>
       </Container>
       <Container>
-        <ImageBox>//////////////////////////////////////////////////////////////////////////////////////////////////////////</ImageBox>
+        <ImageBox>이미지영역</ImageBox>
         <Box>
           
           <Item>
@@ -35,7 +35,7 @@ const Section = () => {
             <div>구독서비스로 아프다를 무한으로 즐기세요!</div>
           </Item2>
         </Box>
-        <ImageBox></ImageBox>
+        <ImageBox>이미지영역</ImageBox>
       </Container>
     </>
   );

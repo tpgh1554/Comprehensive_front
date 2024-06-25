@@ -1,10 +1,6 @@
 import styled from "styled-components";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom";
+import './App.css'; // 특정 컴포넌트 스타일 폰트 적용위해 사용
+import {BrowserRouter as Router,Route,Routes,Navigate,} from "react-router-dom";
 import GlobalStyle from "./font/GlobalStyle";
 import MypageMain from "./mypages/MypageMain";
 import Mypj from "./mypages/Mypj";
@@ -17,9 +13,7 @@ import Upload from "./api/firebase/ImageUploader";
 import Header from "./components/Header";
 import NaviBar from "./components/NaviBar";
 import Mainpage from "./pages/mainpage";
-import DatingApp from "./datingapp/DatingApp";
 import TeamChatPage from "./pages/chat/teamchatpage";
-import DatingApp2 from "./datingapp/DatingApp2";
 import ChatMain from "./pages/chat/ChatMain";
 import EditInfo from "./mypages/EditInfo";
 

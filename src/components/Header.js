@@ -1,14 +1,16 @@
 import styled from "styled-components";
 import Logo from "../components/logoimg";
 import GlobalStyle from "../font/GlobalStyle";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
   return (
     <>
       <GlobalStyle />
       <Body>
         <Container>
-          <Box>
+          <Box onClick={() => navigate("/apueda")}>
             <LogoContainer>
               <Logo />
             </LogoContainer>
@@ -39,6 +41,7 @@ const Box = styled.div`
   display: flex;
   width: auto;
   height: auto;
+  cursor: pointer;
 `;
 const LogoContainer = styled.div`
   display: flex;

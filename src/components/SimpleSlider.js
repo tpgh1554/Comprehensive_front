@@ -40,7 +40,7 @@ export default function SimpleSlider() {
                 </div>
                 <div>
                   두근두근 데이트 시작하기
-                  <DatingAppButton onClick={() => navigate("/login")}>
+                  <DatingAppButton onClick={() => navigate("/apueda/login")}>
                     <span>개발자 매칭</span>
                   </DatingAppButton>
                 </div>
@@ -137,7 +137,7 @@ const SecondCut = styled.div`
   justify-content: center;
   width: 100%;
   min-height: 500px;
-  background-image: linear-gradient(to top, #11fbc8 0%, #225599 100%);
+  background-image: linear-gradient(to top, #11fbc8 0%, #007BCB 100%);
 `;
 
 const ThirdCut = styled.div`
@@ -146,7 +146,7 @@ const ThirdCut = styled.div`
   justify-content: center;
   width: 100%;
   min-height: 500px;
-  background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+  background-image: linear-gradient(to right, #6a11cb 10%, #2575fc 100%);
 `;
 
 const Container = styled.div`
@@ -184,8 +184,8 @@ const Item2 = styled.div`
     margin: 10px; // Box의 직계 자식 div에 스타일 적용
   }
   & span {
-    font-size: 20px;
-    color: black;
+    font-size: 22px;
+    color: rgb(50,50,50);
     text-align: left;
     padding: 20px;
   }
@@ -198,6 +198,7 @@ const PlaystoreButton = styled.div`
   background-image: url(${googlelogo});
   background-size: cover;
   background-position: center;
+  cursor: pointer;
 `;
 const DatingAppButton = styled.div`
   display: flex;
@@ -210,4 +211,5 @@ const DatingAppButton = styled.div`
   background-size: contain;
   background-position: right;
   background-repeat: no-repeat;
+  cursor: pointer;
 `;

@@ -45,7 +45,6 @@ const ChatRoom = ({ roomId }) => {
         const newMessage = JSON.parse(message.body);
         newMessage.timestamp = new Date(); // 현재 시간으로 설정
         setMessages((prevMessages) => [...prevMessages, newMessage]);
-        scrollToBottom();
       });
 
       // 사용자 입장 메시지 전송
@@ -74,6 +73,10 @@ const ChatRoom = ({ roomId }) => {
       }
     };
   }, [roomId]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -122,6 +125,7 @@ const ChatRoom = ({ roomId }) => {
 };
 
 export default ChatRoom;
+
 
 
 

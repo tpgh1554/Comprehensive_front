@@ -6,19 +6,21 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import googlelogo from "../image/share_google_play_logo.png";
 import lovechaticon from "../image/lovechat.png";
-import sampleimg from "../image/pepe.png";
+import teamicon from "../image/team-icon.png";
+import alien from "../image/alien.png";
+import couple from "../image/couple.png";
 
 export default function SimpleSlider() {
   const navigate = useNavigate();
   var settings = {
     dots: true, //아래 원형 버튼 여부
     infinite: true, // 슬라이드 반복 여부
-    speed: 200, // 슬라이드 속도
+    speed: 1000, // 슬라이드 속도 1초
     slidesToShow: 1, // 화면에 출력되는 화면 수
     slidesToScroll: 1, // 이동되는 화면 수
     arrows: true, // 양쪽 화살표
     autoplay: true,
-    autoplaySpeed: 4000,
+    autoplaySpeed: 5000, // 슬라이드 전환 주기 5초마다
     adaptiveHeight: true,
   };
   return (
@@ -46,7 +48,7 @@ export default function SimpleSlider() {
                 </div>
               </Item2>
             </Box>
-            <ImageBox imageUrl={sampleimg} />
+            <ImageBox ><Img src={teamicon}/></ImageBox>
           </Container>
         </FirstCut>
         <SecondCut>
@@ -54,8 +56,8 @@ export default function SimpleSlider() {
             <Box>
               <Item>
                 <div>
-                  우리 같이 <br />
-                  플젝할래?
+                  누구든  <br />
+                  이지하게
                 </div>
               </Item>
               <Item2>
@@ -65,13 +67,13 @@ export default function SimpleSlider() {
                 </div>
                 <div>
                   두근두근 데이트 시작하기
-                  <DatingAppButton onClick={() => navigate("/login")}>
+                  <DatingAppButton onClick={() => navigate("/apueda/login")}>
                     <span>개발자 매칭</span>
                   </DatingAppButton>
                 </div>
               </Item2>
             </Box>
-            <ImageBox imageUrl={sampleimg} />
+            <ImageBox ><Img src={alien}/></ImageBox>
           </Container>
         </SecondCut>
         <ThirdCut>
@@ -79,8 +81,8 @@ export default function SimpleSlider() {
             <Box>
               <Item>
                 <div>
-                  우리 같이 <br />
-                  플젝할래?
+                  아프다에서 연인찾고 <br />
+                  카페에서 야깅하기
                 </div>
               </Item>
               <Item2>
@@ -90,13 +92,13 @@ export default function SimpleSlider() {
                 </div>
                 <div>
                   두근두근 데이트 시작하기
-                  <DatingAppButton onClick={() => navigate("/login")}>
+                  <DatingAppButton onClick={() => navigate("/apueda/login")}>
                     <span>개발자 매칭</span>
                   </DatingAppButton>
                 </div>
               </Item2>
             </Box>
-            <ImageBox imageUrl={sampleimg} />
+            <ImageBox ><Img src={couple}/></ImageBox>
           </Container>
         </ThirdCut>
       </Slider>
@@ -163,8 +165,13 @@ const Box = styled.div`
 const ImageBox = styled.div`
   width: 50%;
   height: auto;
+  box-sizing: border-box;
 `;
-
+const Img = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+`;
 const Item = styled.div`
   font-size: 60px;
   color: white;

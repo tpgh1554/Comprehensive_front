@@ -6,7 +6,7 @@ const Section = () => {
       <Container>
         <Box>
           <Item>
-            <div>어디서 프로젝트 인원을 어디서 구해야 될지 모르겠다면?</div>
+            <div>프로젝트 인원을 어디서 구해야 될지 모르겠다면?</div>
           </Item>
           <Item2>
             <div>언제 어디서나 원하는 스킬을 가진 사람 PICK!</div>

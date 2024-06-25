@@ -1,6 +1,30 @@
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useState, useEffect } from "react";
 import { storage } from "./Firebase";
+import styled from "styled-components";
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const ProfileImg = styled.div`
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f92f23;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #f0f0f0; /* 이미지 없을 때 배경색 */
+`;
+
+const FileSelBtn = styled.button`
+  margin-top: 10px; /* 버튼과 이미지 사이에 여백 추가 */
+`;
 
 const Upload = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -42,11 +66,28 @@ const Upload = () => {
   };
 
   return (
-    <div>
-      <input type="file" onChange={handleFileInputChange}></input>
-      {previewUrl && <img src={previewUrl} />}
-      {/* <button onClick={uploadImg}>이미지 업로드</button> */}
-    </div>
+    // <ProfileImg>
+    //   <FileInput type="file" onChange={handleFileInputChange} />
+    //   {previewUrl && <ImagePreview src={previewUrl} />}
+    // </ProfileImg>
+    // <div>
+    //   <input type="file" onChange={handleFileInputChange}></input>
+    //   {previewUrl && <img src={previewUrl} />}
+    // </div>
+
+    <Container>
+      <ProfileImg>
+        {previewUrl && <img src={previewUrl} alt="Profile Preview" />}
+      </ProfileImg>
+      <FileSelBtn as="label">
+        파일 선택
+        <input
+          type="file"
+          onChange={handleFileInputChange}
+          style={{ display: "none" }}
+        />
+      </FileSelBtn>
+    </Container>
   );
 };
 

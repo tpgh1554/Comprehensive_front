@@ -125,7 +125,7 @@ const LoginPage = () => {
     }
   };
   const handleSignup = () => {
-    navigate("/signup");
+    navigate("/apueda/signup");
   };
 
   return (

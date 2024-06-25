@@ -19,6 +19,10 @@ const AxiosApi = {
   signup: async (user) => {
     return await axios.post(Apueda_Domain + "/users/signup", user);
   },
+  // 사용자 존재 여부 확인
+  userCheck: async (email) => {
+    return await axios.get(`${Apueda_Domain}/users/check?email=${email}`);
+  },
 
   getBoardList: async () => {
     return await axios.get(Apueda_Domain + "/board/list");

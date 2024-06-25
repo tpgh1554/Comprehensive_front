@@ -1,10 +1,16 @@
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { storage } from "./Firebase";
 
-const Upload = () => {
+const Upload = (email, uploadTrigger) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [file, setFile] = useState(null);
+
+  useEffect(() => {
+    if (uploadTrigger === true) {
+      uploadImg();
+    }
+  }, [uploadTrigger]);
 
   const handleFileInputChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -42,7 +48,7 @@ const Upload = () => {
   };
 
   const uploadImg = () => {
-    const fileRef = ref(storage, `images/폴더/파일이름`);
+    const fileRef = ref(storage, `images/${email}`);
     uploadBytes(fileRef, file).then((snapshot) => {
       console.log("이미지 파이어베이스 업로드 성공");
       getDownloadURL(snapshot.ref)
@@ -59,7 +65,7 @@ const Upload = () => {
     <div>
       <input type="file" onChange={handleFileInputChange}></input>
       {previewUrl && <img src={previewUrl} />}
-      <button onClick={uploadImg}>이미지 업로드</button>
+      {/* <button onClick={uploadImg}>이미지 업로드</button> */}
     </div>
   );
 };

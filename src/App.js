@@ -39,7 +39,8 @@ function App() {
           <Route path="/apueda/mypage/mypj" element={<Mypj />} />
           <Route path="/apueda/mypage/mywrite" element={<Mywrite />} />
           <Route path="/apueda/subinfo" element={<Subinfo />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/apueda/login" element={<LoginPage />} />
+          <Route path="/apueda/signup" element={<SignUp />} />
           <Route path="/apueda/mypage/editinfo" element={<EditInfo />} />
         </Routes>
       </Router>

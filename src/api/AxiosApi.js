@@ -16,26 +16,7 @@ const AxiosApi = {
     return await axios.post(Apueda_Domain + "/users/login", user);
   },
   // 회원가입
-  signup: async (
-    email,
-    password,
-    name,
-    nickname,
-    identityNumber,
-    profileImgPath,
-    skill,
-    myInfo
-  ) => {
-    const user = {
-      email: email,
-      password: password,
-      name: name,
-      nickname: nickname,
-      identityNumber: identityNumber,
-      profileImgPath: profileImgPath,
-      skill: skill,
-      myInfo: myInfo,
-    };
+  signup: async (user) => {
     return await axios.post(Apueda_Domain + "/users/signup", user);
   },
 

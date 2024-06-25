@@ -100,14 +100,14 @@ const SubmitBtn = styled.button`
 `;
 
 const SignUp = () => {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
-  const [name, setName] = useState();
-  const [nickname, setNickname] = useState();
-  const [identityNumber, setIdentityNumber] = useState();
-  const [profileImgPath, setProfileImgPath] = useState();
-  const [skill, setSkill] = useState();
-  const [myInfo, setMyInfo] = useState();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [identityNumber, setIdentityNumber] = useState("");
+  const [profileImgPath, setProfileImgPath] = useState("");
+  const [skill, setSkill] = useState("");
+  const [myInfo, setMyInfo] = useState("");
   const [error, setError] = useState();
 
   const [uploadTrigger, setUploadTrigger] = useState(false);
@@ -120,27 +120,21 @@ const SignUp = () => {
     false,
   ]);
 
-  useEffect(() => {
-    if (uploadTrigger === true) {
-      uploadImage();
-    }
-  }, [uploadTrigger]);
-
-  const uploadImage = () => {
-    if (!profileImgPath) return;
-    const fileRef = ref(storage, `images/${email}`);
-    uploadBytes(fileRef, profileImgPath)
-      .then((snapshot) => {
-        console.log("File uploaded successfully!");
-        getDownloadURL(snapshot.ref).then((url) => {
-          console.log("저장경로 확인 : " + url);
-        });
-      })
-      .catch((error) => {
-        console.error("파일 업로드 중 오류가 발생했습니다.", error);
-        setError("파일 업로드 중 오류가 발생했습니다.");
-      });
-  };
+  // const uploadImage = () => {
+  //   if (!profileImgPath) return;
+  //   const fileRef = ref(storage, `images/${email}`);
+  //   uploadBytes(fileRef, profileImgPath)
+  //     .then((snapshot) => {
+  //       console.log("File uploaded successfully!");
+  //       getDownloadURL(snapshot.ref).then((url) => {
+  //         console.log("저장경로 확인 : " + url);
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error("파일 업로드 중 오류가 발생했습니다.", error);
+  //       setError("파일 업로드 중 오류가 발생했습니다.");
+  //     });
+  // };
 
   const handleCheckboxChange = (index) => {
     const updatedChecked = [...isChecked];
@@ -150,6 +144,9 @@ const SignUp = () => {
 
   const onChangeEmail = (e) => {
     setEmail(e.target.value);
+  };
+  const onChangeProfileImgPath = (e) => {
+    setProfileImgPath(e.target.value);
   };
 
   const onChangePassword = (e) => {
@@ -168,26 +165,25 @@ const SignUp = () => {
     setIdentityNumber(e.target.value);
   };
 
+  const test = () => {
+    setUploadTrigger(true);
+  };
   const regist = async () => {
-    const test = () => {
-      setUploadTrigger(true);
+    const user = {
+      email,
+      password,
+      name,
+      nickname,
+      identityNumber,
+      profileImgPath,
+      skill,
+      myInfo,
     };
     try {
-      await AxiosApi.signup(
-        email,
-        password,
-        name,
-        nickname,
-        identityNumber,
-        profileImgPath,
-        skill,
-        myInfo
-      );
-      if (Response.data) {
+      const response = await AxiosApi.signup(user);
+      if (response.data) {
         alert("회원가입에 성공했습니다.");
-
         test();
-        setTimeout(() => {}, 1000);
       } else {
         alert("회원가입에 실패했습니다.");
       }
@@ -203,7 +199,12 @@ const SignUp = () => {
         <Contents>
           <h1>회원가입</h1>
           <ProfileBox>
-            <Upload email={email} uploadTrigger={uploadTrigger} />
+            <Upload
+              value={profileImgPath}
+              onChange={onChangeProfileImgPath}
+              email={email}
+              uploadTrigger={uploadTrigger}
+            />
           </ProfileBox>
 
           <InputContainer>
@@ -243,14 +244,14 @@ const SignUp = () => {
 
             <SkillCheck>
               <p>사용스킬</p>
-              {[0, 1, 2, 3, 4].map((index) => (
+              {/* {[0, 1, 2, 3, 4].map((index) => (
                 <CheckBox
                   key={index}
                   type="checkbox"
                   checked={isChecked[index]}
-                  onChange={() => handleCheckboxChange(index)}
+                  onChange={handleCheckboxChange(index)}
                 />
-              ))}
+              ))} */}
             </SkillCheck>
           </InputContainer>
           <SubmitBtn onClick={regist}>가입</SubmitBtn>

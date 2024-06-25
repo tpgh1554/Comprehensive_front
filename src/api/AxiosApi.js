@@ -24,8 +24,20 @@ const AxiosApi = {
     return await axios.get(Apueda_Domain + "/board/list");
   },
 
+  getProjectList: async () => {
+    return await axios.get(Apueda_Domain + "/project/list");
+  },
+
   boardDelete: async (id) => {
     return await axios.get(Apueda_Domain + "/board/delete", {
+      params: {
+        id: id,
+      },
+    });
+  },
+
+  projectDelete: async (id) => {
+    return await axios.get(Apueda_Domain + "/project/delete", {
       params: {
         id: id,
       },

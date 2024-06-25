@@ -108,6 +108,26 @@ const Mywrite = () => {
   const [showProject, setShowProject] = useState(true);
   const [showFree, setShowFree] = useState(false);
   const [boardList, setBoardList] = useState(null);
+  const [projectList, setProjectList] = useState(null);
+
+  useEffect(() => {
+    const fetchProjectList = async () => {
+      try {
+        const rsp = await AxiosApi.getProjectList();
+        console.log(rsp.data);
+        console.log(localStorage.getItem("email"));
+        // setBoardList(rsp.data);
+        const filteredData = rsp.data.filter(
+          (project) => project.email === localStorage.getItem("email")
+        );
+        setProjectList(filteredData); // 필터링된 데이터를 상태에 저장
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    fetchProjectList();
+  }, []);
 
   useEffect(() => {
     const fetchBoardList = async () => {
@@ -128,7 +148,7 @@ const Mywrite = () => {
     fetchBoardList();
   }, []);
 
-  const Delete = async (boardId) => {
+  const boardDelete = async (boardId) => {
     const confirm = window.confirm("글을 삭제하시겠습니까?");
     if (confirm) {
       try {
@@ -142,6 +162,23 @@ const Mywrite = () => {
       } catch (error) {
         console.error("삭제 오류", error);
         console.log(boardId);
+      }
+    }
+  };
+  const projectDelete = async (projectId) => {
+    const confirm = window.confirm("글을 삭제하시겠습니까?");
+    if (confirm) {
+      try {
+        // API를 호출하여 게시글 삭제
+        await AxiosApi.projectDelete(projectId);
+        // 삭제 성공 시, 상태 업데이트 등 추가 로직 처리
+        console.log(projectId);
+        console.log("삭제 성공");
+        window.alert("삭제완료");
+        window.location.reload();
+      } catch (error) {
+        console.error("삭제 오류", error);
+        console.log(projectId);
       }
     }
   };
@@ -174,15 +211,17 @@ const Mywrite = () => {
 
         {showProject && (
           <>
-            {boardList && (
+            {projectList && (
               <div>
-                {boardList.map((board, index) => (
+                {projectList.map((project, index) => (
                   <div key={index}>
                     <ListWrapper>
-                      <h1>{board.title}</h1>
-                      <h1>{board.content}</h1>
-                      {/* user가 존재하는지 확인 */}
-                      <DelButton onClick={() => Delete(board.boardId)}>
+                      <h1>{project.projectName}</h1>
+                      <h1>{project.projectContent}</h1>
+                      {/* user가 존재하는지 확인 */}{" "}
+                      <DelButton
+                        onClick={() => projectDelete(project.projectId)}
+                      >
                         삭제
                       </DelButton>
                     </ListWrapper>
@@ -192,7 +231,26 @@ const Mywrite = () => {
             )}
           </>
         )}
-        {showFree && <h1>자유 게시판</h1>}
+        {showFree && (
+          <>
+            {boardList && (
+              <div>
+                {boardList.map((board, index) => (
+                  <div key={index}>
+                    <ListWrapper>
+                      <h1>{board.title}</h1>
+                      <h1>{board.content}</h1>
+
+                      <DelButton onClick={() => boardDelete(board.boardId)}>
+                        삭제
+                      </DelButton>
+                    </ListWrapper>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
         <Link to="/apueda/mypage">
           <Exit src={exit} />
         </Link>

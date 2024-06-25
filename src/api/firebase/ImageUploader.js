@@ -2,15 +2,9 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useState, useEffect } from "react";
 import { storage } from "./Firebase";
 
-const Upload = (email, uploadTrigger) => {
+const Upload = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [file, setFile] = useState(null);
-
-  useEffect(() => {
-    if (uploadTrigger === true) {
-      uploadImg();
-    }
-  }, [uploadTrigger]);
 
   const handleFileInputChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -45,20 +39,6 @@ const Upload = (email, uploadTrigger) => {
         console.log("이미지 로드 중 오류 발생");
       };
     }
-  };
-
-  const uploadImg = () => {
-    const fileRef = ref(storage, `images/${email}`);
-    uploadBytes(fileRef, file).then((snapshot) => {
-      console.log("이미지 파이어베이스 업로드 성공");
-      getDownloadURL(snapshot.ref)
-        .then((url) => {
-          console.log("경로 : " + url);
-        })
-        .catch((e) => {
-          console.log("파일 업로드 에러 : " + e);
-        });
-    });
   };
 
   return (

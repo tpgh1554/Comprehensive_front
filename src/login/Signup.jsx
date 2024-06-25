@@ -109,6 +109,7 @@ const SignUp = () => {
   const [skill, setSkill] = useState("");
   const [myInfo, setMyInfo] = useState("");
   const [error, setError] = useState();
+  const [file, setFile] = useState(null);
 
   const [uploadTrigger, setUploadTrigger] = useState(false);
 
@@ -120,21 +121,25 @@ const SignUp = () => {
     false,
   ]);
 
-  // const uploadImage = () => {
-  //   if (!profileImgPath) return;
-  //   const fileRef = ref(storage, `images/${email}`);
-  //   uploadBytes(fileRef, profileImgPath)
-  //     .then((snapshot) => {
-  //       console.log("File uploaded successfully!");
-  //       getDownloadURL(snapshot.ref).then((url) => {
-  //         console.log("저장경로 확인 : " + url);
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       console.error("파일 업로드 중 오류가 발생했습니다.", error);
-  //       setError("파일 업로드 중 오류가 발생했습니다.");
-  //     });
-  // };
+  const uploadImg = () => {
+    return new Promise((resolve, reject) => {
+      // 변경된 부분
+      const fileRef = ref(storage, `images/${email}`);
+      uploadBytes(fileRef, file).then((snapshot) => {
+        console.log("이미지 파이어베이스 업로드 성공");
+        getDownloadURL(snapshot.ref)
+          .then((url) => {
+            console.log("경로 : " + url);
+            setProfileImgPath(url);
+            resolve(url); // 업로드가 성공하면 resolve 호출
+          })
+          .catch((e) => {
+            console.log("파일 업로드 에러 : " + e);
+            reject(e); // 에러 발생 시 reject 호출
+          });
+      });
+    });
+  };
 
   const handleCheckboxChange = (index) => {
     const updatedChecked = [...isChecked];
@@ -144,9 +149,6 @@ const SignUp = () => {
 
   const onChangeEmail = (e) => {
     setEmail(e.target.value);
-  };
-  const onChangeProfileImgPath = (e) => {
-    setProfileImgPath(e.target.value);
   };
 
   const onChangePassword = (e) => {
@@ -165,9 +167,11 @@ const SignUp = () => {
     setIdentityNumber(e.target.value);
   };
 
-  const test = () => {
+  const test = async () => {
     setUploadTrigger(true);
+    return await uploadImg(); // 변경된 부분
   };
+
   const regist = async () => {
     const user = {
       email,
@@ -180,10 +184,13 @@ const SignUp = () => {
       myInfo,
     };
     try {
+      const imgPath = await test(); // 변경된 부분
+      user.profileImgPath = imgPath; // 변경된 부분
+
       const response = await AxiosApi.signup(user);
       if (response.data) {
         alert("회원가입에 성공했습니다.");
-        test();
+        console.log(user);
       } else {
         alert("회원가입에 실패했습니다.");
       }
@@ -201,7 +208,6 @@ const SignUp = () => {
           <ProfileBox>
             <Upload
               value={profileImgPath}
-              onChange={onChangeProfileImgPath}
               email={email}
               uploadTrigger={uploadTrigger}
             />

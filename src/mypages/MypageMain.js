@@ -96,7 +96,9 @@ const MypageMain = () => {
           <Button as={Link} to="/apueda/mypage/mywrite">
             내가 쓴 글
           </Button>
-          <Button>친구</Button>
+          <Button as={Link} to="/apueda/mypage/friend">
+            친구
+          </Button>
         </ButtonContainer>
       </Container>
 

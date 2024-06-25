@@ -27,12 +27,12 @@ export default Header;
 const Body = styled.div`
   display: flex;
   flex-direction: column;
-  align-items:center;
+  align-items: left;
   height: auto;
   margin: 0 15vw;
 `;
 const Container = styled.div`
-  width: 100%;
+  width: 240px;
   max-width: 1920px;
   height: auto;
 `;

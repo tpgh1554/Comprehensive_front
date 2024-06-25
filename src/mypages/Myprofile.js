@@ -107,6 +107,7 @@ const Myprofile = ({ closeModal }) => {
                     <p>닉네임 : {user.nickname}</p>
                     <p>이메일 : {user.email}</p>
                     <p>스킬 : {user.skill}</p>
+                    <p>스킬 : {user.profileImgPath}</p>
                   </div>
                 ))}
             </div>

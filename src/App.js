@@ -1,6 +1,11 @@
 import styled from "styled-components";
-import './App.css'; // 특정 컴포넌트 스타일 폰트 적용위해 사용
-import {BrowserRouter as Router,Route,Routes,Navigate,} from "react-router-dom";
+import "./App.css"; // 특정 컴포넌트 스타일 폰트 적용위해 사용
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import GlobalStyle from "./font/GlobalStyle";
 import MypageMain from "./mypages/MypageMain";
 import Mypj from "./mypages/Mypj";
@@ -16,6 +21,7 @@ import Mainpage from "./pages/mainpage";
 import TeamChatPage from "./pages/chat/teamchatpage";
 import ChatMain from "./pages/chat/ChatMain";
 import EditInfo from "./mypages/EditInfo";
+import Friend from "./mypages/Friend";
 
 function App() {
   return (
@@ -36,6 +42,7 @@ function App() {
           <Route path="/apueda/login" element={<LoginPage />} />
           <Route path="/apueda/signup" element={<SignUp />} />
           <Route path="/apueda/mypage/editinfo" element={<EditInfo />} />
+          <Route path="/apueda/mypage/friend" element={<Friend />} />
         </Routes>
       </Router>
     </>

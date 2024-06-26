@@ -22,6 +22,7 @@ import TeamChatPage from "./pages/chat/teamchatpage";
 import ChatMain from "./pages/chat/ChatMain";
 import EditInfo from "./mypages/EditInfo";
 import Friend from "./mypages/Friend";
+import Payment from "./subscribe/Payment";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
           <Route path="/apueda/signup" element={<SignUp />} />
           <Route path="/apueda/mypage/editinfo" element={<EditInfo />} />
           <Route path="/apueda/mypage/friend" element={<Friend />} />
+          <Route path="/apueda/payment" element={<Payment />} />
         </Routes>
       </Router>
     </>

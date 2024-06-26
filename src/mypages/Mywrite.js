@@ -218,7 +218,7 @@ const Mywrite = () => {
                     <ListWrapper>
                       <h1>{project.projectName}</h1>
                       <h1>{project.projectContent}</h1>
-                      {/* user가 존재하는지 확인 */}{" "}
+
                       <DelButton
                         onClick={() => projectDelete(project.projectId)}
                       >

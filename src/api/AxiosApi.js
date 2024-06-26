@@ -47,6 +47,19 @@ const AxiosApi = {
       },
     });
   },
+
+  friendlist: async (email) => {
+    return await axios.get(`${Apueda_Domain}/friends/list?userEmail=${email}`);
+  },
+
+  friendDelete: async (userEmail, friendEmail) => {
+    return await axios.get(Apueda_Domain + "/friends/delete", {
+      params: {
+        userEmail: userEmail,
+        friendEmail: friendEmail,
+      },
+    });
+  },
 };
 
 export default AxiosApi;

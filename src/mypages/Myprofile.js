@@ -51,8 +51,8 @@ const TitelBox = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 30vw;
-  height: 7vw;
+  width: 20vw;
+  height: 4vw;
   color: white;
   border-radius: 30px;
   background-color: #ff5353;
@@ -67,7 +67,7 @@ const TitelBox = styled.div`
 `;
 
 const UserBox = styled.div`
-  font-size: 30px;
+  font-size: 20px;
   font-weight: 700;
   @media (max-width: 500px) {
     font-size: 20px;
@@ -107,7 +107,7 @@ const Myprofile = ({ closeModal }) => {
                     <p>닉네임 : {user.nickname}</p>
                     <p>이메일 : {user.email}</p>
                     <p>스킬 : {user.skill}</p>
-                    <p>스킬 : {user.profileImgPath}</p>
+                    <p>프로필 : {user.profileImgPath}</p>
                   </div>
                 ))}
             </div>

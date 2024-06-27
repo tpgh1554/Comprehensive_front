@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAnimate, stagger, motion } from "framer-motion";
 import AxiosApi from "../api/AxiosApi";
 import styled from "styled-components";
-import persionIcon from "../image/person-icon2.png";
+import defaultImage from "../image/person-icon2.png";
 import file from "../image/file.png";
 import chat from "../image/chat.png";
 import friend from "../image/friend.png";
@@ -14,32 +14,30 @@ import profile from "../image/profile.png";
 import logout from "../image/logout.png";
 
 export default function NaviBar() {
+  const email = localStorage.getItem("email");
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [userInfo, setUserInfo] = useState([]);
-  const [imageUrl, setImageUrl] = useState("");
+  const [userInfo, setUserInfo] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const rsp = await AxiosApi.getUserInfo();
         setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
-
-        // // 파이어베이스 url 주소는 바로 사용 불가하여 firebaseUrl > blob > Objecturl로 변환하여야 함
-        const email = localStorage.getItem("email");
         const user = rsp.data.find((user) => user.email === email);
         if (user && user.profileImgPath) {
-          const response = await fetch(user.profileImgPath);
-          const blob = await response.blob();
-          const objectUrl = URL.createObjectURL(blob);
-          setImageUrl(objectUrl);
+          setImageUrl(user.profileImgPath);
+        } else {
+          setImageUrl(defaultImage);
         }
       } catch (e) {
         console.log(e);
+        setImageUrl(defaultImage);
       }
     };
-
     fetchUserInfo();
-  }, []);
+  }, [email]);
   const scope = useMenuAnimation(isOpen);
 
   const staggerMenuItems = stagger(0.1, { startDelay: 0.15 });
@@ -79,9 +77,6 @@ export default function NaviBar() {
     return scope;
   }
 
-  const email = localStorage.getItem("email");
-  const user = userInfo.find((user) => user.email === email);
-
   return (
     <Body>
       <Container className="menu" ref={scope}>
@@ -89,25 +84,18 @@ export default function NaviBar() {
           <ProfileButton>
             <motion.button
               style={{
+                width: "60px",
+                height: "60px",
                 border: 0,
                 backgroundColor: "transparent",
-                width: "70px",
-                height: "40px",
                 fontSize: "40px",
               }}
               whileHover={{ scale: 1.1 }} // 마우스 호버 시 이미지 커짐
               whileTap={{ scale: 0.95 }} // 클릭 시 이미지 작아짐
               onClick={() => setIsOpen(!isOpen)}
             >
-              <ProfileImage>
-                {user ? (
-                  <div>
-                    <Img src={imageUrl || persionIcon} alt="profile" />
-                    <p>{user.name}</p>
-                  </div>
-                ) : (
-                  <Img src={persionIcon} alt="default profile" />
-                )}
+              <ProfileImage loggedIn={userInfo}>
+                <img src={imageUrl} alt="User Profile" />
               </ProfileImage>
               <div className="arrow" style={{ transformOrigin: "50% 55%" }}>
                 {/* <svg display="block" width="20" height="20" viewBox="0 0 20 20">
@@ -174,7 +162,7 @@ const Container = styled.div`
   position: fixed;
   z-index: 100;
   display: flex;
-  margin: 10vh -90px 0 0; // 네비바 위치
+  margin: 10vh -80px 0 0; // 네비바 위치
   flex-direction: column;
   align-self: flex-end; /* 자신을 교차축 방향으로 오른쪽 정렬 */
   align-items: center; // 하위 아이템 정렬
@@ -187,7 +175,7 @@ const Box = styled.div`
   height: auto;
   box-sizing: border-box;
 `;
-// 리모콘 위치 설정
+
 const ProfileButton = styled.div`
   position: fixed;
   display: flex;
@@ -197,7 +185,7 @@ const List = styled.div`
   font-size: 40px;
 
   ul {
-    margin-top: 70px; /* 위아래 간격을 없애고 싶다면 0으로 설정합니다 */
+    margin-top: 80px; /* 위아래 간격을 없애고 싶다면 0으로 설정합니다 */
     padding: 0; /* 패딩도 필요에 따라 조정합니다 */
   }
   li {
@@ -213,12 +201,21 @@ const Arrow = styled.div`
 const Img = styled.img`
   width: 60px;
   height: 60px;
+
   background-size: contain;
 `;
 const ProfileImage = styled.div`
-  width: 60px;
-  height: 60px;
-  background-size: contain;
+  img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    ${(props) => // 로그인 됐을때만 보더라인 적용
+      props.loggedIn ? `
+      border-radius: 100%;
+      border: 7px solid rgba(150, 150, 150, 0.5);
+    `
+      : ``}
+  }
 `;
 const Overlay = styled.div`
   position: absolute;

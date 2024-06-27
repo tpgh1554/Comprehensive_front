@@ -4,6 +4,7 @@ import exit from "../image/exit.png";
 import letter from "../image/letter.png";
 import { useEffect, useState } from "react";
 import AxiosApi from "../api/AxiosApi";
+import Message from "./Message";
 const Container = styled.div`
   height: auto;
   width: 100vw;
@@ -81,12 +82,20 @@ const Friendcontainer = styled.div`
   padding-bottom: 20px;
   border: 3px solid #ff5353;
   border-radius: 30px;
+
+  @media (max-width: 1200px) {
+    width: 700px;
+    padding-top: 10px;
+    white-space: nowrap;
+  }
   @media (max-width: 900px) {
     width: 500px;
     padding-top: 10px;
+    white-space: nowrap;
   }
   @media (max-width: 500px) {
     width: 300px;
+    white-space: nowrap;
   }
 `;
 
@@ -112,6 +121,11 @@ const ItemGrid = styled.div`
   grid-template-columns: repeat(2, minmax(2vw, 1fr));
   margin-bottom: 50px;
 
+  @media (max-width: 1000px) {
+    grid-template-columns: repeat(1, minmax(2vw, 1fr));
+    margin-bottom: 10px;
+  }
+
   @media (max-width: 500px) {
     grid-template-columns: repeat(1, minmax(2vw, 1fr));
     margin-bottom: 10px;
@@ -119,7 +133,7 @@ const ItemGrid = styled.div`
 `;
 
 const FriendItem = styled.div`
-  width: 20vw;
+  width: 25vw;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -128,8 +142,17 @@ const FriendItem = styled.div`
   border-radius: 30px;
   margin-top: 50px;
 
+  @media (max-width: 1000px) {
+    width: 40vw;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 800px) {
+    width: 60vw;
+    margin-top: 20px;
+  }
   @media (max-width: 500px) {
-    width: 300px;
+    width: 60vw;
     margin-top: 20px;
   }
 `;
@@ -174,6 +197,19 @@ const Friend = () => {
   const [showApp, setShowApp] = useState(false);
   const [friends, setFriends] = useState([]);
   const [friendReq, setFriendReq] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFriendEmail, setSelectedFriendEmail] = useState("");
+  //메세지 보내기 모달창
+
+  const openModal = (email) => {
+    setSelectedFriendEmail(email); // 클릭한 친구의 이메일을 상태에 설정
+    setIsModalOpen(true); // 모달 창 열기
+    console.log(email);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   //친구리스트
   useEffect(() => {
@@ -297,7 +333,16 @@ const Friend = () => {
 
                     <ButtonWrapper>
                       {/* Letter Del로 감싸지 않으면 삭제와 메세지가 space-between으로 멀어짐*/}
-                      <Letter src={letter} />
+                      <Letter
+                        src={letter}
+                        onClick={() => {
+                          openModal(
+                            friend.member
+                              ? friend.member.email
+                              : friend.toMember.email
+                          );
+                        }}
+                      />
                       <ButtonStyle
                         onClick={() =>
                           friendDelete(
@@ -361,6 +406,10 @@ const Friend = () => {
           </Requsetcontainer>
         )}
       </Container>
+
+      {isModalOpen && (
+        <Message closeModal={closeModal} friendEmail={selectedFriendEmail} />
+      )}
     </>
   );
 };

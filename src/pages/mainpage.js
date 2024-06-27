@@ -5,7 +5,6 @@ import Section from "../components/section";
 import SimpleSlider from "../components/SimpleSlider";
 import Footer from "../components/Footer";
 
-
 const Mainpage = () => {
   return (
     <>
@@ -25,7 +24,7 @@ export default Mainpage;
 const Body = styled.div`
   display: flex;
   flex-direction: column;
-  align-items:center;
+  align-items: center;
   width: auto;
   height: auto;
   margin: 0 15vw;

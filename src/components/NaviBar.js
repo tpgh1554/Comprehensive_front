@@ -124,7 +124,7 @@ export default function NaviBar() {
                 listStyle: "none",
               }}
             >
-              <MenuItem onClick={() => navigate("/apueda/mypage")}>
+              <MenuItem onClick={() => navigate("/apueda/board")}>
                 <Img src={file} />
                 <Overlay>게시판</Overlay>
               </MenuItem>

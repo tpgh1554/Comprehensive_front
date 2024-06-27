@@ -1,3 +1,4 @@
+//NaviBar.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAnimate, stagger, motion } from "framer-motion";
@@ -16,7 +17,7 @@ export default function NaviBar() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [userInfo, setUserInfo] = useState([]);
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState("");
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -173,13 +174,15 @@ const Container = styled.div`
   position: fixed;
   z-index: 100;
   display: flex;
-  margin: 7vh -100px 0 0; // 네비바 위치
+  margin: 10vh -90px 0 0; // 네비바 위치
   flex-direction: column;
   align-self: flex-end; /* 자신을 교차축 방향으로 오른쪽 정렬 */
   align-items: center; // 하위 아이템 정렬
 `;
 
 const Box = styled.div`
+  display: flex;
+  justify-content: center;
   width: auto;
   height: auto;
   box-sizing: border-box;
@@ -189,15 +192,12 @@ const ProfileButton = styled.div`
   position: fixed;
   display: flex;
   justify-content: center;
-  left: 200;
-  width: 100;
-  height: 500;
 `;
 const List = styled.div`
   font-size: 40px;
 
   ul {
-    margin: 30px; /* 위아래 간격을 없애고 싶다면 0으로 설정합니다 */
+    margin-top: 70px; /* 위아래 간격을 없애고 싶다면 0으로 설정합니다 */
     padding: 0; /* 패딩도 필요에 따라 조정합니다 */
   }
   li {
@@ -233,7 +233,7 @@ const MenuItem = styled(motion.li)`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   cursor: pointer;
 
   &:hover {

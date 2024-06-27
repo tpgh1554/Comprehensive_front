@@ -10,11 +10,11 @@ const Header = () => {
       <GlobalStyle />
       <Body>
         <Container>
-          <Box onClick={() => navigate("/apueda")}>
-            <LogoContainer>
+          <Box>
+            <LogoContainer onClick={() => navigate("/apueda")}>
               <Logo />
-            </LogoContainer>
             <Span>아프다</Span>
+            </LogoContainer>
           </Box>
         </Container>
       </Body>
@@ -27,12 +27,12 @@ export default Header;
 const Body = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: left;
+  align-items:center;
   height: auto;
   margin: 0 15vw;
 `;
 const Container = styled.div`
-  width: 240px;
+  width: 100%;
   max-width: 1920px;
   height: auto;
 `;
@@ -41,12 +41,13 @@ const Box = styled.div`
   display: flex;
   width: auto;
   height: auto;
-  cursor: pointer;
 `;
 const LogoContainer = styled.div`
   display: flex;
   align-items: center;
+  white-space: nowrap;
   margin: 0 2px 0 2vw;
+  cursor: pointer;
 `;
 
 // 폰트

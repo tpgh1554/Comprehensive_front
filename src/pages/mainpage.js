@@ -1,3 +1,4 @@
+//mainpage.js
 import styled from "styled-components";
 import Logo from "../components/logoimg";
 import Section from "../components/section";
@@ -25,6 +26,7 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   align-items:center;
+  width: auto;
   height: auto;
   margin: 0 15vw;
 `;
@@ -32,5 +34,5 @@ const Body = styled.div`
 const Container = styled.div`
   width: 100%;
   max-width: 1920px;
-  height: 5000px;
+  height: auto;
 `;

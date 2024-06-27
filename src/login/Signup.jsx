@@ -131,8 +131,6 @@ const SignUp = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const [uploadTrigger, setUploadTrigger] = useState(false);
-
   const [isChecked, setIsChecked] = useState([
     false,
     false,
@@ -148,6 +146,9 @@ const SignUp = () => {
 
   const uploadImg = async () => {
     try {
+      if (!file) {
+        throw new Error("파일이 선택되지 않았습니다.");
+      }
       const fileRef = ref(storage, `images/${email}`);
       const snapshot = await uploadBytes(fileRef, file, {
         contentType: file.type,
@@ -162,6 +163,8 @@ const SignUp = () => {
       throw e; // 에러 발생 시 예외 던짐
     }
   };
+  //  
+
   // 체크박스
   const handleCheckboxChange = (index) => {
     const updatedChecked = [...isChecked];
@@ -176,6 +179,7 @@ const SignUp = () => {
     if (!emailRegex.test(e.target.value)) {
       // 입력값이 정규식에 만족하지 않으면~
       setEmailError("이메일 형식이 올바르지 않습니다.");
+      setEmailValid(false);
     } else {
       setEmailError("올바른 이메일 형식입니다.");
       setEmailValid(true);
@@ -195,8 +199,10 @@ const SignUp = () => {
       setPasswordError(
         "비밀번호는 숫자, 영어 소문자, 특수문자를 모두 포함하여 8자 이상이어야 합니다."
       );
+      setPwdValid(false);
     } else {
       setPasswordError("");
+      setPwdValid(true);
     }
   };
 
@@ -213,7 +219,6 @@ const SignUp = () => {
   };
 
   const test = async () => {
-    setUploadTrigger(true);
     return await uploadImg(); // 업로드 이미지 함수가 완료 될 때 까지 기다리는듯
   };
 
@@ -270,11 +275,7 @@ const SignUp = () => {
         <Contents>
           <h1>회원가입</h1>
           <ProfileBox>
-            <Upload
-              value={profileImgPath}
-              email={email}
-              uploadTrigger={uploadTrigger}
-            />
+            <Upload setFile={setFile} />
           </ProfileBox>
 
           <InputContainer>
@@ -339,7 +340,7 @@ const SignUp = () => {
             </SkillCheck>
             <TextBox>
               <p>자기소개</p>
-              <Text></Text>
+              <Text value={myInfo} onChange={(e) => setMyInfo(e.target.value)} />
             </TextBox>
           </InputContainer>
           <SubmitBtn onClick={regist}>가입</SubmitBtn>

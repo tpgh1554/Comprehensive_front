@@ -1,3 +1,5 @@
+//ImageUpader.js
+
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useState, useEffect } from "react";
 import { storage } from "./Firebase";
@@ -26,9 +28,10 @@ const FileSelBtn = styled.button`
   margin-top: 10px; /* 버튼과 이미지 사이에 여백 추가 */
 `;
 
-const Upload = () => {
+const Upload = ({ setFile }) => {
+
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [file, setFile] = useState(null);
+
 
   const handleFileInputChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -45,11 +48,11 @@ const Upload = () => {
         canvas.toBlob(
           (blob) => {
             if (blob) {
-              const resizedFiled = new File([blob], selectedFile.name, {
+              const resizedFile = new File([blob], selectedFile.name, {
                 type: "image/jpeg",
               });
-              setFile(resizedFiled);
-              setPreviewUrl(URL.createObjectURL(resizedFiled));
+              setFile(resizedFile);
+              setPreviewUrl(URL.createObjectURL(resizedFile));
             } else {
               console.log("이미지 변환중 오류발생");
             }
@@ -85,6 +88,7 @@ const Upload = () => {
           type="file"
           onChange={handleFileInputChange}
           style={{ display: "none" }}
+          accept="image/*"
         />
       </FileSelBtn>
     </Container>

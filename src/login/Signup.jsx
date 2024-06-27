@@ -146,24 +146,21 @@ const SignUp = () => {
     false,
   ]);
 
-  const uploadImg = () => {
-    return new Promise((resolve, reject) => {
-      // 변경된 부분
+  const uploadImg = async () => {
+    try {
       const fileRef = ref(storage, `images/${email}`);
-      uploadBytes(fileRef, file).then((snapshot) => {
-        console.log("이미지 파이어베이스 업로드 성공");
-        getDownloadURL(snapshot.ref)
-          .then((url) => {
-            console.log("경로 : " + url);
-            setProfileImgPath(url);
-            resolve(url); // 업로드가 성공하면 resolve 호출
-          })
-          .catch((e) => {
-            console.log("파일 업로드 에러 : " + e);
-            reject(e); // 에러 발생 시 reject 호출
-          });
+      const snapshot = await uploadBytes(fileRef, file, {
+        contentType: file.type,
       });
-    });
+      console.log("이미지 파이어베이스 업로드 성공");
+      const url = await getDownloadURL(snapshot.ref);
+      console.log("경로 : " + url);
+      setProfileImgPath(url);
+      return url; // 업로드가 성공하면 URL 반환
+    } catch (e) {
+      console.log("파일 업로드 에러 : " + e);
+      throw e; // 에러 발생 시 예외 던짐
+    }
   };
   // 체크박스
   const handleCheckboxChange = (index) => {

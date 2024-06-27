@@ -1,7 +1,28 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import AxiosApi from "../../api/AxiosApi";
-const List = styled.div``;
+
+const ContentNameList = styled.li`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 32px;
+  background-color: #ff5353;
+  color: #ffffff;
+  font-size: 0.9rem;
+  list-style-type: none;
+`;
+const Column = styled.li`
+  margin: 0 16px;
+  list-style-type: none;
+`;
+const List = styled.li`
+  width: 100%;
+  list-style-type: none;
+`;
+
 const BoardList = () => {
   const [projectList, setProjectList] = useState(null);
   const [boardList, setBoardList] = useState(null);
@@ -34,34 +55,41 @@ const BoardList = () => {
     fetchBoardList();
   }, []);
   return (
-    <List
-      primary={showProject ? true : false}
-      onClick={() => {
-        setShowProject(true);
-        setShowFree(false);
-      }}
-    >
-      {showProject && (
-        <>
-          {projectList && (
-            <div>
-              {projectList.map((project, index) => (
-                <div key={index}>
-                  <div>
-                    <span>{project.projectName} ,</span>
-                    <span>{project.job},</span>
-                    <span>{project.projectTitle},</span>
-                    <span>{project.skills},</span>
-                    <span>{project.projectContent},</span>
+    <>
+      <ContentNameList>
+        <Column>작성자</Column>
+        <Column>제목</Column>
+        <Column>등록일자</Column>
+      </ContentNameList>
+      <List
+        primary={showProject ? true : false}
+        onClick={() => {
+          setShowProject(true);
+          setShowFree(false);
+        }}
+      >
+        {showProject && (
+          <>
+            {projectList && (
+              <div>
+                {projectList.map((project, index) => (
+                  <div key={index}>
+                    <div>
+                      <span>{project.projectName} ,</span>
+                      <span>{project.job},</span>
+                      <span>{project.projectTitle},</span>
+                      <span>{project.skills},</span>
+                      <span>{project.projectContent},</span>
+                    </div>
+                    <br></br>
                   </div>
-                  <br></br>
-                </div>
-              ))}
-            </div>
-          )}
-        </>
-      )}
-    </List>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </List>
+    </>
   );
 };
 export default BoardList;

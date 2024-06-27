@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import SelectBoard from "./SelectBoard";
 import BoardList from "./BoardList";
-import { Link } from "react-router-dom";
+import HeadBar from "./HeadBar";
 
 const BoardLayout = styled.div`
   display: flex;
@@ -20,11 +20,13 @@ const Container = styled.div`
   border: 5px solid #ff5353;
   border-radius: 37px;
 `;
+
 const BoardMain = () => {
   return (
     <BoardLayout>
       <Container>
         <SelectBoard />
+        <HeadBar />
         <BoardList />
       </Container>
     </BoardLayout>

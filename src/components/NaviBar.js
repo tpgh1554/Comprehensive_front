@@ -209,13 +209,9 @@ const ProfileImage = styled.div`
     width: 60px;
     height: 60px;
     object-fit: cover;
-    ${(props) => // 로그인 됐을때만 보더라인 적용
-      props.loggedIn ? `
-      border-radius: 100%;
-      border: 7px solid rgba(150, 150, 150, 0.5);
-    `
-      : ``}
-  }
+    border-radius: 100%;
+    border: 7px solid rgba(150, 150, 150, 0.5);
+    }
 `;
 const Overlay = styled.div`
   position: absolute;

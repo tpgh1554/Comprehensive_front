@@ -4,7 +4,7 @@ const Apueda_Domain = "http://localhost:8118";
 
 const AxiosApi = {
   getUserInfo: async () => {
-    return await axios.get(Apueda_Domain + "/users/list");
+    return await axios.get(Apueda_Domain + "/members/list");
   },
 
   // 로그인
@@ -13,15 +13,15 @@ const AxiosApi = {
       email: email,
       password: password,
     };
-    return await axios.post(Apueda_Domain + "/users/login", user);
+    return await axios.post(Apueda_Domain + "/members/login", user);
   },
   // 회원가입
   signup: async (user) => {
-    return await axios.post(Apueda_Domain + "/users/signup", user);
+    return await axios.post(Apueda_Domain + "/members/signup", user);
   },
   // 사용자 존재 여부 확인
   userCheck: async (email) => {
-    return await axios.get(`${Apueda_Domain}/users/check?email=${email}`);
+    return await axios.get(`${Apueda_Domain}/members/check?email=${email}`);
   },
 
   getBoardList: async () => {
@@ -48,18 +48,63 @@ const AxiosApi = {
     });
   },
 
+  //------------------친구 기능---------------------------
+
   friendlist: async (email) => {
-    return await axios.get(`${Apueda_Domain}/friends/list?userEmail=${email}`);
+    return await axios.get(
+      `${Apueda_Domain}/friends/list?memberEmail=${email}`
+    );
   },
 
-  friendDelete: async (userEmail, friendEmail) => {
+  friendRequestList: async (email) => {
+    return await axios.get(
+      `${Apueda_Domain}/friends/findrequest?memberEmail=${email}`
+    );
+  },
+
+  // friendRequestAccept: async (userEmail, toUserEmail) => {
+  //   return await axios.post(Apueda_Domain + "/friends/accept", {
+  //     userEmail: userEmail,
+  //     toUserEmail: toUserEmail,
+  //   });
+  // },
+
+  friendRequestAccept: async (memberEmail, toMemberEmail) => {
+    // FormData 객체 생성
+    const formData = new FormData();
+    formData.append("memberEmail", memberEmail);
+    formData.append("toMemberEmail", toMemberEmail);
+
+    return await axios.post(Apueda_Domain + "/friends/accept", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data", // FormData를 사용할 때는 Content-Type을 명시적으로 설정해야 합니다.
+      },
+    });
+  },
+
+  friendRequestReject: async (memberEmail, toMemberEmail) => {
+    // FormData 객체 생성
+    const formData = new FormData();
+    formData.append("memberEmail", memberEmail);
+    formData.append("toMemberEmail", toMemberEmail);
+
+    return await axios.post(Apueda_Domain + "/friends/reject", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data", // FormData를 사용할 때는 Content-Type을 명시적으로 설정해야 합니다.
+      },
+    });
+  },
+
+  friendDelete: async (memberEmail, friendEmail) => {
     return await axios.get(Apueda_Domain + "/friends/delete", {
       params: {
-        userEmail: userEmail,
+        memberEmail: memberEmail,
         friendEmail: friendEmail,
       },
     });
   },
+
+  //------------------친구 기능---------------------------
 };
 
 export default AxiosApi;

@@ -45,10 +45,9 @@ const Title = styled.div`
   font-size: 40px;
   font-weight: 700;
   color: black;
-  margin-top: 3vw;
+
   @media (max-width: 700px) {
     font-size: 30px;
-    margin-top: 10vw;
   }
 `;
 
@@ -76,17 +75,34 @@ const Button = styled.button`
   }
 `;
 
-const Contentcontainer = styled.div`
+const Friendcontainer = styled.div`
   width: 1000px;
   padding: 40px;
   padding-bottom: 20px;
   border: 3px solid #ff5353;
   border-radius: 30px;
   @media (max-width: 900px) {
-    width: 80vw;
+    width: 500px;
+    padding-top: 10px;
   }
   @media (max-width: 500px) {
-    width: 85vw;
+    width: 300px;
+  }
+`;
+
+const Requsetcontainer = styled.div`
+  width: 700px;
+
+  padding: 40px;
+  padding-bottom: 10px;
+  border: 3px solid #ff5353;
+  border-radius: 30px;
+  flex-direction: column;
+  @media (max-width: 900px) {
+    width: 500px;
+  }
+  @media (max-width: 500px) {
+    width: 300px;
   }
 `;
 
@@ -95,6 +111,11 @@ const ItemGrid = styled.div`
   justify-items: center;
   grid-template-columns: repeat(2, minmax(2vw, 1fr));
   margin-bottom: 50px;
+
+  @media (max-width: 500px) {
+    grid-template-columns: repeat(1, minmax(2vw, 1fr));
+    margin-bottom: 10px;
+  }
 `;
 
 const FriendItem = styled.div`
@@ -105,15 +126,36 @@ const FriendItem = styled.div`
   padding: 20px;
   border: 3px solid #ff5353;
   border-radius: 30px;
+  margin-top: 50px;
+
+  @media (max-width: 500px) {
+    width: 300px;
+    margin-top: 20px;
+  }
 `;
 
-const Letter_Del = styled.div`
+const RequestItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid gray;
+  margin-top: 30px;
+
+  @media (max-width: 500px) {
+    margin-top: 0px;
+  }
+`;
+
+//감싸지 않으면  justify-content: space-between 코드 때문에 버튼의 간격도 벌어짐
+const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   flex-direction: row;
 `;
 
-const DeleteButton = styled.button`
+const ButtonStyle = styled.button`
   width: 70px;
   height: 30px;
   margin-left: 10px;
@@ -121,13 +163,19 @@ const DeleteButton = styled.button`
   background-color: #ff5353;
   border: none;
   border-radius: 30px;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const Friend = () => {
   const [showFriend, setshowFriend] = useState(true);
   const [showApp, setShowApp] = useState(false);
   const [friends, setFriends] = useState([]);
+  const [friendReq, setFriendReq] = useState([]);
 
+  //친구리스트
   useEffect(() => {
     const fechFriend = async () => {
       try {
@@ -143,12 +191,30 @@ const Friend = () => {
     fechFriend();
   }, []);
 
-  const friendDelete = async (userEmail, friendEmail) => {
+  //친구요청관리
+  useEffect(() => {
+    const fechFriendRequest = async () => {
+      try {
+        const rsp = await AxiosApi.friendRequestList(
+          localStorage.getItem("email")
+        );
+        console.log(rsp.data);
+        console.log(localStorage.getItem("email"));
+        setFriendReq(rsp.data); // 백엔드에서 받아온 친구 목록을 상태에 저장
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    fechFriendRequest();
+  }, []);
+
+  const friendDelete = async (memberEmail, friendEmail) => {
     const confirm = window.confirm("친구를 삭제하시겠습니까?");
     if (confirm) {
       try {
         // API를 호출하여 게시글 삭제
-        await AxiosApi.friendDelete(userEmail, friendEmail);
+        await AxiosApi.friendDelete(memberEmail, friendEmail);
         // 삭제 성공 시, 상태 업데이트 등 추가 로직 처리
         console.log(friendEmail);
         console.log("삭제 성공");
@@ -157,8 +223,36 @@ const Friend = () => {
       } catch (error) {
         console.error("삭제 오류", error);
         console.log(friendEmail);
-        console.log(userEmail);
+        console.log(memberEmail);
       }
+    }
+  };
+
+  //요청 수락
+  const requsetAccept = async (memberEmail, toMemberEmail) => {
+    try {
+      await AxiosApi.friendRequestAccept(memberEmail, toMemberEmail);
+      console.log("친추 성공");
+      window.alert("추가 완료");
+      window.location.reload();
+    } catch (error) {
+      console.error("오류 : ", error);
+      console.log(memberEmail);
+      console.log(toMemberEmail);
+    }
+  };
+
+  //요청 거절
+  const requestReject = async (memberEmail, toMemberEmail) => {
+    try {
+      await AxiosApi.friendRequestReject(memberEmail, toMemberEmail);
+      console.log("거절 완료");
+      window.alert("거절 완료");
+      window.location.reload();
+    } catch (error) {
+      console.error("오류 : ", error);
+      console.log(memberEmail);
+      console.log(toMemberEmail);
     }
   };
 
@@ -190,33 +284,33 @@ const Friend = () => {
         </ButtonContainer>
 
         {showFriend && (
-          <Contentcontainer>
+          <Friendcontainer>
             <ItemGrid>
               {friends.map((friend) => (
                 <div key={friend.friendId}>
                   <FriendItem>
                     {/* 친구 이름이 user/touser에 있기 때문에 두 가지로 부름*/}
-                    {friend.user ? friend.user.name : null}
-                    {friend.user ? friend.user.nickname : null}
-                    {friend.toUser ? friend.toUser.name : null}
-                    {friend.toUser ? friend.toUser.nickname : null}
+                    {friend.member ? friend.member.name : null}
+                    {friend.member ? friend.member.nickname : null}
+                    {friend.toMember ? friend.toMember.name : null}
+                    {friend.toMember ? friend.toMember.nickname : null}
 
-                    <Letter_Del>
+                    <ButtonWrapper>
                       {/* Letter Del로 감싸지 않으면 삭제와 메세지가 space-between으로 멀어짐*/}
                       <Letter src={letter} />
-                      <DeleteButton
+                      <ButtonStyle
                         onClick={() =>
                           friendDelete(
                             localStorage.getItem("email"),
-                            friend.user
-                              ? friend.user.email
-                              : friend.toUser.email
+                            friend.member
+                              ? friend.member.email
+                              : friend.toMember.email
                           )
                         }
                       >
                         삭제
-                      </DeleteButton>
-                    </Letter_Del>
+                      </ButtonStyle>
+                    </ButtonWrapper>
                   </FriendItem>
                 </div>
               ))}
@@ -226,17 +320,45 @@ const Friend = () => {
                 <Exit src={exit} />
               </Link>
             </ExitWrapper>
-          </Contentcontainer>
+          </Friendcontainer>
         )}
 
         {showApp && (
-          <Contentcontainer>
+          <Requsetcontainer>
+            {friendReq.map((requset) => (
+              <RequestItem>
+                <div key={requset.friendId}>{requset.member.nickname} </div>
+                <ButtonWrapper>
+                  <ButtonStyle
+                    onClick={() =>
+                      requsetAccept(
+                        requset.member.email,
+                        localStorage.getItem("email")
+                      )
+                    }
+                  >
+                    수락
+                  </ButtonStyle>
+                  <ButtonStyle
+                    onClick={() =>
+                      requestReject(
+                        requset.member.email,
+                        localStorage.getItem("email")
+                      )
+                    }
+                  >
+                    거절
+                  </ButtonStyle>
+                </ButtonWrapper>
+              </RequestItem>
+            ))}
+
             <ExitWrapper>
               <Link to="/apueda/mypage">
                 <Exit src={exit} />
               </Link>
             </ExitWrapper>
-          </Contentcontainer>
+          </Requsetcontainer>
         )}
       </Container>
     </>

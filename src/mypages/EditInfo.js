@@ -46,16 +46,18 @@ const EditInfo = () => {
         {userInfo && (
           <div>
             {userInfo
-              .filter((user) => user.email === localStorage.getItem("email"))
-              .map((user, index) => (
+              .filter(
+                (member) => member.email === localStorage.getItem("email")
+              )
+              .map((member, index) => (
                 <div key={index}>
                   <p>이름</p>
-                  <EditName placeholder={user.name}></EditName>
+                  <EditName placeholder={member.name}></EditName>
                   <p>닉네임</p>
-                  <EditNickname placeholder={user.nickname}></EditNickname>
+                  <EditNickname placeholder={member.nickname}></EditNickname>
                   <p>이메일</p>
-                  <EditEmail placeholder={user.email}></EditEmail>
-                  <p>스킬 : {user.skill}</p>
+                  <EditEmail placeholder={member.email}></EditEmail>
+                  <p>스킬 : {member.skill}</p>
                 </div>
               ))}
           </div>

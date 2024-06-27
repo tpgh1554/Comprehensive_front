@@ -30,10 +30,9 @@ const Title = styled.div`
   font-size: 40px;
   font-weight: 700;
   color: black;
-  margin-top: 3vw;
+
   @media (max-width: 700px) {
     font-size: 30px;
-    margin-top: 10vw;
   }
 `;
 

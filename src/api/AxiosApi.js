@@ -105,6 +105,18 @@ const AxiosApi = {
   },
 
   //------------------친구 기능---------------------------
+
+  //메세지 기능
+  messageList: async (receiveEmail, sendEmail) => {
+    return await axios.get(Apueda_Domain + "/messages/received", {
+      params: {
+        receiveEmail: receiveEmail,
+        sendEmail: sendEmail,
+      },
+    });
+  },
+
+  //메세지 기능
 };
 
 export default AxiosApi;

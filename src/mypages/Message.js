@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import exit from "../image/exit.png";
-
+import { useState, useEffect } from "react";
+import AxiosApi from "../api/AxiosApi";
 const ContainerBack = styled.div`
   position: fixed;
   top: 0;
@@ -65,6 +66,26 @@ const TitelBox = styled.div`
 `;
 
 const Message = ({ closeModal, friendEmail }) => {
+  const [messageList, setMessageList] = useState([]);
+
+  useEffect(() => {
+    const fechMessage = async () => {
+      try {
+        const rsp = await AxiosApi.messageList(
+          localStorage.getItem("email"),
+          friendEmail
+        );
+        console.log(rsp.data);
+        console.log(localStorage.getItem("email"));
+        setMessageList(rsp.data); // 백엔드에서 받아온 친구 목록을 상태에 저장
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    fechMessage();
+  }, []);
+
   return (
     <>
       <ContainerBack>
@@ -72,6 +93,17 @@ const Message = ({ closeModal, friendEmail }) => {
           <TitelBox>
             <h1>메세지</h1>
           </TitelBox>
+          <div>
+            {messageList &&
+              messageList.map((postMsg) => (
+                <>
+                  <h1>{postMsg.content}</h1>
+
+                  {postMsg.receiveTime}
+                  {postMsg.sendMember.nickname}
+                </>
+              ))}
+          </div>
           <Exit onClick={() => closeModal()} src={exit} />
         </Container>
       </ContainerBack>

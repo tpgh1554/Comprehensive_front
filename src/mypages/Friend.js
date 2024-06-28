@@ -199,16 +199,18 @@ const Friend = () => {
   const [friendReq, setFriendReq] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFriendEmail, setSelectedFriendEmail] = useState("");
-  //메세지 보내기 모달창
 
+  //메세지 모달창
   const openModal = (email) => {
     setSelectedFriendEmail(email); // 클릭한 친구의 이메일을 상태에 설정
     setIsModalOpen(true); // 모달 창 열기
+    document.body.style.overflow = "hidden";
     console.log(email);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    document.body.style.overflow = "unset";
   };
 
   //친구리스트

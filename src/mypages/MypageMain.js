@@ -68,6 +68,7 @@ const MypageMain = () => {
 
   const openModal = () => {
     setIsModalOpen(true);
+    console.log(localStorage.getItem("email"));
   };
 
   const closeModal = () => {

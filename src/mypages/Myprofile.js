@@ -2,7 +2,7 @@ import styled from "styled-components";
 import exit from "../image/exit.png";
 
 import AxiosApi from "../api/AxiosApi";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const ContainerBack = styled.div`
   position: fixed;
@@ -75,13 +75,15 @@ const UserBox = styled.div`
 `;
 
 const Myprofile = ({ closeModal }) => {
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState();
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const rsp = await AxiosApi.getUserInfo();
+        const email = localStorage.getItem("email");
+        const rsp = await AxiosApi.getUserInfo(email);
         setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
+        console.log(rsp.data);
       } catch (e) {
         console.log(e);
       }
@@ -95,21 +97,16 @@ const Myprofile = ({ closeModal }) => {
         <TitelBox>
           <h1>나의 프로필</h1>
         </TitelBox>
-
         <UserBox>
           {userInfo && (
             <div>
-              {userInfo
-                .filter((user) => user.email === localStorage.getItem("email"))
-                .map((user, index) => (
-                  <div key={index}>
-                    <p>이름 : {user.name}</p>
-                    <p>닉네임 : {user.nickname}</p>
-                    <p>이메일 : {user.email}</p>
-                    <p>스킬 : {user.skill}</p>
-                    <p>프로필 : {user.profileImgPath}</p>
-                  </div>
-                ))}
+              <div>
+                <p>이름 : {userInfo.name}</p>
+                <p>닉네임 : {userInfo.nickname}</p>
+                <p>이메일 : {userInfo.email}</p>
+                <p>스킬 : {userInfo.skill}</p>
+                <p>프로필 : {userInfo.profileImgPath}</p>
+              </div>
             </div>
           )}
         </UserBox>

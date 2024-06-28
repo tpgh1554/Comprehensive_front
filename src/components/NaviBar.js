@@ -23,7 +23,7 @@ export default function NaviBar() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const rsp = await AxiosApi.getUserInfo();
+        const rsp = await AxiosApi.getUserList();
         setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
         const user = rsp.data.find((user) => user.email === email);
         if (user && user.profileImgPath) {
@@ -211,7 +211,7 @@ const ProfileImage = styled.div`
     object-fit: cover;
     border-radius: 100%;
     border: 7px solid rgba(150, 150, 150, 0.5);
-    }
+  }
 `;
 const Overlay = styled.div`
   position: absolute;

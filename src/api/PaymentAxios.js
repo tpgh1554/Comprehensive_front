@@ -40,6 +40,30 @@ const PaymentApi = {
     };
     return await axios.post(Apueda_Domain + "/payments/info", savePaymentinfo);
   },
+  requestBillingKey: async (
+    buyer_email,
+    transactionId,
+    paymentDate,
+    createdAt,
+    validUntil,
+    customerUid,
+    status
+  ) => {
+    const requestBillingKey = {
+      user: buyer_email,
+      transactionId: transactionId,
+      paymentDate: paymentDate,
+      customerUid: customerUid,
+      createdAt: createdAt,
+      validUntil: validUntil,
+      status: status,
+      billingKeyCreatedAt: paymentDate,
+    };
+    return await axios.post(
+      Apueda_Domain + "/payments/subscriptions",
+      requestBillingKey
+    );
+  },
 };
 
 export default PaymentApi;

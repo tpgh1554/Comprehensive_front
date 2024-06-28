@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 const HeadContainer = styled.div`
   display: flex;
@@ -6,26 +7,34 @@ const HeadContainer = styled.div`
   align-items: center;
   width: 100%;
   height: 40px;
+  background-color: #ff5353;
+  font-size: 0.7rem;
+  /* padding-top: 18px;
+  padding-left: 18px; */
 `;
 const WriteBoard = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 32px;
-  width: 70px;
+  height: 24px;
+  width: 50px;
   border-radius: 36px;
   margin-left: 16px;
-  color: #ffffff;
-  background-color: #ff5353;
+  color: #ff5353;
+  background-color: #ffffff;
 `;
 const SearchFilter = styled.div`
   margin-right: 16px;
+  color: #ffffff;
 `;
 const HeadBar = () => {
+  const navigate = useNavigate();
   return (
     <>
       <HeadContainer>
-        <WriteBoard>글쓰기</WriteBoard>
+        <WriteBoard onClick={() => navigate("/apueda/writeproject")}>
+          글쓰기
+        </WriteBoard>
         <SearchFilter>검색필터</SearchFilter>
       </HeadContainer>
     </>

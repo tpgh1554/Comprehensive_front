@@ -3,7 +3,8 @@ import axios from "axios";
 const Apueda_Domain = "http://localhost:8118";
 
 const AxiosApi = {
-  getUserInfo: async () => {
+  // 사용자 전체리스트 조회
+  getUserList: async () => {
     return await axios.get(Apueda_Domain + "/members/list");
   },
 
@@ -24,6 +25,12 @@ const AxiosApi = {
     return await axios.get(`${Apueda_Domain}/members/check?email=${email}`);
   },
 
+  // 사용자 정보 가져오기
+  getUserInfo: async (email) => {
+    return await axios.get(
+      `${Apueda_Domain}/members/memberinfo?email=${email}`
+    );
+  },
   getBoardList: async () => {
     return await axios.get(Apueda_Domain + "/board/list");
   },
@@ -105,18 +112,6 @@ const AxiosApi = {
   },
 
   //------------------친구 기능---------------------------
-
-  //메세지 기능
-  messageList: async (receiveEmail, sendEmail) => {
-    return await axios.get(Apueda_Domain + "/messages/received", {
-      params: {
-        receiveEmail: receiveEmail,
-        sendEmail: sendEmail,
-      },
-    });
-  },
-
-  //메세지 기능
 };
 
 export default AxiosApi;

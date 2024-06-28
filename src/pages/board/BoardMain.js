@@ -19,6 +19,7 @@ const Container = styled.div`
   margin-top: 5vh;
   border: 5px solid #ff5353;
   border-radius: 37px;
+  background-color: #ff5353;
 `;
 
 const BoardMain = () => {

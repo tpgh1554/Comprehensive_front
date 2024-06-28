@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import AxiosApi from "../../api/AxiosApi";
-
+// 컴포넌트로 관리시 사용
 const Container = styled.div`
   width: 100%;
   height: 100%;
@@ -9,65 +9,37 @@ const Container = styled.div`
   background-color: #ffffff;
   border-radius: 30px;
 `;
-const ListContainer = styled.div`
+const ListContainer = styled.ul`
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 0 12px;
 `;
-const ContentNameList = styled.div`
+const ContentNameList = styled.li`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 48px;
+  height: 32px;
   color: #ff5353;
   font-size: 0.9rem;
   list-style-type: none;
   border-bottom: 0.5px solid #c1c1c1;
 `;
-const Column = styled.div`
+const Column = styled.li`
   margin: 0 16px;
   list-style-type: none;
   padding: 9px;
 `;
 
-const List = styled.div`
+const List = styled.li`
   width: 100%;
   list-style-type: none;
   padding: 18px;
-`;
-const ListResult = styled.div`
-  display: flex;
-  flex-direction: row;
-  border-bottom: 0.5px solid #c1c1c1;
-  height: auto;
-  padding: 8px 0;
-`;
-
-const Profile = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 20%;
-  & img {
-    width: 60px;
-    height: 60px;
-    border-radius: 30px;
-    object-fit: cover;
+  & div.list-result {
+    border-bottom: 0.5px solid #c1c1c1;
   }
-`;
-const Content = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 60%;
-`;
-const Etc = styled.div`
-  display: flex;
-  flex-direction: column;
-  right: 0;
-  width: 20%;
-  position: relative;
 `;
 
 const BoardList = () => {
@@ -75,10 +47,8 @@ const BoardList = () => {
   const [boardList, setBoardList] = useState(null);
   const [showProject, setShowProject] = useState(true);
   const [showFree, setShowFree] = useState(false);
-  const email = localStorage.getItem("email");
 
   useEffect(() => {
-    // 플젝 정보 가져오기
     const fetchProjectList = async () => {
       try {
         const rsp = await AxiosApi.getProjectList();
@@ -90,20 +60,20 @@ const BoardList = () => {
     };
     fetchProjectList();
   }, []);
-  // 자유 게시판 정보 가져오기
+
   useEffect(() => {
     const fetchBoardList = async () => {
       try {
         const rsp = await AxiosApi.getBoardList();
         console.log(rsp.data);
-        setBoardList(rsp.data);
+        setBoardList(rsp.data); // 필터링된 데이터를 상태에 저장
       } catch (e) {
         console.log(e);
       }
     };
+
     fetchBoardList();
   }, []);
-
   return (
     <Container>
       <ListContainer>
@@ -121,26 +91,22 @@ const BoardList = () => {
         >
           {showProject && (
             <>
-              {projectList &&
-                projectList.map((project, index) => (
-                  <ListResult key={index}>
-                    {/* <span>{project.email} </span> */}
-                    <Profile>
-                      <img src={project.profileImg}></img>
-                      <span>닉네임 : {project.nickName}</span>
-                    </Profile>
-                    <Content>
-                      {/* <span>{project.projectName}</span> */}
-                      <span>{project.projectTitle}</span>
-                      <span>{project.skills} 스킬(미출력됨 수정필요)</span>
-                      {/* <span>{project.projectContent}</span> */}
-                    </Content>
-                    <Etc>
-                      <span>{project.projectTime}</span>
-                      <span>{project.recruitNum}</span>
-                    </Etc>
-                  </ListResult>
-                ))}
+              {projectList && (
+                <div>
+                  {projectList.map((project, index) => (
+                    <div key={index}>
+                      <div className="list-result">
+                        <span>{project.projectName} ,</span>
+                        <span>{project.job},</span>
+                        <span>{project.projectTitle},</span>
+                        <span>{project.skills},</span>
+                        <span>{project.projectContent},</span>
+                      </div>
+                      <br></br>
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </List>

@@ -14,11 +14,11 @@ const AxiosApi = {
       email: email,
       password: password,
     };
-    return await axios.post(Apueda_Domain + "/members/login", user);
+    return await axios.post(Apueda_Domain + "/auth/login", user);
   },
   // 회원가입
   signup: async (user) => {
-    return await axios.post(Apueda_Domain + "/members/signup", user);
+    return await axios.post(Apueda_Domain + "/auth/signup", user);
   },
   // 사용자 존재 여부 확인
   userCheck: async (email) => {

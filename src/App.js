@@ -20,6 +20,7 @@ import NaviBar from "./components/NaviBar";
 import Mainpage from "./pages/mainpage";
 import TeamChatPage from "./pages/chat/teamchatpage";
 import ChatMain from "./pages/chat/ChatMain";
+import DatingApp from "./pages/datingapp-page/Swipe";
 import EditInfo from "./mypages/EditInfo";
 import Friend from "./mypages/Friend";
 import Payment from "./subscribe/Payment";
@@ -39,6 +40,7 @@ function App() {
           <Route path="/apueda" element={<Mainpage />} />
           <Route path="/apueda/mypage" element={<MypageMain />} />
           <Route path="/apueda/chatmainpage" element={<ChatMain />} />
+          <Route path="/apueda/datingapp" element={<DatingApp />} />
           <Route path="/apueda/board" element={<BoardMain />} />
           <Route path="/apueda/writeproject" element={<WriteProject />} />
           <Route path="/apueda/mypage/mypj" element={<Mypj />} />

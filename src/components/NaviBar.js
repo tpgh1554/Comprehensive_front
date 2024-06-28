@@ -94,7 +94,7 @@ export default function NaviBar() {
               whileTap={{ scale: 0.95 }} // 클릭 시 이미지 작아짐
               onClick={() => setIsOpen(!isOpen)}
             >
-              <ProfileImage loggedIn={userInfo}>
+              <ProfileImage>
                 <img src={imageUrl} alt="User Profile" />
               </ProfileImage>
               <div className="arrow" style={{ transformOrigin: "50% 55%" }}>

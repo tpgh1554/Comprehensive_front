@@ -110,6 +110,7 @@ const SignUp = () => {
   // 입력하는 값을 저장하기 위한 것들
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
   const [identityNumber, setIdentityNumber] = useState("");
@@ -163,7 +164,7 @@ const SignUp = () => {
       throw e; // 에러 발생 시 예외 던짐
     }
   };
-  //  
+  //
 
   // 체크박스
   const handleCheckboxChange = (index) => {
@@ -310,7 +311,7 @@ const SignUp = () => {
                 </p>
               )}
             </span>
-            <LongInput placeholder="비밀번호 확인" />
+            <LongInput placeholder="비밀번호 확인" value={password2} />
             <LongInput
               placeholder="이름"
               value={name}
@@ -340,7 +341,10 @@ const SignUp = () => {
             </SkillCheck>
             <TextBox>
               <p>자기소개</p>
-              <Text value={myInfo} onChange={(e) => setMyInfo(e.target.value)} />
+              <Text
+                value={myInfo}
+                onChange={(e) => setMyInfo(e.target.value)}
+              />
             </TextBox>
           </InputContainer>
           <SubmitBtn onClick={regist}>가입</SubmitBtn>

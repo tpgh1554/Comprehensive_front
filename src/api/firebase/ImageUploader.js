@@ -15,8 +15,8 @@ const ProfileImg = styled.div`
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #f92f23;
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,9 +29,7 @@ const FileSelBtn = styled.button`
 `;
 
 const Upload = ({ setFile }) => {
-
   const [previewUrl, setPreviewUrl] = useState(null);
-
 
   const handleFileInputChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -41,9 +39,9 @@ const Upload = ({ setFile }) => {
       img.onload = () => {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        canvas.width = 100;
-        canvas.height = 100;
-        ctx.drawImage(img, 0, 0, 100, 100);
+        canvas.width = 150;
+        canvas.height = 150;
+        ctx.drawImage(img, 0, 0, 150, 150);
         console.log("이미지 그리기 완료");
         canvas.toBlob(
           (blob) => {

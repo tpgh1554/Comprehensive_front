@@ -3,14 +3,14 @@ const Layout = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: auto;
+  height: 1024px;
   margin: 0 15vw;
 `;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 800px;
+  height: 90%;
   width: 100%;
   margin-top: 5vh;
   border: 5px solid #ff5353;

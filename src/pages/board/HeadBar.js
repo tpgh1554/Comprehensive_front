@@ -19,12 +19,12 @@ const WriteBoard = styled.div`
   height: 24px;
   width: 50px;
   border-radius: 36px;
-  margin-left: 16px;
+  margin-right: 16px;
   color: #ff5353;
   background-color: #ffffff;
 `;
 const SearchFilter = styled.div`
-  margin-right: 16px;
+  margin-left: 16px;
   color: #ffffff;
 `;
 const HeadBar = () => {
@@ -32,10 +32,10 @@ const HeadBar = () => {
   return (
     <>
       <HeadContainer>
+        <SearchFilter>검색필터</SearchFilter>
         <WriteBoard onClick={() => navigate("/apueda/writeproject")}>
           글쓰기
         </WriteBoard>
-        <SearchFilter>검색필터</SearchFilter>
       </HeadContainer>
     </>
   );

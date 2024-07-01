@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import AxiosApi from "../api/AxiosApi";
 import exit from "../image/exit.png";
+import WriteMessage from "./WriteMessage";
 
 const ContainerBack = styled.div`
   position: fixed;
@@ -16,9 +17,9 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  width: 35vw;
-  height: 45vw;
+  justify-content: space-between;
+  min-width: 45vw;
+  height: 50vw;
   padding: 20px;
   position: fixed;
   top: 50%;
@@ -29,9 +30,12 @@ const Container = styled.div`
   border-radius: 100px;
   z-index: 1000;
 
+  @media (max-width: 900px) {
+    width: 55vw;
+  }
+
   @media (max-width: 500px) {
     width: 80vw;
-    height: 500px;
   }
 `;
 
@@ -53,6 +57,13 @@ const WriteButton = styled.button`
   border: 2px solid black;
   border-radius: 30px;
   font-size: 20px;
+  background-color: white;
+  cursor: pointer;
+
+  &:hover {
+    border: 4px solid gray;
+    font-size: 22px;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -74,6 +85,10 @@ const TitelBox = styled.div`
   background-color: #ff5353;
   font-size: 20px;
 
+  @media (max-width: 700px) {
+    font-size: 15px;
+  }
+
   @media (max-width: 500px) {
     font-size: 10px;
     width: 50vw;
@@ -92,28 +107,56 @@ const PageBtn = styled.div`
 `;
 
 const MessageContainer = styled.div`
-  width: 35vw;
-  height: 30vw;
+  flex: 1; /* 변경: 남은 공간을 차지하도록 설정 */
+  overflow-y: auto; /* 스크롤을 추가하여 내용이 넘치지 않도록 함 */
 `;
 
 const MsgItem = styled.div`
+  border-radius: 10px;
   background-color: white;
   margin-bottom: 20px; /* Adjust as needed */
   text-align: center;
 
   h1 {
-    font-size: 20px;
+    font-size: 18px;
   }
   h5 {
     text-align: right;
   }
+  @media (max-width: 1200px) {
+    h1 {
+      font-size: 15px;
+    }
+  }
 `;
 
-const Message = ({ closeModal, friendEmail }) => {
+const Profile = styled.div`
+  img {
+    width: 100px;
+    height: 100px;
+    border-radius: 100px;
+    border: 2px solid black;
+  }
+`;
+
+const Message = ({ closeModal, friendEmail, friendProfile }) => {
   const [messageList, setMessageList] = useState([]);
-  const [content, setContent] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3; // 한 페이지에 표시할 아이템 수
+  const [selectedFriendEmail, setSelectedFriendEmail] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false); // 메세지 보내기 모달
+
+  const openWriteModal = (friendemail) => {
+    setSelectedFriendEmail(friendemail); // 클릭한 친구의 이메일을 상태에 설정
+    setIsModalOpen(true); // 모달 창 열기
+    document.body.style.overflow = "hidden"; //모달창 열렸을 때 스크롤 금지
+    console.log(friendemail);
+  };
+
+  const closeWriteModal = () => {
+    setIsModalOpen(false);
+    document.body.style.overflow = "hidden";
+  };
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -123,6 +166,7 @@ const Message = ({ closeModal, friendEmail }) => {
           friendEmail
         );
         setMessageList(rsp.data);
+        console.log(friendProfile);
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
@@ -135,7 +179,10 @@ const Message = ({ closeModal, friendEmail }) => {
   };
 
   const handleNextPage = () => {
-    setCurrentPage(currentPage + 1);
+    const totalPages = Math.ceil(messageList.length / itemsPerPage);
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   const indexOfLastItem = currentPage * itemsPerPage; // 현재 페이지의 마지막 항목 위치 계산
@@ -149,6 +196,9 @@ const Message = ({ closeModal, friendEmail }) => {
           <TitelBox>
             <h1>메세지</h1>
           </TitelBox>
+          <Profile>
+            <img src={friendProfile[friendEmail]} alt="Profi" />
+          </Profile>
           <MessageContainer>
             {currentItems.map((postMsg, index) => (
               <MsgItem key={index}>
@@ -173,11 +223,23 @@ const Message = ({ closeModal, friendEmail }) => {
             </button>
           </PageBtn>
           <ButtonWrapper>
-            <WriteButton>메세지 보내기</WriteButton>
+            <WriteButton
+              onClick={() => {
+                openWriteModal(friendEmail);
+              }}
+            >
+              메세지 보내기
+            </WriteButton>
             <Exit onClick={() => closeModal()} src={exit} />
           </ButtonWrapper>
         </Container>
       </ContainerBack>
+      {isModalOpen && (
+        <WriteMessage
+          closeModal={closeWriteModal}
+          friendEmail={selectedFriendEmail}
+        />
+      )}
     </>
   );
 };

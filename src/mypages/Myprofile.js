@@ -17,8 +17,8 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 60vw;
-  height: 30vw;
+  width: 50vw;
+  min-height: 38vw;
   padding: 20px;
   position: fixed;
   top: 50%;
@@ -29,9 +29,13 @@ const Container = styled.div`
   border-radius: 100px;
   z-index: 1000;
 
+  @media (max-width: 900px) {
+    width: 60vw;
+    min-height: 700px;
+  }
   @media (max-width: 500px) {
     width: 80vw;
-    height: 500px;
+    min-height: 500px;
   }
 `;
 
@@ -58,6 +62,12 @@ const TitelBox = styled.div`
   background-color: #ff5353;
   font-size: 13px;
 
+  @media (max-width: 900px) {
+    font-size: 10px;
+    width: 30vw;
+    height: 6vh;
+    top: 20px;
+  }
   @media (max-width: 500px) {
     font-size: 10px;
     width: 50vw;
@@ -67,36 +77,64 @@ const TitelBox = styled.div`
 `;
 
 const UserBox = styled.div`
-  font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 25px;
   font-weight: 700;
   @media (max-width: 500px) {
     font-size: 20px;
   }
 `;
 
+const ProfileImage = styled.div`
+  margin-top: 20px;
+  img {
+    width: 120px;
+    height: 120px;
+
+    border-radius: 30%;
+  }
+
+  @media (max-width: 500px) {
+    img {
+      width: 100px;
+      height: 100px;
+    }
+  }
+`;
+
 const Myprofile = ({ closeModal }) => {
-  const [userInfo, setUserInfo] = useState();
+  const [userInfo, setUserInfo] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+  const email = localStorage.getItem("email");
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const email = localStorage.getItem("email");
         const rsp = await AxiosApi.getUserInfo(email);
         setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
         console.log(rsp.data);
+        if (rsp.data && rsp.data.profileImgPath) {
+          setImageUrl(rsp.data.profileImgPath);
+        }
       } catch (e) {
         console.log(e);
       }
     };
 
     fetchUserInfo();
-  }, []);
+  }, [email]);
   return (
     <ContainerBack>
       <Container>
         <TitelBox>
           <h1>나의 프로필</h1>
         </TitelBox>
+
+        <ProfileImage>
+          <img src={imageUrl} alt="User Profile" />
+        </ProfileImage>
         <UserBox>
           {userInfo && (
             <div>
@@ -105,11 +143,11 @@ const Myprofile = ({ closeModal }) => {
                 <p>닉네임 : {userInfo.nickname}</p>
                 <p>이메일 : {userInfo.email}</p>
                 <p>스킬 : {userInfo.skill}</p>
-                <p>프로필 : {userInfo.profileImgPath}</p>
               </div>
             </div>
           )}
         </UserBox>
+
         <Exit onClick={() => closeModal()} src={exit} />
       </Container>
     </ContainerBack>

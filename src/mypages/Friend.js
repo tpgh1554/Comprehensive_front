@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import AxiosApi from "../api/AxiosApi";
 import Message from "./Message";
 const Container = styled.div`
-  height: auto;
   width: 100vw;
+  margin-bottom: 3vw;
   position: relative; /* 상대적 위치 설정 */
   display: flex;
   background-color: white;
@@ -77,31 +77,30 @@ const Button = styled.button`
 `;
 
 const Friendcontainer = styled.div`
-  width: 1000px;
+  min-width: 1100px;
   padding: 40px;
   padding-bottom: 20px;
   border: 3px solid #ff5353;
   border-radius: 30px;
 
   @media (max-width: 1200px) {
-    width: 700px;
+    min-width: 700px;
     padding-top: 10px;
     white-space: nowrap;
   }
   @media (max-width: 900px) {
-    width: 500px;
+    min-width: 500px;
     padding-top: 10px;
     white-space: nowrap;
   }
   @media (max-width: 500px) {
-    width: 300px;
+    min-width: 300px;
     white-space: nowrap;
   }
 `;
 
 const Requsetcontainer = styled.div`
-  width: 700px;
-
+  min-width: 700px;
   padding: 40px;
   padding-bottom: 10px;
   border: 3px solid #ff5353;
@@ -118,6 +117,7 @@ const Requsetcontainer = styled.div`
 const ItemGrid = styled.div`
   display: grid;
   justify-items: center;
+  gap: 30px;
   grid-template-columns: repeat(2, minmax(2vw, 1fr));
   margin-bottom: 50px;
 
@@ -129,57 +129,84 @@ const ItemGrid = styled.div`
   @media (max-width: 500px) {
     grid-template-columns: repeat(1, minmax(2vw, 1fr));
     margin-bottom: 10px;
+    gap: 10px;
   }
 `;
 
 const FriendItem = styled.div`
-  width: 25vw;
+  min-width: 35vw;
+  height: 8vw;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   padding: 20px;
   border: 3px solid #ff5353;
   border-radius: 30px;
-  margin-top: 50px;
+  margin-top: 25px;
 
   @media (max-width: 1000px) {
-    width: 40vw;
-    margin-top: 20px;
+    min-width: 50vw;
+    height: 10vw;
   }
 
   @media (max-width: 800px) {
     width: 60vw;
-    margin-top: 20px;
+    height: 15vw;
   }
-  @media (max-width: 500px) {
-    width: 60vw;
-    margin-top: 20px;
+  @media (max-width: 600px) {
+    width: 80vw;
+    height: 15vw;
   }
 `;
 
 const RequestItem = styled.div`
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20px;
-  padding-bottom: 10px;
   border-bottom: 3px solid gray;
-  margin-top: 30px;
-
+  margin-top: 10px;
+  margin-bottom: 10px;
   @media (max-width: 500px) {
     margin-top: 0px;
   }
 `;
 
+const ProfileImage = styled.div`
+  img {
+    width: 65px;
+    height: 60px;
+    border-radius: 100px;
+  }
+
+  @media (max-width: 500px) {
+    img {
+      width: 50px;
+      height: 50px;
+    }
+  }
+`;
+
 //감싸지 않으면  justify-content: space-between 코드 때문에 버튼의 간격도 벌어짐
+const ProfileNickNameWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 5px;
+`;
+
 const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
-  flex-direction: row;
+  justify-content: center;
 `;
 
 const ButtonStyle = styled.button`
-  width: 70px;
+  min-width: 70px;
   height: 30px;
   margin-left: 10px;
   color: white;
@@ -199,12 +226,14 @@ const Friend = () => {
   const [friendReq, setFriendReq] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFriendEmail, setSelectedFriendEmail] = useState("");
+  const [friendImageUrls, setfriendImageUrls] = useState(null);
+  const [reqImageUrls, setReqImageUrls] = useState({});
 
   //메세지 모달창
   const openModal = (email) => {
     setSelectedFriendEmail(email); // 클릭한 친구의 이메일을 상태에 설정
     setIsModalOpen(true); // 모달 창 열기
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = "hidden"; //모달창 열렸을 때 스크롤 금지
     console.log(email);
   };
 
@@ -221,6 +250,17 @@ const Friend = () => {
         console.log(rsp.data);
         console.log(localStorage.getItem("email"));
         setFriends(rsp.data); // 백엔드에서 받아온 친구 목록을 상태에 저장
+
+        // 각 친구의 이미지 URL을 설정
+        const urls = {};
+        rsp.data.forEach((friend) => {
+          if (friend.member) {
+            urls[friend.member.email] = friend.member.profileImgPath;
+          } else if (friend.toMember) {
+            urls[friend.toMember.email] = friend.toMember.profileImgPath;
+          }
+        });
+        setfriendImageUrls(urls);
       } catch (e) {
         console.log(e);
       }
@@ -237,10 +277,17 @@ const Friend = () => {
           localStorage.getItem("email")
         );
         console.log(rsp.data);
-        console.log(localStorage.getItem("email"));
         setFriendReq(rsp.data); // 백엔드에서 받아온 친구 목록을 상태에 저장
-      } catch (e) {
-        console.log(e);
+
+        const urls = {};
+        rsp.data.forEach((request) => {
+          urls[request.member.email] = request.member.profileImgPath;
+        });
+
+        setReqImageUrls(urls); // 상태 업데이트
+        console.log(urls);
+      } catch (error) {
+        console.error("친구 요청 목록 가져오기 오류:", error);
       }
     };
 
@@ -328,11 +375,22 @@ const Friend = () => {
                 <div key={friend.friendId}>
                   <FriendItem>
                     {/* 친구 이름이 user/touser에 있기 때문에 두 가지로 부름*/}
-                    {friend.member ? friend.member.name : null}
-                    {friend.member ? friend.member.nickname : null}
-                    {friend.toMember ? friend.toMember.name : null}
-                    {friend.toMember ? friend.toMember.nickname : null}
-
+                    <ProfileNickNameWrapper>
+                      <ProfileImage>
+                        <img
+                          src={
+                            friendImageUrls[
+                              friend.member
+                                ? friend.member.email
+                                : friend.toMember.email
+                            ]
+                          }
+                          alt="이미지x"
+                        />
+                      </ProfileImage>
+                      {friend.member ? friend.member.nickname : null}
+                      {friend.toMember ? friend.toMember.nickname : null}
+                    </ProfileNickNameWrapper>
                     <ButtonWrapper>
                       {/* Letter Del로 감싸지 않으면 삭제와 메세지가 space-between으로 멀어짐*/}
                       <Letter
@@ -373,8 +431,13 @@ const Friend = () => {
         {showApp && (
           <Requsetcontainer>
             {friendReq.map((requset) => (
-              <RequestItem>
-                <div key={requset.friendId}>{requset.member.nickname} </div>
+              <RequestItem key={requset.friendId}>
+                <ProfileNickNameWrapper ameWrapper>
+                  <ProfileImage>
+                    <img src={reqImageUrls[requset.member.email]} alt="Profi" />
+                  </ProfileImage>
+                  {requset.member.nickname}
+                </ProfileNickNameWrapper>
                 <ButtonWrapper>
                   <ButtonStyle
                     onClick={() =>
@@ -410,7 +473,11 @@ const Friend = () => {
       </Container>
 
       {isModalOpen && (
-        <Message closeModal={closeModal} friendEmail={selectedFriendEmail} />
+        <Message
+          closeModal={closeModal}
+          friendEmail={selectedFriendEmail}
+          friendProfile={friendImageUrls}
+        />
       )}
     </>
   );

@@ -113,6 +113,25 @@ const AxiosApi = {
 
   //------------------친구 기능---------------------------
 
+  //메세지
+  messageList: async (receiveEmail, sendEmail) => {
+    return await axios.get(Apueda_Domain + "/messages/received", {
+      params: {
+        receiveEmail: receiveEmail,
+        sendEmail: sendEmail,
+      },
+    });
+  },
+
+  writeMessage: async (receiverMemberName, senderMemberName, content) => {
+    const writeInfo = {
+      receiverMemberName: receiverMemberName,
+      senderMemberName: senderMemberName,
+      content: content,
+    };
+    return await axios.post(Apueda_Domain + "/messages/write", writeInfo);
+  },
+
   // ----------------------- 게시판-----------------------
   // 스킬 리스트 가지고 오기
   getSkilList: async () => {

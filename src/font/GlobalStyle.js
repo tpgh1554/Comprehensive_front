@@ -9,7 +9,7 @@ const GlobalStyle = createGlobalStyle`
     font-style: normal;
 }
 
-  body,button {
+  body,button,input,textarea {
     font-family: 'GmarketSansMedium', sans-serif;
   }
 `;

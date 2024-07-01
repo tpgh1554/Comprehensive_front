@@ -314,7 +314,7 @@ const WriteProject = () => {
           <Content
             placeholder="내용을 입력해주세요(10,000자 이내)"
             cols={100}
-            rows={80}
+            style={{ resize: "none" }}
             maxLength={10000}
             onChange={(e) => setContent(e.target.value)}
           />

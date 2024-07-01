@@ -3,8 +3,8 @@ import styled from "styled-components";
 export const Title = styled.input`
   border-width: 0 0 1px;
   width: 85%;
-  height: 50px;
-  padding-left: 32px;
+  height: 56px;
+  padding: 32px;
   margin-top: 16px;
   font-size: 1.5rem;
   &:focus {
@@ -15,7 +15,7 @@ export const Title = styled.input`
 export const InputButtonSection = styled.div`
   display: flex;
   width: 85%;
-  padding-left: 32px;
+  padding: 12px 32px;
 `;
 
 export const Button = styled.button`
@@ -57,6 +57,7 @@ export const ContentContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
+  padding: 16px;
 `;
 
 export const Top = styled.div`
@@ -108,10 +109,10 @@ export const InputImage = styled.input`
 `;
 
 export const Content = styled.textarea`
-  border-width: 0.7px 0 0.7px;
+  border-width: 1px 0 1px;
   margin: 10px 0;
   width: 85%;
-  height: 70%;
+  height: 580px;
   padding: 32px;
   font-size: 1.2rem;
   overflow: auto;

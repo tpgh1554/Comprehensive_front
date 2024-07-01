@@ -55,14 +55,7 @@ const ProfileBox = styled.div`
   gap: 10px;
 `;
 
-const ProfileImg = styled.div`
-  /* FireBase로 구현 예정 */
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #f92f23;
-  width: 100px;
-  height: 100px;
-`;
+
 
 const FileSelBtn = styled.button``;
 
@@ -117,6 +110,7 @@ const SignUp = () => {
   const [profileImgPath, setProfileImgPath] = useState("");
   const [skill, setSkill] = useState("");
   const [myInfo, setMyInfo] = useState("");
+  const [formattedIdentityNumber, setFormattedIdentityNumber] = useState("");
 
   // 유효성 검사
   const [emailValid, setEmailValid] = useState(false); // 이메일 형식 검사
@@ -131,6 +125,7 @@ const SignUp = () => {
   // 오류메세지
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [passwordError2, setPasswordError2] = useState("");
 
   const [isChecked, setIsChecked] = useState([
     false,
@@ -207,6 +202,21 @@ const SignUp = () => {
     }
   };
 
+  const onChangePassword2 = (e) => {
+    const newPassword = e.target.value;
+    setPassword2(newPassword);
+    if (password === newPassword) {
+      setPwdConcord(true);
+      setPasswordError("");
+    } else {
+      setPwdConcord(false);
+      setPasswordError(
+        "비밀번호가 일치하지 않습니다."
+      );
+    }
+    
+  }
+
   const onChangeName = (e) => {
     setName(e.target.value);
   };
@@ -217,6 +227,19 @@ const SignUp = () => {
 
   const onChangeIdentityNumber = (e) => {
     setIdentityNumber(e.target.value);
+    let value = e.target.value.replace(/[^0-9]/g, ''); // 숫자만 입력받기
+    if (value.length > 7) {
+      value = value.slice(0, 7); // 최대 7자리까지만 입력받기
+    }
+
+    // 하이픈 포맷팅 적용
+    let formattedValue = value;
+    if (value.length > 6) {
+      formattedValue = value.slice(0, 6) + '-' + value.slice(6);
+    }
+
+    setIdentityNumber(value);
+    setFormattedIdentityNumber(formattedValue);
   };
 
   const test = async () => {
@@ -311,7 +334,14 @@ const SignUp = () => {
                 </p>
               )}
             </span>
-            <LongInput placeholder="비밀번호 확인" value={password2} />
+            <LongInput placeholder="비밀번호 확인" value={password2} onChange={onChangePassword2}/>
+            <span id="hint">
+              {password2.length > 0 && (
+                <p className={pwdConcord ? "success" : "error"}>
+                  {passwordError2}
+                </p>
+              )}
+            </span>
             <LongInput
               placeholder="이름"
               value={name}

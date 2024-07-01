@@ -23,7 +23,6 @@ import ChatMain from "./pages/chat/ChatMain";
 import DatingApp from "./pages/datingapp-page/Swipe";
 import EditInfo from "./mypages/EditInfo";
 import Friend from "./mypages/Friend";
-import Payment from "./subscribe/Payment";
 import BoardMain from "./pages/board/BoardMain";
 import WriteProject from "./pages/board/WriteProject";
 
@@ -50,7 +49,6 @@ function App() {
           <Route path="/apueda/signup" element={<SignUp />} />
           <Route path="/apueda/mypage/editinfo" element={<EditInfo />} />
           <Route path="/apueda/mypage/friend" element={<Friend />} />
-          <Route path="/apueda/payment" element={<Payment />} />
         </Routes>
       </Router>
     </>

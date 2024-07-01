@@ -1,12 +1,37 @@
 import React from "react";
 import PaymentApi from "../api/PaymentAxios";
 import axios from "axios";
+import styled from "styled-components";
+import Kapay from "../image/kakaopaymark-removebg-preview.png";
 
-const Payment = () => {
+const Paybu = styled.button`
+  width: 40%;
+  height: 45px;
+  background-color: white;
+  border: 1px solid #dee2e6;
+  display: flex;
+  position: absolute;
+  font-size: 25px;
+  left: 2px;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+const Payment = ({ isChecked1, isChecked2 }) => {
   const getBuyerIdFromLocalStorage = () => {
     // 로컬 스토리지에서 사용자 ID 값 가져오기
     const email = localStorage.getItem("email"); // 사용자 ID를 저장한 키에 맞게 수정
     return email;
+  };
+  const handleButtonClick = () => {
+    if (isChecked1 && isChecked2) {
+      Kakaopayment();
+    } else {
+      alert("약관동의를 전부 체크해 주세요");
+    }
   };
 
   const handlePayment = () => {
@@ -97,7 +122,11 @@ const Payment = () => {
         const createdAt = new Date();
         const validUntil = new Date(paymentDate);
         validUntil.setMonth(validUntil.getMonth() + 1);
-        const validUntilTimestamp = Math.floor(validUntil.getTime() / 1000);
+        const validUntilTimestamp = Math.floor(validUntil.getTime() / 1000); // 1달뒤
+
+        // const validUntil = new Date(paymentDate);
+        // validUntil.setMinutes(validUntil.getMinutes() + 1);
+        // const validUntilTimestamp = Math.floor(validUntil.getTime() / 1000); // 테스트용 날짜 1분뒤
 
         const scheduleData = {
           customer_uid: buyer_email,
@@ -179,11 +208,17 @@ const Payment = () => {
   };
 
   return (
-    <div>
-      <h1>구독 결제</h1>
-      <button onClick={handlePayment}>KG 이니시스 결제하기</button>
-      <button onClick={Kakaopayment}>카카오 결제하기</button>
-    </div>
+    <>
+      {/* <Paybu onClick={handlePayment}>KG 이니시스 결제하기</Paybu> */}
+      <Paybu onClick={handleButtonClick}>
+        <img
+          src={Kapay}
+          alt="카카오 결제하기"
+          style={{ height: "70%", marginRight: "50px" }}
+        />
+        KakaoPay
+      </Paybu>
+    </>
   );
 };
 

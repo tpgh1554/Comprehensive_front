@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Logosidefont from "../components/logosidefont";
 import Termsmodal from "./terms";
+import Payment from "./Payment";
 
 const ModalStyle = styled.div`
   .modal {
@@ -22,7 +23,7 @@ const ModalStyle = styled.div`
     animation: modal-bg-show 0.8s;
   }
   section {
-    width: 80%;
+    width: 60%;
     height: 90%;
     margin: 0 auto;
     background-color: #fff;
@@ -63,7 +64,7 @@ const Button = styled.button`
   font-weight: bold;
   cursor: pointer;
   margin-right: 10px;
-  width: 100px;
+  width: 150px;
   height: 50px;
   border: 2px solid #f92f23;
   background-color: white;
@@ -71,12 +72,13 @@ const Button = styled.button`
   bottom: 10px;
 `;
 const Reddeco = styled.div`
-  width: 15%;
+  width: 25%;
   height: 100%;
   background-color: #f92f23;
+  display: flex;
 `;
 const Submain = styled.div`
-  width: 65%;
+  width: 90%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -84,11 +86,7 @@ const Submain = styled.div`
   text-align: center;
   align-items: center;
 `;
-const Redam = styled.div`
-  width: 20%;
-  height: 100%;
-  background-color: #f92f23;
-`;
+
 const Grayline = styled.div`
   width: 100%;
   height: 1px;
@@ -133,10 +131,10 @@ const Terms = styled.div`
   }
 `;
 const Nicebu = styled.button`
-  width: 90%;
+  width: 125%;
   height: 45px;
   background-color: white;
-  border: 1px solid black;
+  border: 1px solid #dee2e6;
   &:hover {
     cursor: pointer;
   }
@@ -147,7 +145,14 @@ const Agencybox = styled.div`
   margin-left: 5%;
   margin-right: 5%;
   text-align: center;
+  position: relative;
 `;
+
+const Longbox = styled.div`
+  width: 80%;
+  margin-bottom: 10px;
+`;
+
 const Paym = styled.button`
   width: 30%;
   height: 40px;
@@ -159,6 +164,15 @@ const Paym = styled.button`
     cursor: pointer;
   }
 `;
+
+const Prbox = styled.div`
+  margin-top: 80px;
+  margin-left: 10px;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+`;
+
 const Modal = (props) => {
   const { open, confirm, close, type, children } = props;
   const [isChecked, setIsChecked] = useState(false);
@@ -206,6 +220,7 @@ const Modal = (props) => {
       alert("약관동의를 전부 체크해 주세요");
     }
   };
+
   const resetbu = () => {
     setModalContent(false);
   };
@@ -216,7 +231,30 @@ const Modal = (props) => {
           {open && (
             <section>
               <main>{children}</main>
-              <Reddeco />
+              <Reddeco>
+                <Prbox>
+                  <Textbox style={{ color: "white", marginBottom: "10px" }}>
+                    상품명:
+                  </Textbox>
+                  <Textbox style={{ color: "white", marginBottom: "10px" }}>
+                    가격:
+                  </Textbox>
+                  <Textbox style={{ color: "white", marginBottom: "10px" }}>
+                    기간:
+                  </Textbox>
+                </Prbox>
+                <Prbox style={{ marginTop: "74px" }}>
+                  <Textbox style={{ color: "white", marginBottom: "10px" }}>
+                    아프다 1달 구독
+                  </Textbox>
+                  <Textbox style={{ color: "white", marginBottom: "10px" }}>
+                    5,000 원
+                  </Textbox>
+                  <Textbox style={{ color: "white", marginBottom: "10px" }}>
+                    1달
+                  </Textbox>
+                </Prbox>
+              </Reddeco>
               <Submain>
                 {modalContent ? (
                   <>
@@ -280,18 +318,21 @@ const Modal = (props) => {
                     </Modbox>
 
                     <Agencybox>
-                      <Nicebu
-                        enabled={isChecked1 && isChecked2}
-                        onClick={handleButtonClick}
-                      >
-                        Nice
-                      </Nicebu>
+                      <Longbox>
+                        <Nicebu onClick={handleButtonClick}>
+                          신용카드 결제
+                        </Nicebu>
+                      </Longbox>
+
+                      <Payment
+                        isChecked1={isChecked1}
+                        isChecked2={isChecked2}
+                      />
                     </Agencybox>
                     <Button onClick={close}>취소</Button>
                   </>
                 )}
               </Submain>
-              <Redam></Redam>
             </section>
           )}
         </div>

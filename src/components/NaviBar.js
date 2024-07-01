@@ -8,7 +8,7 @@ import defaultImage from "../image/person-icon2.png";
 import file from "../image/file.png";
 import chat from "../image/chat.png";
 import friend from "../image/friend.png";
-import mobile from "../image/mobile-in-hand.png";
+import phone from "../image/mobile-in-hand.png";
 import card from "../image/credit-card.png";
 import profile from "../image/profile.png";
 import logout from "../image/logout.png";
@@ -23,11 +23,10 @@ export default function NaviBar() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const rsp = await AxiosApi.getUserList();
+        const rsp = await AxiosApi.getUserInfo(email);
         setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
-        const user = rsp.data.find((user) => user.email === email);
-        if (user && user.profileImgPath) {
-          setImageUrl(user.profileImgPath);
+        if (rsp.data && rsp.data.profileImgPath) {
+          setImageUrl(rsp.data.profileImgPath);
         } else {
           setImageUrl(defaultImage);
         }
@@ -124,8 +123,8 @@ export default function NaviBar() {
                 <Img src={friend} />
                 <Overlay>친구관리</Overlay>
               </MenuItem>
-              <MenuItem>
-                <Img src={mobile} />
+              <MenuItem onClick={() => navigate("/apueda/datingapp")}>
+                <Img src={phone} />
                 <Overlay>
                   개발자
                   <br /> 매칭

@@ -158,6 +158,24 @@ const AxiosApi = {
     return await axios.get(Apueda_Domain + `/project/detail?id=${id}`);
   },
   // ----------------------- 게시판-----------------------
+  // -----------------------채   팅-----------------------
+  creactRoom: async (roomName, userEmail) => { // 방이름, 작성자이메일 받아서 방생성
+    return await axios.post(`${Apueda_Domain}/chat/room`, {
+      roomName,
+      creatorEmail: userEmail,
+    });
+  },
+  // -----------------------채   팅-----------------------
+  // -----------------------데이트 어플-----------------------
+
+  getCardList: async (myEmail) => {
+    return await axios.post(`${Apueda_Domain}/datingapp/cardlist`, null, {
+      params: {
+        myEmail: myEmail,
+      }
+    });
+  }
+  // -----------------------데이트 어플-----------------------
 };
 
 export default AxiosApi;

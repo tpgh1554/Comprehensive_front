@@ -20,12 +20,13 @@ import NaviBar from "./components/NaviBar";
 import Mainpage from "./pages/mainpage";
 import TeamChatPage from "./pages/chat/teamchatpage";
 import ChatMain from "./pages/chat/ChatMain";
-import DatingApp from "./pages/datingapp-page/Swipe";
+import DatingApp from "./pages/datingapp-page/datingApp";
 import EditInfo from "./mypages/EditInfo";
 import Friend from "./mypages/Friend";
 import BoardMain from "./pages/board/BoardMain";
 import WriteProject from "./pages/board/WriteProject";
 import ProjectDetail from "./pages/board/ProjectDetail";
+
 
 function App() {
   return (

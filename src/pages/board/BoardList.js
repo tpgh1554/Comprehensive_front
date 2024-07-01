@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import AxiosApi from "../../api/AxiosApi";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   width: 100%;
@@ -8,13 +9,16 @@ const Container = styled.div`
   list-style-type: none;
   background-color: #ffffff;
   border-radius: 30px;
+  overflow: scroll;
 `;
+
 const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 0 12px;
 `;
+
 const ContentNameList = styled.div`
   display: flex;
   flex-direction: row;
@@ -27,6 +31,7 @@ const ContentNameList = styled.div`
   list-style-type: none;
   border-bottom: 0.5px solid #c1c1c1;
 `;
+
 const Column = styled.div`
   margin: 0 16px;
   list-style-type: none;
@@ -38,6 +43,7 @@ const List = styled.div`
   list-style-type: none;
   padding: 18px;
 `;
+
 const ListResult = styled.div`
   display: flex;
   flex-direction: row;
@@ -50,6 +56,7 @@ const Profile = styled.div`
   display: flex;
   flex-direction: column;
   width: 20%;
+
   & img {
     width: 60px;
     height: 60px;
@@ -57,52 +64,95 @@ const Profile = styled.div`
     object-fit: cover;
   }
 `;
+
 const Content = styled.div`
   display: flex;
   flex-direction: column;
-  width: 60%;
+  width: 70%;
 `;
+
 const Etc = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   right: 0;
-  width: 20%;
+  width: 10%;
   position: relative;
+`;
+
+export const Button = styled.button`
+  border: 0;
+  color: #ffffff;
+  background-color: #ff5353;
+  border-radius: 26px;
+  margin-right: 12px;
+  font-size: 12px;
+  padding: 6px;
+  height: auto;
+  width: auto;
+  overflow: hidden;
 `;
 
 const BoardList = () => {
   const [projectList, setProjectList] = useState(null);
-  const [boardList, setBoardList] = useState(null);
-  const [showProject, setShowProject] = useState(true);
-  const [showFree, setShowFree] = useState(false);
-  const email = localStorage.getItem("email");
+  const [sortBy, setSortBy] = useState(true); // Default sort by newest
+  const navigate = useNavigate();
+  useEffect(() => {
+    fetchProjectList(); // Fetch projects when component mounts
+  }, []);
 
-  useEffect(() => {
-    // 플젝 정보 가져오기
-    const fetchProjectList = async () => {
-      try {
-        const rsp = await AxiosApi.getProjectList();
-        console.log(rsp.data);
-        setProjectList(rsp.data); // 필터링된 데이터를 상태에 저장
-      } catch (e) {
-        console.log(e);
+  const fetchProjectList = async () => {
+    try {
+      const rsp = await AxiosApi.getProjectList();
+      // Sort project list by regDate in descending order (newest first)
+      const sortedProjects = rsp.data.sort(
+        (a, b) => new Date(b.regDate) - new Date(a.regDate)
+      );
+      setProjectList(sortedProjects); // Set sorted project list
+    } catch (e) {
+      console.error("Error fetching project list:", e);
+    }
+  };
+
+  const sortByCreatedAt = () => {
+    const sortedProjects = [...projectList].sort((a, b) => {
+      if (sortBy) {
+        return new Date(b.regDate) - new Date(a.regDate);
+      } else {
+        return new Date(a.regDate) - new Date(b.regDate);
       }
-    };
-    fetchProjectList();
-  }, []);
-  // 자유 게시판 정보 가져오기
-  useEffect(() => {
-    const fetchBoardList = async () => {
-      try {
-        const rsp = await AxiosApi.getBoardList();
-        console.log(rsp.data);
-        setBoardList(rsp.data);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    fetchBoardList();
-  }, []);
+    });
+    setProjectList(sortedProjects);
+    setSortBy(!sortBy); // Toggle sort order
+  };
+
+  const formatTimestamp = (timestamp) => {
+    const now = new Date();
+    const date = new Date(timestamp);
+    const diff = Math.abs(now - date);
+    const dayInMs = 1000 * 60 * 60 * 24;
+    const monthInMs = dayInMs * 30.4375;
+    const yearInMs = dayInMs * 365.25;
+
+    if (diff < 1000 * 60) {
+      return "방금 전";
+    } else if (diff < 1000 * 60 * 60) {
+      return `${Math.floor(diff / (1000 * 60))}분 전`;
+    } else if (diff < dayInMs) {
+      return `${Math.floor(diff / (1000 * 60 * 60))}시간 전`;
+    } else if (diff < monthInMs) {
+      return `${Math.floor(diff / dayInMs)}일 전`;
+    } else if (diff < yearInMs) {
+      return `${Math.floor(diff / monthInMs)}달 전`;
+    } else {
+      return `${Math.floor(diff / yearInMs)}년 전`;
+    }
+  };
+
+  const projectClick = (id) => {
+    console.log(id, "플젝id값");
+    navigate("");
+  };
 
   return (
     <Container>
@@ -110,42 +160,36 @@ const BoardList = () => {
         <ContentNameList>
           <Column>작성자</Column>
           <Column>제목</Column>
-          <Column>등록일자</Column>
+          <Column>
+            <Button onClick={sortByCreatedAt}>등록일자</Button>
+          </Column>
         </ContentNameList>
-        <List
-          primary={showProject ? true : false}
-          onClick={() => {
-            setShowProject(true);
-            setShowFree(false);
-          }}
-        >
-          {showProject && (
-            <>
-              {projectList &&
-                projectList.map((project, index) => (
-                  <ListResult key={index}>
-                    {/* <span>{project.email} </span> */}
-                    <Profile>
-                      <img src={project.profileImg}></img>
-                      <span>닉네임 : {project.nickName}</span>
-                    </Profile>
-                    <Content>
-                      {/* <span>{project.projectName}</span> */}
-                      <span>{project.projectTitle}</span>
-                      <span>{project.skills} 스킬(미출력됨 수정필요)</span>
-                      {/* <span>{project.projectContent}</span> */}
-                    </Content>
-                    <Etc>
-                      <span>{project.projectTime}</span>
-                      <span>{project.recruitNum}</span>
-                    </Etc>
-                  </ListResult>
-                ))}
-            </>
-          )}
+        <List>
+          {projectList &&
+            projectList.map((project, index) => (
+              <ListResult key={index}>
+                <Profile>
+                  <img src={project.profileImg} alt="profile" />
+                  <span>닉네임: {project.nickName}</span>
+                </Profile>
+                <Content>
+                  <span onClick={() => projectClick(project.projectId)}>
+                    {project.projectTitle}
+                  </span>
+                  <span>
+                    {project.skillName &&
+                      project.skillName.map((skills, index) => (
+                        <Button key={index}>{skills.skillName}</Button>
+                      ))}
+                  </span>
+                </Content>
+                <Etc>{formatTimestamp(project.regDate)}</Etc>
+              </ListResult>
+            ))}
         </List>
       </ListContainer>
     </Container>
   );
 };
+
 export default BoardList;

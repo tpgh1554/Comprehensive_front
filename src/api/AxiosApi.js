@@ -133,11 +133,30 @@ const AxiosApi = {
   },
 
   // ----------------------- 게시판-----------------------
-  // 스킬 리스트 가지고 오기
+  // 스킬 리스트 가지고 오기(등록용)
   getSkilList: async () => {
-    return await axios.get(Apueda_Domain + "/project/list");
+    return await axios.get(Apueda_Domain + "/skill/list");
   },
-
+  // 플젝 글쓰기
+  postProject: async (postData) => {
+    console.log("axi recruitNum", postData.recruitNum, postData.projectName);
+    const project = {
+      projectTitle: postData.title,
+      projectContent: postData.content,
+      projectPassword: postData.pw,
+      skillName: postData.skills,
+      projectTime: postData.endDate,
+      recruitNum: postData.recruitNum,
+      projectName: postData.projectName,
+      regDate: postData.currentDate,
+      imgPath: postData.imgPath.name,
+    };
+    return await axios.post(Apueda_Domain + "/project/insert", project);
+  },
+  // 플젝 상세 보기
+  getProjectDetal: async (id) => {
+    return await axios.get(Apueda_Domain + `/project/detail?id=${id}`);
+  },
   // ----------------------- 게시판-----------------------
 };
 

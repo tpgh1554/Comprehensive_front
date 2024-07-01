@@ -2,8 +2,9 @@ import styled, { keyframes } from "styled-components";
 import exit from "../../image/exit.png";
 import { Container, ContainerBack, Exit } from "../../style/ModalStyle.js";
 import AxiosApi from "../../api/AxiosApi";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../../style/WriteStyle";
+
 const Input = styled.input``;
 const SearchResult = styled.div``;
 
@@ -13,6 +14,7 @@ const Layout = styled.div`
   width: 100%;
   height: 90%;
 `;
+
 const SearchContainer = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -26,6 +28,7 @@ const SearchContainer = styled.div`
     height: 50px;
   }
 `;
+
 const ResultContainer = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -41,14 +44,16 @@ const Ul = styled.ul`
   display: ${(props) => (props.showList ? "inline-block" : "none")};
   list-style: none;
 `;
+
 const SkillList = styled.div`
-  point: cursor;
   cursor: pointer;
 `;
+
 const spin = keyframes`
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 `;
+
 const LoadingSpinner = styled.div`
   border: 4px solid #f3f3f3;
   border-top: 4px solid #3498db;
@@ -59,11 +64,17 @@ const LoadingSpinner = styled.div`
   display: inline-block;
 `;
 
-const Modal = ({ closeModal, handleEvent }) => {
+const Save = styled.div`
+  cursor: pointer;
+  margin-top: 16px;
+`;
+
+const Modal = ({ closeModal, onSave }) => {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [skillsArray, setSkillsArray] = useState([]);
   const [clickList, setClickList] = useState([]);
+  const modalRef = useRef(null);
 
   /**
    * @param {event} event input창에 입력한값을 상태관리하는 handler
@@ -73,30 +84,72 @@ const Modal = ({ closeModal, handleEvent }) => {
     console.log(inputValue, "input");
   };
 
+  // 스킬 리스트 가져오기
   useEffect(() => {
     const getSkills = async () => {
       try {
-        // const response = await AxiosApi.getSkilList();
-        // email -> skill
-        const response = await AxiosApi.getUserList();
-        console.log(response.data, "skill");
+        const response = await AxiosApi.getSkilList();
+        //console.log(response.data, "skill");
         setSkillsArray(response.data);
       } catch (e) {
         console.log(e);
       }
     };
     getSkills();
-  }, [inputValue]);
+  }, []);
+
   // 입력한 스킬 값과 db스킬 비교
   const filterSkillResult = skillsArray.filter((skill) => {
     const trimmedInputValue = inputValue.replace(/\s+/g, "").toLowerCase();
-    const trimmedSkillName = skill.email.replace(/\s+/g, "").toLowerCase();
+    const trimmedSkillName = skill.skillName.replace(/\s+/g, "").toLowerCase();
     return trimmedSkillName.includes(trimmedInputValue);
   });
 
+  // 스킬 클릭시 setClickList에 저장
+  const onClick = (skill) => {
+    // console.log("클릭값 : ", skill.skillName);
+    // 스킬 클릭한 리스트 중복 체크
+    setClickList((prevList) => {
+      if (prevList.some((item) => item.skillName === skill.skillName)) {
+        return prevList;
+      }
+      const newList = [...prevList, skill];
+      console.log("newList : ", newList);
+      return newList;
+    });
+  };
+
+  // 저장 버튼 클릭 시 선택된 스킬 리스트를 상위 컴포넌트로 전달
+  const handleSave = () => {
+    onSave(clickList);
+    //console.log("check", clickList);
+    closeModal();
+  };
+
+  const onRemove = (skill) => {
+    setClickList((prevList) => {
+      const newList = prevList.filter(
+        (item) => item.skillName !== skill.skillName
+      );
+      return newList;
+    });
+  };
+
+  // 모달 외 다른 곳 클릭 시 모달 닫기
+  const handleOutsideClick = (event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      closeModal();
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
   return (
     <ContainerBack>
-      <Container>
+      <Container ref={modalRef}>
         <Layout>
           <SearchContainer>
             <Input
@@ -110,30 +163,41 @@ const Modal = ({ closeModal, handleEvent }) => {
                 filterSkillResult.map((skill, index) => (
                   <li key={index}>
                     <SearchResult>
-                      <SkillList>{skill.email}</SkillList>
-                      {/* <img
-                        src={skill.strTeamBadge}
-                        alt={`${skill.strTeam} badge`}
-                        style={{ width: "24px", height: "24px" }}
-                      /> */}
+                      <SkillList
+                        onClick={() => onClick(skill)}
+                        value={skill.skillName}
+                      >
+                        {skill.skillName}
+                      </SkillList>
                     </SearchResult>
                   </li>
                 ))
               ) : (
-                // <SearchResult>
-                //   <li>no skill result</li>
-                // </SearchResult>
                 <></>
               )}
             </Ul>
           </SearchContainer>
           <ResultContainer>
-            <Button style={{ width: "40px", height: "24px", fontSize: "12px" }}>
-              java
-            </Button>
+            {clickList.map((skill, index) => (
+              <Button
+                key={index}
+                onClick={() => onRemove(skill)}
+                style={{
+                  width: "auto",
+                  height: "24px",
+                  fontSize: "12px",
+                  margin: "4px",
+                }}
+              >
+                {skill.skillName}
+              </Button>
+            ))}
           </ResultContainer>
         </Layout>
-        <Exit onClick={() => closeModal()} src={exit} />
+        <Save onClick={handleSave}>
+          <Button>저장</Button>
+        </Save>
+        {/* <Exit onClick={() => closeModal()} src={exit} /> */}
       </Container>
     </ContainerBack>
   );

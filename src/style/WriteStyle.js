@@ -47,6 +47,66 @@ export const ConfirmButton = styled.button`
   height: 42px;
 `;
 
+export const ContentContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: 90%;
+  list-style-type: none;
+  background-color: #ffffff;
+  border-radius: 30px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+`;
+
+export const Top = styled.div`
+  color: #ffffff;
+  align-content: center;
+  font-size: 1.5rem;
+  bottom: 1rem;
+  position: relative;
+`;
+
+export const Container = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+`;
+
+export const DropdownInput = styled.div`
+  position: absolute;
+  top: 100%;
+  left: -66px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 1000;
+  margin-right: 16px;
+  background-color: #ff5353;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100px;
+  input {
+    width: 200px;
+    padding: 5px;
+  }
+`;
+export const InsertConfirm = styled.button`
+  border: 0;
+  background-color: #fff;
+  color: #ff5353;
+  border-radius: 26px;
+  width: 60px;
+  height: 30px;
+`;
+export const InputImage = styled.input`
+  display: none;
+`;
+
 export const Content = styled.textarea`
   border-width: 0.7px 0 0.7px;
   margin: 10px 0;

@@ -151,7 +151,7 @@ const BoardList = () => {
 
   const projectClick = (id) => {
     console.log(id, "플젝id값");
-    navigate("");
+    navigate("/apueda/projectDetail");
   };
 
   return (

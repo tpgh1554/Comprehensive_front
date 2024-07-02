@@ -6,10 +6,9 @@ import styled from "styled-components";
 
 const Notice = styled.div``;
 const Input = styled.input``;
-const PasswordModal = ({ closePwModal, onPasswordSave, onClick }) => {
+const PasswordModal = ({ onRoomNameSave, closePwModal, onClick }) => {
   const modalRef = useRef(null);
-  const [inputPassword, setInputPassword] = useState(""); // 입력된 비밀번호 상태 추가
-
+  const [inputRoomName, setInputRoomName] = useState(""); // 채팅방(플젝)이름 입력 상태 관리
   // 모달 외 다른 곳 클릭 시 모달 닫기
   const handleOutsideClick = (event) => {
     if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -22,18 +21,31 @@ const PasswordModal = ({ closePwModal, onPasswordSave, onClick }) => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
-  const handleSave = () => {
-    onPasswordSave(inputPassword);
-    onClick();
-    closePwModal();
+  const handleSave = async () => {
+    try {
+      // Save input values to parent component
+      await onRoomNameSave(inputRoomName);
+
+      // Call onClick callback from parent component
+      onClick(inputRoomName);
+
+      // Reset input fields after successful save
+      setInputRoomName("");
+
+      // Close modal
+      closePwModal();
+    } catch (error) {
+      console.error("Error saving:", error);
+      // Handle error saving room name or password if needed
+    }
   };
   return (
     <ContainerBack>
       <Container ref={modalRef} style={{ width: "500px", height: "500px" }}>
         <Notice>
-          <span>프로젝트 채팅방 입장시 사용할 비밀번호를 입력해주세요</span>
+          <span>프로젝트 채팅방의 이름을 입력해주세요</span>
         </Notice>
-        <Input onChange={(e) => setInputPassword(e.target.value)}></Input>
+        방이름<Input onChange={(e) => setInputRoomName(e.target.value)}></Input>
         <Button onClick={handleSave}>저장</Button>
       </Container>
     </ContainerBack>

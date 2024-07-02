@@ -29,13 +29,14 @@ const WriteProject = () => {
   const [IsPwModalOpen, setIsPwModalOpen] = useState(false);
   const [isDropdownOpenForPeople, setIsDropdownOpenForPeople] = useState(false); // 인원 드롭다운 상태 추가
   const [isDropdownOpenForPeriod, setIsDropdownOpenForPeriod] = useState(false); // 기간 드롭다운 상태 추가
-  const [isDropdownOpenForName, setIsDropdownOpenForName] = useState(false); // 기간 드롭다운 상태 추가
+  //const [isDropdownOpenForName, setIsDropdownOpenForName] = useState(false); // 플젝 이름 드롭다운
   const [currentDate, setCurrentDate] = useState(getFormattedDate()); // 기간선택시 최소 날짜를 오늘 날짜로 고정
   const [selectDate, setSelectDate] = useState(getFormattedDate()); // 기간 선택 값 상태로 관리
   const [title, setTitle] = useState("");
-  const [projectName, setProjectName] = useState("");
+  //const [projectName, setProjectName] = useState("");
   const [content, setContent] = useState("");
-  const [password, setPassword] = useState("");
+  const [roomName, setRoomName] = useState("");
+  // const [password, setPassword] = useState("");
   const [recruitNum, setRecruitNum] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [imgPath, setImgPath] = useState("");
@@ -45,10 +46,15 @@ const WriteProject = () => {
     setSelectedSkills(skills);
     closeModal(); // 스킬 선택 모달 닫기
   };
-  const handlePwValue = (pw) => {
-    setPassword(pw);
-    //console.log(password, "!!");
-    closePwModal(); // 스킬 선택 모달 닫기
+  // const handlePwValue = (pw) => {
+  //   setPassword(pw);
+  //   //console.log(password, "!!");
+  //   //closePwModal();
+  // };
+  const handleRoomNameValue = (rm) => {
+    console.log(rm, "!");
+    setRoomName(rm);
+    // closePwModal();
   };
 
   // 다른 곳을 클릭하면 드롭다운 닫기
@@ -61,12 +67,6 @@ const WriteProject = () => {
       !inputRefForPeriod.current.contains(event.target)
     ) {
       setIsDropdownOpenForPeriod(false);
-    }
-    if (
-      inputRefForName.current &&
-      !inputRefForName.current.contains(event.target)
-    ) {
-      setIsDropdownOpenForName(false); // 이름 드롭다운 닫기
     }
   };
 
@@ -81,22 +81,20 @@ const WriteProject = () => {
   const toggleDropdownForPeople = () => {
     setIsDropdownOpenForPeople(!isDropdownOpenForPeople);
     setIsDropdownOpenForPeriod(false); // 기간 드롭다운 닫기
-    setIsDropdownOpenForName(false); // 이름 드롭다운 닫기
   };
 
   // 기간 드롭다운 토글 함수
   const toggleDropdownForPeriod = () => {
     setIsDropdownOpenForPeriod(!isDropdownOpenForPeriod);
     setIsDropdownOpenForPeople(false); // 인원 드롭다운 닫기
-    setIsDropdownOpenForName(false); // 이름 드롭다운 닫기
   };
 
   // 플젝 이름 드롭다운 토글 함수
-  const toggleDropdownForName = () => {
-    setIsDropdownOpenForName(!isDropdownOpenForName);
-    setIsDropdownOpenForPeople(false); // 인원 드롭다운 닫기
-    setIsDropdownOpenForPeriod(false); // 기간 드롭다운 닫기
-  };
+  // const toggleDropdownForName = () => {
+  //   setIsDropdownOpenForName(!isDropdownOpenForName);
+  //   setIsDropdownOpenForPeople(false); // 인원 드롭다운 닫기
+  //   setIsDropdownOpenForPeriod(false); // 기간 드롭다운 닫기
+  // };
 
   // Open modal
   const openModal = () => {
@@ -147,9 +145,12 @@ const WriteProject = () => {
       fileInputRef.current.click();
     }
   };
-
-  // 글쓰기 등록 버튼
-  const handleRegister = () => {
+  useEffect(() => {
+    if (roomName) {
+      handleRegister();
+    }
+  }, [roomName]);
+  const handleRegister = async () => {
     if (!title) {
       alert("제목을 입력해주세요");
       return;
@@ -159,10 +160,6 @@ const WriteProject = () => {
       return;
     }
 
-    // if (!selectedSkills.length) {
-    //   alert("스킬을 선택해주세요");
-    //   return;
-    // }
     if (!recruitNum) {
       alert("인원을 입력해주세요");
       return;
@@ -181,35 +178,31 @@ const WriteProject = () => {
       title,
       content,
       skills: selectedSkills,
-      pw: password,
+      // pw: password,
       endDate: selectDate + getCurrentTime(),
       recruitNum: recruitNum,
-      projectName: projectName,
+      roomName: roomName,
       regDate: currentDate,
       imgPath: imgPath,
     };
-    // console.log("projectName ", projectName);
-    // console.log("projectName.post", postData.projectName);
-    // console.log("recruitNum ", recruitNum);
-    // console.log("recruitNum.post", postData.recruitNum);
+    try {
+      const response = await AxiosApi.postProject(postData);
 
-    const postProject = async (postData) => {
-      try {
-        const response = await AxiosApi.postProject(postData);
-        if (response.data) {
-          navigate("/apueda/board");
-          alert("프로젝트 게시글이 등록되었습니다.");
-        } else {
-          alert("프로젝트 게시글 등록이 실패했습니다.");
-        }
-      } catch (e) {
-        console.log(e);
-        alert("프로젝트 게시글 등록 중 오류가 발생했습니다.");
+      const rm = roomName;
+      const email = localStorage.getItem("email");
+      const createRoomResponse = await AxiosApi.createRoom(rm, email);
+      if (createRoomResponse.data) {
+        alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
+        navigate("/apueda/board");
+      } else {
+        throw new Error("채팅방 생성이 실패했습니다.");
       }
-    };
-
-    postProject(postData);
+    } catch (error) {
+      console.log(error);
+      alert("등록 중 오류가 발생했습니다.");
+    }
   };
+
   const cancel = () => {
     const confirmMessage =
       "뒤로 가면 변경 사항이 저장되지 않습니다. 계속 하시겠습니까?";
@@ -253,7 +246,7 @@ const WriteProject = () => {
                 </DropdownInput>
               )}
             </div>
-            <div style={{ position: "relative" }}>
+            {/* <div style={{ position: "relative" }}>
               <Button
                 onClick={toggleDropdownForName}
                 style={{ marginRight: "16px" }}
@@ -272,7 +265,7 @@ const WriteProject = () => {
                   <InsertConfirm>확인</InsertConfirm>
                 </DropdownInput>
               )}
-            </div>
+            </div> */}
             <div style={{ position: "relative" }}>
               <Button
                 onClick={toggleDropdownForPeriod}
@@ -330,9 +323,10 @@ const WriteProject = () => {
       )}
       {IsPwModalOpen && (
         <PasswordModal
+          onRoomNameSave={handleRoomNameValue}
           closePwModal={closePwModal}
-          onPasswordSave={handlePwValue}
-          onClick={handleRegister}
+          // onPasswordSave={handlePwValue}
+          onClick={setRoomName}
         />
       )}
     </BoardLayout>

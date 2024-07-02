@@ -113,7 +113,7 @@ const AxiosApi = {
 
   //------------------친구 기능---------------------------
 
-  //-------------------------------------------메세지------------------------------------------------
+  //메세지
   messageList: async (receiveEmail, sendEmail) => {
     return await axios.get(Apueda_Domain + "/messages/received", {
       params: {
@@ -131,14 +131,6 @@ const AxiosApi = {
     };
     return await axios.post(Apueda_Domain + "/messages/write", writeInfo);
   },
-  delMsg: async (postMsgId) => {
-    return await axios.get(Apueda_Domain + "/messages/delete", {
-      params: {
-        id: postMsgId,
-      },
-    });
-  },
-  //-------------------------------------------메세지------------------------------------------------
 
   // ----------------------- 게시판-----------------------
   // 스킬 리스트 가지고 오기(등록용)
@@ -147,15 +139,19 @@ const AxiosApi = {
   },
   // 플젝 글쓰기
   postProject: async (postData) => {
-    console.log("axi recruitNum", postData.recruitNum, postData.projectName);
+    console.log(
+      "postProject recruitNum",
+      postData.recruitNum,
+      postData.roomName
+    );
     const project = {
       projectTitle: postData.title,
       projectContent: postData.content,
-      projectPassword: postData.pw,
+      // projectPassword: postData.pw,
       skillName: postData.skills,
       projectTime: postData.endDate,
       recruitNum: postData.recruitNum,
-      projectName: postData.projectName,
+      projectName: postData.roomName,
       regDate: postData.currentDate,
       imgPath: postData.imgPath.name,
     };
@@ -167,8 +163,9 @@ const AxiosApi = {
   },
   // ----------------------- 게시판-----------------------
   // -----------------------채   팅-----------------------
-  creactRoom: async (roomName, userEmail) => {
+  createRoom: async (roomName, userEmail) => {
     // 방이름, 작성자이메일 받아서 방생성
+    console.log("createRoom 방이름 , ", roomName, "아이디 : ", userEmail);
     return await axios.post(`${Apueda_Domain}/chat/room`, {
       roomName,
       creatorEmail: userEmail,

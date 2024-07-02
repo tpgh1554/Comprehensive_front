@@ -182,6 +182,27 @@ const AxiosApi = {
   },
   // -----------------------채   팅-----------------------
   // -----------------------데이트 어플-----------------------
+  // 좋아요 이후 친구 신청
+
+  friendRequest: async (memberEmail, toMemberEmail) => {
+    return await axios.post(`${Apueda_Domain}/friends/request`, null, {
+      params: {
+        memberEmail: memberEmail,
+        toMemberEmail: toMemberEmail,
+      },
+    });
+  },
+
+  // 싫어요 이후 DB 저장
+  unlikeFriendRequest: async (memberEmail, unlikeMemberEmail) => {
+    console.log("Sending unlike request:", memberEmail, unlikeMemberEmail);
+    return await axios.post(`${Apueda_Domain}/datingapp/unlike`, null, {
+      params: {
+        memberEmail: memberEmail,
+        unlikeMemberEmail: unlikeMemberEmail,
+      },
+    });
+  },
 
   getCardList: async (myEmail) => {
     return await axios.post(`${Apueda_Domain}/datingapp/cardlist`, null, {

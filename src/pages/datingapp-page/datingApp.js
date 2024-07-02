@@ -3,14 +3,25 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 import AxiosApi from "../../api/AxiosApi";
 import TinderCard from "react-tinder-card";
-import { FaRegCircleCheck } from "react-icons/fa6"; // 좋아요 오른쪽드래그 아이콘
-import { FaRegCircleXmark } from "react-icons/fa6"; // 싫어요 왼쪽 드래그 아이콘
-import { FaArrowRotateLeft } from "react-icons/fa6"; // REDO 아이콘
+import { FaRegCircleCheck, FaRegCircleXmark, FaArrowRotateLeft } from "react-icons/fa6";
 
 function DatingApp() {
   const [cardList, setCardList] = useState([]);
   const [likedList, setLikedList] = useState([]); // 좋아요 누른 사람들은 현재페이지에서 나갈때 일괄 신청 되도록 리스트에 입력
+  const [unlikedList, setUnlikedList] = useState([]); // 싫어요 누른 사람들은 현재페이지에서 나갈때 일괄 신청 되도록 리스트에 입력
   const myEmail = localStorage.getItem('email')
+  const [currentIndex, setCurrentIndex] = useState(0); // 겹친 카드중 선택 순서
+  const [lastDirection, setLastDirection] = useState();
+  // used for outOfFrame closure
+  const currentIndexRef = useRef(currentIndex);
+
+  const childRefs = useMemo(
+    () =>
+      Array(cardList.length)
+        .fill(0)
+        .map((i) => React.createRef()),
+    [cardList.length]
+  );
 
   useEffect(() => {
     const showUserInfo = async () => {
@@ -25,50 +36,15 @@ function DatingApp() {
         }));
         setCardList(userList); // 변환된 데이터를 카드에 넣어줌
         setCurrentIndex(userList.length - 1);
-        console.log(userList);
+        currentIndexRef.current = userList.length - 1;
       } catch (error) {
         console.log(error);
       }
     };
     showUserInfo();
   }, [myEmail]);
-  
-  const [currentIndex, setCurrentIndex] = useState(0); // 겹친 카드중 선택 순서
-  const [lastDirection, setLastDirection] = useState();
-  // used for outOfFrame closure
-  const currentIndexRef = useRef(currentIndex);
-
-  const childRefs = useMemo(
-    () =>
-      Array(cardList.length)
-        .fill(0)
-        .map((i) => React.createRef()),
-    [cardList.length]
-  );
-
-  const updateCurrentIndex = (val) => {
-    setCurrentIndex(val);
-    currentIndexRef.current = val;
-  };
-
-  const canGoBack = currentIndex < cardList.length - 1;
-
-  const canSwipe = currentIndex >= 0;
-
-  // set last direction and decrease current index
-  const swiped = (direction, nameToDelete, index) => {
-    setLastDirection(direction);
-    updateCurrentIndex(index - 1);
-    
-    if (direction === "right") {
-      setLikedList((prev) => [...prev, cardList[index]]);
-    } else if (direction === 'left') { // 왼쪽으로 넘겼을 때 실행 함수 (싫어요
-
-    }
-    if (index === 0) {
-
-    }
-    if (index === 0) { // 카드가 더이상 없으면 마지막카드가 사라지고 알림 출력위해 지연시간 설정
+  useEffect(()=>{
+    if (currentIndex === -1) { // 카드가 더이상 없으면 마지막카드가 사라지고 알림 출력위해 지연시간 설정
       setTimeout( () => {
         if (window.confirm("더이상 카드가 없습니다. 모든 친구 신청을 보내고 메인페이지로 이동하시겠습니까? (취소 시 페이지이동 X)")) {
           likedList.forEach(async (user) => {
@@ -79,26 +55,45 @@ function DatingApp() {
               console.error("Error sending friend request:", error);
             }
           });
+          unlikedList.forEach(async (user) => {
+            try {
+              const response = await AxiosApi.unlikeFriendRequest(myEmail, user.email);
+              console.log("Response:", response.data);
+            } catch (error) {
+              console.error("Error sending friend request:", error);
+            }
+          });
           window.location.href = "/"; // 메인 페이지로 이동
-        } else {
-          
-        };
+        }
       }, 1500); 
     }
+  }, [currentIndex, likedList, unlikedList, myEmail]);
+
+  const swiped = (direction, nameToDelete, index) => {
+    setLastDirection(direction);
+    updateCurrentIndex(index - 1);
+
+    if (direction === "right") {
+      setLikedList((prev) => [...prev, cardList[index]]);
+    } else if (direction === 'left') { // 왼쪽으로 넘겼을 때 실행 함수 (싫어요
+      setUnlikedList((prev) => [...prev, cardList[index]]);
+    }
   };
-  // 카드가 화면 밖으로 나간 이후 로직
+  const updateCurrentIndex = (val) => {
+    setCurrentIndex(val);
+    currentIndexRef.current = val;
+  };
+  // set last direction and decrease current index
   const outOfFrame = (nickname, idx) => {
-    console.log(
-      `${nickname} (${idx}) 카드 제거!`,
-      currentIndexRef.current
-    );
+    console.log(`${nickname} (${idx}) 카드 제거!`, currentIndexRef.current);
     // handle the case in which go back is pressed before card goes outOfFrame
     currentIndexRef.current >= idx && childRefs[idx].current.restoreCard();
     // TODO: when quickly swipe and restore multiple times the same card,
     // it happens multiple outOfFrame events are queued and the card disappear
     // during latest swipes. Only the last outOfFrame event should be considered valid
   };
-
+  const canGoBack = currentIndex < cardList.length - 1;
+  const canSwipe = currentIndex >= 0;
   const swipe = async (dir) => {
     if (canSwipe && currentIndex < cardList.length) {
       await childRefs[currentIndex].current.swipe(dir); // Swipe the card!

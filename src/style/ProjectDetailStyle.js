@@ -45,7 +45,6 @@ export const ReplyContainer = styled.div`
   width: 100%;
   height: 1000px;
   //height: auto;
-  background-color: #005353;
 `;
 
 export const InputContainer = styled.div`
@@ -53,17 +52,14 @@ export const InputContainer = styled.div`
   flex-direction: column;
   width: 100%;
   height: 150px;
-  background-color: #1a153a;
 `;
 
 export const UpInert = styled.div`
   display: flex;
   flex-direction: row;
-  align-items: center;
   width: 100%;
   height: 60%;
   padding: 16px;
-  background-color: red;
 `;
 
 export const UnderInert = styled.div`

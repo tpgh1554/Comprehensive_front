@@ -186,6 +186,15 @@ const AxiosApi = {
   getProjectDetal: async (id) => {
     return await axios.get(Apueda_Domain + `/project/detail/${id}`);
   },
+  // 댓글 등록
+  postReply: async (replyContent, projectId) => {
+    const reply = {
+      content: replyContent,
+      projectId: projectId,
+    };
+    console.log("axios ", replyContent);
+    return await axios.post(Apueda_Domain + "/reply/insert", reply);
+  },
   // ----------------------- 게시판-----------------------
   // -----------------------채   팅-----------------------
   createRoom: async (roomName, userEmail) => {

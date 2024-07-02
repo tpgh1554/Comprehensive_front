@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BoardLayout from "../../components/BoardLayout";
 import AxiosApi from "../../api/AxiosApi";
 import {
@@ -23,6 +23,7 @@ import {
 } from "../../style/ProjectDetailStyle";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
+import defaultImage from "../../image/person-icon2.png";
 const Title = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -49,12 +50,6 @@ const Profile = styled.div`
   width: 50%;
   height: 60px;
   padding: 12px;
-  & img {
-    width: 35px;
-    height: 35px;
-    border-radius: 40px;
-    object-fit: cover;
-  }
 `;
 const Recruit = styled.div`
   display: flex;
@@ -67,9 +62,14 @@ const Recruit = styled.div`
   padding: 12px;
 `;
 const ProfileImg = styled.div`
-  width: auto;
   padding: 8px;
-  height: auto;
+
+  & img {
+    width: 35px;
+    height: 35px;
+    border-radius: 40px;
+    object-fit: cover;
+  }
 `;
 
 const RegDate = styled.div`
@@ -97,13 +97,29 @@ const ListBtt = styled.div`
   padding: 16px;
 `;
 
-const Input = styled.div`
-  width: 80%;
+const Input = styled.textarea`
+  width: 70%;
   height: auto;
   margin-left: 10px;
+  resize: none;
+  background-color: #fbfcfc;
+  border: 0.5px solid #d0d3d7;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 1rem;
+  z-index: 2;
+  &:focus {
+    border: 0.8px solid #000;
+    outline: none; /* 추가: 기본 포커스 아웃라인 제거 */
+  }
 `;
 
-const ConfirmReply = styled.div``;
+const ConfirmReply = styled.div`
+  display: flex;
+  width: 20%;
+  justify-content: center;
+  align-items: center;
+`;
 
 const NickName = styled.div`
   padding: 8px;
@@ -122,6 +138,30 @@ const ReplyContent = styled.div`
 const ProjectDetail = () => {
   const { projectId } = useParams();
   const [projectContent, setProjectContent] = useState("");
+  const [imageUrl, setImageUrl] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
+  const [replyContent, setReplyContent] = useState(null);
+  const id = localStorage.getItem("email");
+  useEffect(() => {
+    const fetchUserInfo = async (email) => {
+      try {
+        const rsp = await AxiosApi.getUserInfo(email);
+        setUserInfo(rsp.data);
+        console.log("rsp.data", rsp.data.nickname);
+
+        if (rsp.data && rsp.data.profileImgPath) {
+          setImageUrl(rsp.data.profileImgPath);
+        } else {
+          setImageUrl(defaultImage);
+        }
+      } catch (e) {
+        console.log(e);
+        setImageUrl(defaultImage);
+      }
+    };
+    console.log("userInfo", userInfo);
+    fetchUserInfo(id);
+  }, []);
   // 년월일 표기로 바꾸기
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -151,7 +191,45 @@ const ProjectDetail = () => {
     };
     projectDetail(projectId);
   }, [projectId]);
+  const textareaRef = useRef(null);
+  // 댓글창 자동으로 늘어나게하기...
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto"; // 높이를 초기화
+      textarea.style.height = `${textarea.scrollHeight}px`; // 스크롤 높이에 따라 높이 조절
+    }
+  }, []); // 빈 배열을 전달하여 컴포넌트가 마운트될 때 한 번만 실행
 
+  const handleInput = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto"; // 높이를 초기화
+      textarea.style.height = `${textarea.scrollHeight}px`; // 스크롤 높이에 따라 높이 조절
+    }
+  };
+
+  const sendReply = () => {
+    const postReply = async () => {
+      try {
+        // Construct the postData with the room ID obtained from createRoomResponse
+
+        console.log("reply ", replyContent);
+
+        const response = await AxiosApi.postReply(replyContent, projectId);
+        console.log("response ", replyContent);
+        if (response.data) {
+          alert("댓글 등록 성공!!!!!!!!!!!!");
+        } else {
+          throw new Error("댓글 등록이 실패했습니다.");
+        }
+      } catch (error) {
+        console.log(error);
+        alert("댓글 등록 실패ㅠㅠㅠㅠㅠㅠㅠㅠㅠ");
+      }
+    };
+    postReply();
+  };
   return (
     <BoardLayout>
       <Container>
@@ -167,7 +245,10 @@ const ProjectDetail = () => {
               </UpHead>
               <UnderHead>
                 <Profile>
-                  <img src={projectContent.profileImg}></img>
+                  <ProfileImg>
+                    <img src={projectContent.profileImg}></img>
+                  </ProfileImg>
+
                   <NickName>{projectContent.nickName}</NickName>
                 </Profile>
                 <Recruit>
@@ -189,7 +270,12 @@ const ProjectDetail = () => {
               <Skills>
                 {projectContent.skillName &&
                   projectContent.skillName.map((skills, index) => (
-                    <Button key={index}>{skills.skillName}</Button>
+                    <Button
+                      key={index}
+                      style={{ width: "auto", padding: "0 10px" }}
+                    >
+                      {skills.skillName}
+                    </Button>
                   ))}
               </Skills>
               <ListBtt>
@@ -199,16 +285,32 @@ const ProjectDetail = () => {
           )}
           <ReplyContainer>
             <InputContainer>
-              <UpInert>
-                <ProfileImg>이미지</ProfileImg>
-                <NickName>닉네임</NickName>
-                <Input>input 창</Input>
-              </UpInert>
-              <UnderInert>
+              {userInfo && (
+                <UpInert>
+                  <Profile style={{ width: "20%" }}>
+                    <ProfileImg>
+                      <img src={imageUrl}></img>
+                    </ProfileImg>
+                    <NickName>{userInfo.nickname}</NickName>
+                  </Profile>
+                  <Input
+                    ref={textareaRef}
+                    placeholder="클린한 댓글을 입력해주세요(500자)"
+                    onInput={handleInput}
+                    rows={1}
+                    maxLength={500}
+                    onChange={(e) => setReplyContent(e.target.value)}
+                  ></Input>
+                  <ConfirmReply>
+                    <Button onClick={() => sendReply()}>등록</Button>
+                  </ConfirmReply>
+                </UpInert>
+              )}
+              {/* <UnderInert>
                 <ConfirmReply>
-                  <Button>등록</Button>
+                  
                 </ConfirmReply>
-              </UnderInert>
+              </UnderInert> */}
             </InputContainer>
             <ReplyListContainer>
               <ReplyList>

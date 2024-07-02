@@ -139,6 +139,24 @@ const AxiosApi = {
       },
     });
   },
+
+  updateReadStatus: async (postMsgId, readStatus) => {
+    //메세지 읽음
+    const requestData = {
+      postMsgId: postMsgId,
+      readStatus: readStatus,
+    };
+    try {
+      const response = await axios.post(
+        Apueda_Domain + "/messages/updateReadStatus",
+        requestData
+      );
+      return response.data; // 서버에서 반환한 데이터를 처리하거나 반환할 수 있음
+    } catch (error) {
+      console.error("오류 발생:", error);
+      throw error; // 오류를 처리하거나 상위 호출자에게 넘김
+    }
+  },
   //-------------------------------------------메세지------------------------------------------------
 
   // ----------------------- 게시판-----------------------

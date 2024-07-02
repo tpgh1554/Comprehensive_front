@@ -120,7 +120,7 @@ const Requsetcontainer = styled.div`
 const ItemGrid = styled.div`
   display: grid;
   justify-items: center;
-  gap: 30px;
+
   grid-template-columns: repeat(2, minmax(2vw, 1fr));
   margin-bottom: 50px;
 
@@ -158,7 +158,7 @@ const FriendItem = styled.div`
   }
   @media (max-width: 600px) {
     width: 95vw;
-    height: 15vw;
+    height: 17vw;
   }
 `;
 
@@ -207,7 +207,7 @@ const ReqBtn = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-
+  gap: 5px;
   @media (max-width: 500px) {
     flex-direction: column;
   }

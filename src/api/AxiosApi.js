@@ -31,6 +31,14 @@ const AxiosApi = {
       `${Apueda_Domain}/members/memberinfo?email=${email}`
     );
   },
+  // 회원정보 수정
+  memberUpdate: async (user) => {
+    return await axios.put(Apueda_Domain + "/members/membermodify${email}", user);
+  },
+  // 회원 탈퇴
+  signout: async (user) => {
+    return await axios.delete(Apueda_Domain + "/members/delmember/${email}", user);
+  },
   getBoardList: async () => {
     return await axios.get(Apueda_Domain + "/board/list");
   },

@@ -13,6 +13,7 @@ import Subinfo from "./subscribe/subinfo";
 import Mywrite from "./mypages/Mywrite";
 import LoginPage from "./login/Login";
 import SignUp from "./login/Signup";
+import MemberUpdate from "./login/MemberUpdate";
 import Upload from "./api/firebase/ImageUploader";
 
 import Header from "./components/Header";
@@ -53,6 +54,7 @@ function App() {
           <Route path="/apueda/subinfo" element={<Subinfo />} />
           <Route path="/apueda/login" element={<LoginPage />} />
           <Route path="/apueda/signup" element={<SignUp />} />
+          <Route path="/apueda/memberupdate" element={<MemberUpdate/>} />
           <Route path="/apueda/mypage/editinfo" element={<EditInfo />} />
           <Route path="/apueda/mypage/friend" element={<Friend />} />
           <Route path="/apueda/mysub" element={<Mysub />} />

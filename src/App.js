@@ -26,6 +26,7 @@ import Friend from "./mypages/Friend";
 import BoardMain from "./pages/board/BoardMain";
 import WriteProject from "./pages/board/WriteProject";
 import ProjectDetail from "./pages/board/ProjectDetail";
+import Mysub from "./subscribe/mysub";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
           <Route path="/apueda/signup" element={<SignUp />} />
           <Route path="/apueda/mypage/editinfo" element={<EditInfo />} />
           <Route path="/apueda/mypage/friend" element={<Friend />} />
+          <Route path="/apueda/mysub" element={<Mysub />} />
         </Routes>
       </Router>
     </>

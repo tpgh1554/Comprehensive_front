@@ -21,11 +21,7 @@ const Paybu = styled.button`
   }
 `;
 const Payment = ({ isChecked1, isChecked2 }) => {
-  const getBuyerIdFromLocalStorage = () => {
-    // 로컬 스토리지에서 사용자 ID 값 가져오기
-    const email = localStorage.getItem("email"); // 사용자 ID를 저장한 키에 맞게 수정
-    return email;
-  };
+  const buyer_email = localStorage.getItem("email");
   const handleButtonClick = () => {
     if (isChecked1 && isChecked2) {
       Kakaopayment();
@@ -93,8 +89,6 @@ const Payment = ({ isChecked1, isChecked2 }) => {
     const { IMP } = window;
     IMP.init("imp63702282"); // 포트원 테스트 가맹점 식별코드
 
-    const buyer_email = getBuyerIdFromLocalStorage();
-
     const paymentData = {
       pg: "kakaopay", // 카카오페이 사용 시 'kakaopay'로 설정
       pay_method: "card", // 결제 수단 (카드, 계좌이체, 가상계좌 등)
@@ -108,6 +102,7 @@ const Payment = ({ isChecked1, isChecked2 }) => {
 
     IMP.request_pay(paymentData, async (response) => {
       if (response.success) {
+        const name = "아프다 1달 구독";
         const transactionId = response.imp_uid; // 고유 결제 ID
         const paymentStatus = "결재 성공"; // 결제 성공 시 상태
         const paymentDate = new Date(); // 날짜
@@ -194,12 +189,13 @@ const Payment = ({ isChecked1, isChecked2 }) => {
             paymentStatus,
             transactionId,
             paymentDate,
+            name,
             cancellationDate
           );
-          console.log("결제 이력 저장 성공", rsp);
+          console.log("결제 내역 저장 성공", rsp);
         } catch (error) {
-          console.error("결제 이력 저장 실패", error);
-          alert("결제 이력 저장 실패");
+          console.error("결제 내역 저장 실패", error);
+          alert("결제 내역 저장 실패");
         }
       } else {
         alert(`Payment failed: ${response.error_msg}`);

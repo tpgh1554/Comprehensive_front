@@ -1,18 +1,22 @@
 import axios from "axios";
+import { SiNamecheap } from "react-icons/si";
 
 const Apueda_Domain = "http://localhost:8118";
 
 const PaymentApi = {
+  // 결재내역 저장
   savePaymentHistory: async (
     buyer_email,
     amount,
     paymentStatus,
     transactionId,
     paymentDate,
+    name,
     cancellationDate
   ) => {
     const savePaymentHistory = {
       user: buyer_email,
+      name: name,
       paymentDate: paymentDate,
       paymentStatus: paymentStatus,
       transactionId: transactionId,
@@ -24,6 +28,7 @@ const PaymentApi = {
       savePaymentHistory
     );
   },
+  // 결재정보저장
   savePaymentinfo: async (
     buyer_email,
     paymentMethodCode,
@@ -40,6 +45,7 @@ const PaymentApi = {
     };
     return await axios.post(Apueda_Domain + "/payments/info", savePaymentinfo);
   },
+  // 구독 상태 및 빌링키 저장
   requestBillingKey: async (
     buyer_email,
     transactionId,
@@ -63,6 +69,22 @@ const PaymentApi = {
       Apueda_Domain + "/payments/subscriptions",
       requestBillingKey
     );
+  },
+  // 결재내역 출력
+  historyList: async (member) => {
+    return await axios.get(`${Apueda_Domain}/payments/detail/${member}`, {
+      params: {
+        member,
+      },
+    });
+  },
+  // 구독일 출력
+  deadline: async (member) => {
+    return await axios.get(`${Apueda_Domain}/payments/deadline/${member}`, {
+      params: {
+        member,
+      },
+    });
   },
 };
 

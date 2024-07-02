@@ -32,7 +32,7 @@ function DatingApp() {
     };
     showUserInfo();
   }, [myEmail]);
-
+  // 더미 데이터
   const userInfo = [
     {
       nickname: "오링",
@@ -138,7 +138,7 @@ function DatingApp() {
     <Body>
       <PhoneFrame>
         <Title>
-          <div>카드를 모두 확인 해주세요!</div>
+          <div>매일 새롭게 만나는 5명의 아프다맨~</div>
         </Title>
         <Window>
           {cardList.map((character, index) => (
@@ -204,7 +204,7 @@ function DatingApp() {
             </ResultBox>
           ) : (
             <ResultBox>
-              Swipe a card or press a button to get Restore Card button visible!
+              모든 카드를 넘겨주세요!
             </ResultBox>
           )}
         </ButtonArea>
@@ -230,17 +230,13 @@ const PhoneFrame = styled.div`
   box-sizing: border-box;
   width: 30vw;
   height: 80vh;
-  background-image: linear-gradient(to right, #243949 0%, #517fa4 100%);
+  background-image: linear-gradient(to right, #ff5253 0%, rgb(255,60,100) 90%);
   border-radius: 4dvi;
 
   & * {
     user-select: none;
   }
-  @media (max-width: 625px) {
-    .buttons {
-      flex-direction: column;
-    }
-  }
+  
   @keyframes popup {
     0% {
       transform: scale(1, 1);
@@ -278,7 +274,7 @@ const Title = styled.div`
   margin-top: 2vh;
   padding-top: 1vh;
   & div {
-    font-size: 2vw;
+    font-size: 1.5vw;
   }
 `;
 
@@ -318,10 +314,44 @@ const ButtonArea = styled.div`
   margin-bottom: 5vh;
   padding-bottom: 2vh;
 `;
+const Buttons = styled.div`
+  display: flex;
+  flex-direction: row !important;
+  justify-content: center; // 좌우 가운데 정렬
+  /* align-items: flex-end; */
+  margin-top: auto; // 부모가 column방향이고 자식이 margin-top : auto면 맨 아래 위치
+  margin-bottom: 1vh;
+  width: 100%;
+  white-space: nowrap;
+  box-sizing: border-box;
+  & button {
+    display: flex;
+    justify-content: center; // 좌우 가운데 정렬
+    width: 10vw;
+    height: 5vh;
+    text-align: center;
+    border: 0.5vw solid #ff5253;
+    border-radius: 3vw;
+    font-size: 3vmin;
+    font-weight: bolder;
+    color: #ffffff;
+    -webkit-text-stroke: 0.3vh #000000;
+    background-color: #ffffff;
+    transition: 200ms;
+    margin: 0 .5vw;
+    white-space: nowrap;
+    flex-shrink: 1; /* 버튼이 부모 크기에 맞춰 작아지도록 설정 */
+    flex-grow: 1;
+    cursor: pointer;
+  }
+  :hover {
+    transform: scale(1.05);
+  }
+`;
 const ResultBox = styled.div`
   display: flex;
   justify-content: center;
-  font-size: 1.5vmin;
+  font-size: 2vmin;
   color: #000;
   animation-name: popup;
   animation-duration: 800ms;
@@ -343,38 +373,4 @@ const Span = styled.span`
   text-align: left;
 `;
 
-const Buttons = styled.div`
-  display: flex;
-  flex-direction: row !important;
-  justify-content: center; // 좌우 가운데 정렬
-  align-content: center;
-  margin-top: auto; // 부모가 column방향이고 자식이 margin-top : auto면 맨 아래 위치
-  margin-bottom: 1vh;
-  width: 100%;
-  white-space: nowrap;
-  box-sizing: border-box;
-  & button {
-    display: flex;
-    justify-content: center; // 좌우 가운데 정렬
-    align-content: center;
-    width: 10vw;
-    height: 5vh;
-    text-align: center;
-    border: 0.5vw solid #ff5253;
-    border-radius: 3vw;
-    font-size: 3vmin;
-    font-weight: bolder;
-    color: #ffffff;
-    -webkit-text-stroke: 0.3vh #000000;
-    background-color: #ffffff;
-    transition: 200ms;
-    margin: 0 10px;
-    white-space: nowrap;
-    flex-shrink: 1; /* 버튼이 부모 크기에 맞춰 작아지도록 설정 */
-    flex-grow: 1;
-    cursor: pointer;
-  }
-  :hover {
-    transform: scale(1.05);
-  }
-`;
+

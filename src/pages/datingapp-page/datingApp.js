@@ -32,36 +32,15 @@ function DatingApp() {
     };
     showUserInfo();
   }, [myEmail]);
-  // 더미 데이터
-  const userInfo = [
-    {
-      nickname: "오링",
-      skill: "Java",
-      my_info: "카페에서 모각코 할 사람?",
-      url: "https://image.fmkorea.com/files/attach/new3/20231220/4366334379/1972135478/6526193738/e44c60321973d21a2beede402b64f152.jpeg",
-    },
-    {
-      nickname: "준빈쿤",
-      skill: "React",
-      my_info: "리액트 개발자 입니다.",
-      url: "https://entertainimg.kbsmedia.co.kr/cms/uploads/BBSIMAGE_20230613095006_03c551d7255312cf0f13ad58165ce3ba.png",
-    },
-    {
-      nickname: "김랩틸리언",
-      skill: "Python",
-      my_info: "하버드대학교 출신 개발자입니다. 질문은 언제나 환영 ㅎㅎ",
-      url: "https://img.appstory.co.kr/@files/monthly.appstory.co.kr/content/201208/1346044725.jpg",
-    },
-  ];
-
-  const [currentIndex, setCurrentIndex] = useState(userInfo.length - 1);
+  
+  const [currentIndex, setCurrentIndex] = useState(0); // 겹친 카드중 선택 순서
   const [lastDirection, setLastDirection] = useState();
   // used for outOfFrame closure
   const currentIndexRef = useRef(currentIndex);
 
   const childRefs = useMemo(
     () =>
-      Array(userInfo.length)
+      Array(cardList.length)
         .fill(0)
         .map((i) => React.createRef()),
     [cardList.length]
@@ -72,7 +51,7 @@ function DatingApp() {
     currentIndexRef.current = val;
   };
 
-  const canGoBack = currentIndex < userInfo.length - 1;
+  const canGoBack = currentIndex < cardList.length - 1;
 
   const canSwipe = currentIndex >= 0;
 
@@ -121,7 +100,7 @@ function DatingApp() {
   };
 
   const swipe = async (dir) => {
-    if (canSwipe && currentIndex < userInfo.length) {
+    if (canSwipe && currentIndex < cardList.length) {
       await childRefs[currentIndex].current.swipe(dir); // Swipe the card!
     }
   };

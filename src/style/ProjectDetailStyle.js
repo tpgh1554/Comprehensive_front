@@ -10,12 +10,16 @@ export const UpHead = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+  padding: 12px;
+  border: solid #b9b9b9;
+  border-width: 0 0 1px;
 `;
 
 export const UnderHead = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+  border: solid #b9b9b9;
   border-width: 0 0 1px;
 `;
 
@@ -24,9 +28,8 @@ export const Body = styled.div`
   flex-direction: column;
   width: 100%;
   //height: 1000px;
-  height: auto;
+  height: 90%;
   padding: 16px;
-  background-color: gray;
 `;
 
 export const Footer = styled.div`
@@ -78,5 +81,6 @@ export const ReplyListContainer = styled.div`
 `;
 
 export const PageNum = styled.div`
-  /* Add your styles here */
+  display: flex;
+  justify-content: center;
 `;

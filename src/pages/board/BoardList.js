@@ -149,9 +149,9 @@ const BoardList = () => {
     }
   };
 
-  const projectClick = (id) => {
-    console.log(id, "플젝id값");
-    navigate("/apueda/projectDetail");
+  const projectClick = (projectId) => {
+    console.log(projectId, "플젝id값");
+    navigate(`/apueda/projectDetail/${projectId}`);
   };
 
   return (

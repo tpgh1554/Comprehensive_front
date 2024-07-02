@@ -148,11 +148,7 @@ const AxiosApi = {
   },
   // 플젝 글쓰기
   postProject: async (postData) => {
-    console.log(
-      "postProject recruitNum",
-      postData.recruitNum,
-      postData.roomName
-    );
+    console.log("postProject chatRoom", postData.chatRoom);
     const project = {
       projectTitle: postData.title,
       projectContent: postData.content,
@@ -163,12 +159,14 @@ const AxiosApi = {
       projectName: postData.roomName,
       regDate: postData.currentDate,
       imgPath: postData.imgPath.name,
+      chatRoom: { roomId: postData.chatRoom },
     };
+    console.log("project roomID", project.chatRoom);
     return await axios.post(Apueda_Domain + "/project/insert", project);
   },
   // 플젝 상세 보기
   getProjectDetal: async (id) => {
-    return await axios.get(Apueda_Domain + `/project/detail?id=${id}`);
+    return await axios.get(Apueda_Domain + `/project/detail/${id}`);
   },
   // ----------------------- 게시판-----------------------
   // -----------------------채   팅-----------------------

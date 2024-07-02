@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import BoardLayout from "../../components/BoardLayout";
 import AxiosApi from "../../api/AxiosApi";
 import {
@@ -22,23 +22,24 @@ import {
   PageNum,
 } from "../../style/ProjectDetailStyle";
 import styled from "styled-components";
+import { useParams } from "react-router-dom";
 const Title = styled.div`
   display: flex;
   justify-content: flex-start;
-  align-items: center;
   width: 80%;
   height: 60px;
-  padding: 12px;
-  background-color: red;
+  padding: 16px;
+  font-size: 2rem;
+  font-weight: bold;
 `;
 const ProjectTime = styled.div`
   display: flex;
   justify-content: flex-end;
-  align-items: center;
+  align-items: end;
   width: 20%;
   height: 60px;
   padding: 12px;
-  background-color: blue;
+  font-size: 12px;
 `;
 const Profile = styled.div`
   display: flex;
@@ -46,35 +47,48 @@ const Profile = styled.div`
   justify-content: flex-start;
   align-items: center;
   width: 50%;
-  background-color: green;
   height: 60px;
   padding: 12px;
+  & img {
+    width: 35px;
+    height: 35px;
+    border-radius: 40px;
+    object-fit: cover;
+  }
 `;
 const Recruit = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  justify-content: center;
+
   width: 50%;
-  background-color: #fac1f5;
   height: 60px;
   padding: 12px;
 `;
 const ProfileImg = styled.div`
   width: auto;
+  padding: 8px;
   height: auto;
 `;
 
-const RegDate = styled.div``;
+const RegDate = styled.div`
+  padding: 4px;
+`;
 
-const RecruitMemNum = styled.div``;
+const RecruitMemNum = styled.div`
+  padding: 4px;
+`;
 
 const Content = styled.div`
   padding: 16px;
 `;
 
 const Skills = styled.div`
+  display: flex;
   border: solid #b9b9b9;
   border-width: 0 0 1px;
+  padding: 12px;
 `;
 
 const ListBtt = styled.div`
@@ -92,7 +106,7 @@ const Input = styled.div`
 const ConfirmReply = styled.div``;
 
 const NickName = styled.div`
-  /* Add your styles here */
+  padding: 8px;
 `;
 const ReplyList = styled.div`
   display: flex;
@@ -102,21 +116,42 @@ const ReplyList = styled.div`
   padding: 16px;
 `;
 const ReplyContent = styled.div`
-  width: 60%;
+  width: 78%;
+  padding: 8px;
 `;
 const ProjectDetail = () => {
+  const { projectId } = useParams();
+  const [projectContent, setProjectContent] = useState("");
+  // 년월일 표기로 바꾸기
+  const formatDate = (inputDate) => {
+    const date = new Date(inputDate);
+    const year = date.getFullYear().toString().slice(2);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    return `${year}년 ${month.toString()}월 ${day.toString()}일`;
+  };
+  // 플젝 상세 정보 가져오기
   useEffect(() => {
     const projectDetail = async (id) => {
+      console.log(projectId, " 플젝 아이디 값 넘기기 ");
       try {
-        const rsp = await AxiosApi.getProjectDetal(id);
-        console.log(rsp.data);
+        const response = await AxiosApi.getProjectDetal(id);
+        console.log(response.data);
+        const formattedData = {
+          ...response.data,
+          regDate: formatDate(response.data.regDate),
+          projectTime: formatDate(response.data.projectTime),
+        };
+        setProjectContent(formattedData);
         // setBoardList(rsp.data); // 필터링된 데이터를 상태에 저장
       } catch (e) {
         console.log(e);
       }
     };
-    projectDetail();
-  }, []);
+    projectDetail(projectId);
+  }, [projectId]);
+
   return (
     <BoardLayout>
       <Container>
@@ -124,68 +159,44 @@ const ProjectDetail = () => {
           <Top>프로젝트</Top>
         </HeadContainer>
         <ContentContainer style={{ padding: "32px", height: "auto" }}>
-          <Head>
-            <UpHead>
-              <Title>title ex</Title>
-              <ProjectTime>모집 마감 ~6/30</ProjectTime>
-            </UpHead>
-            <UnderHead>
-              <Profile>
-                <ProfileImg>이미지</ProfileImg>
-                <NickName>닉네임</NickName>
-              </Profile>
-              <Recruit>
-                <RegDate>2024-06-18</RegDate>
-                <RecruitMemNum>1명/10명</RecruitMemNum>
-              </Recruit>
-            </UnderHead>
-          </Head>
-          <Body>
-            <Content>
-              코딩 테스트를 함께 공부합시다 (코딩 테스트 책 저자와 함께)
-              <br />
-              안녕하세요, 코딩에 관심 있는 여러분!
-              <br />
-              코딩 테스트 준비는 막막하고 혼자 하기는 어렵죠? 그렇다면 저자와
-              함께하는 특별한 스터디 그룹에 참여하세요!
-              <br />
-              📚 코딩 테스트 책 저자와 함께 공부하세요!
-              <br />
-              코딩 테스트 책 저자와 함께 실력을 쌓고 자유롭게 질문할 수 있는
-              오픈 채팅방이 열렸습니다. 이 기회를 통해 코딩 실력을 한 단계
-              끌어올리세요.
-              <br />
-              💡 오픈 채팅방에서 얻을 수 있는 것들:
-              <br />
-              직접 피드백: 코딩 테스트 책 저자가 직접 질문에 답변해드립니다.
-              <br />
-              실전 문제 풀이: 다양한 코딩 테스트 문제를 함께 풀며 실력을
-              향상시킵니다.
-              <br />
-              스터디 자료 제공: 다양한 자료와 유용한 팁을 제공합니다.
-              <br />
-              동기부여: 동료 학생들과 서로 격려하며 동기부여를 얻습니다.
-              <br />
-              🚀 이런 분들께 추천합니다:
-              <br />
-              처음으로 코딩 테스트를 준비하는 분<br />
-              문제 해결에 어려움을 겪고 있는 분<br />
-              실력을 더 향상시키고 싶은 분<br />
-              🎉 지금 바로 참여하세요!
-              <br />
-              링크: [오픈 채팅방 참여 링크]
-              <br />
-              함께 공부하며 코딩 실력을 키워봅시다! 여러분의 참여를 기다리고
-              있습니다.
-              <br />
-            </Content>
-          </Body>
-          <Footer>
-            <Skills>스킬,스킬,스킬,스킬,스킬</Skills>
-            <ListBtt>
-              <Button>목록</Button>
-            </ListBtt>
-          </Footer>
+          {projectContent && (
+            <Head>
+              <UpHead>
+                <Title>{projectContent.projectTitle}</Title>
+                <ProjectTime>~ {projectContent.projectTime}까지</ProjectTime>
+              </UpHead>
+              <UnderHead>
+                <Profile>
+                  <img src={projectContent.profileImg}></img>
+                  <NickName>{projectContent.nickName}</NickName>
+                </Profile>
+                <Recruit>
+                  {/* <RegDate>{projectContent.regDate}</RegDate> */}
+                  <RecruitMemNum>
+                    모집 인원 : {projectContent.recruitNum}명
+                  </RecruitMemNum>
+                </Recruit>
+              </UnderHead>
+            </Head>
+          )}
+          {projectContent && (
+            <Body>
+              <Content>{projectContent.projectContent}</Content>
+            </Body>
+          )}
+          {projectContent && (
+            <Footer>
+              <Skills>
+                {projectContent.skillName &&
+                  projectContent.skillName.map((skills, index) => (
+                    <Button key={index}>{skills.skillName}</Button>
+                  ))}
+              </Skills>
+              <ListBtt>
+                <Button>목록</Button>
+              </ListBtt>
+            </Footer>
+          )}
           <ReplyContainer>
             <InputContainer>
               <UpInert>
@@ -208,7 +219,7 @@ const ProjectDetail = () => {
                 <RegDate>8일전</RegDate>
               </ReplyList>
             </ReplyListContainer>
-            <PageNum></PageNum>
+            <PageNum>1 2 3 ... 11</PageNum>
           </ReplyContainer>
         </ContentContainer>
       </Container>

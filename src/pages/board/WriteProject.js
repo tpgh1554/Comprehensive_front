@@ -159,7 +159,6 @@ const WriteProject = () => {
       alert("내용을 입력해주세요");
       return;
     }
-
     if (!recruitNum) {
       alert("인원을 입력해주세요");
       return;
@@ -168,41 +167,51 @@ const WriteProject = () => {
       alert("날짜를 오늘 이후로 선택해주세요");
       return;
     }
-
     if (!currentDate) {
       alert("등록일을 입력해주세요");
       return;
     }
 
-    const postData = {
-      title,
-      content,
-      skills: selectedSkills,
-      // pw: password,
-      endDate: selectDate + getCurrentTime(),
-      recruitNum: recruitNum,
-      roomName: roomName,
-      regDate: currentDate,
-      imgPath: imgPath,
-    };
     try {
-      const response = await AxiosApi.postProject(postData);
-
-      const rm = roomName;
       const email = localStorage.getItem("email");
+      // First, create the chat room
+      const rm = roomName;
       const createRoomResponse = await AxiosApi.createRoom(rm, email);
-      if (createRoomResponse.data) {
+
+      if (!createRoomResponse.data) {
+        throw new Error("채팅방 생성이 실패했습니다.");
+      }
+
+      // Construct the postData with the room ID obtained from createRoomResponse
+      const postData = {
+        title,
+        content,
+        skills: selectedSkills,
+        // pw: password,
+        endDate: selectDate + getCurrentTime(),
+        recruitNum: recruitNum,
+        roomName: roomName,
+        regDate: currentDate,
+        imgPath: imgPath,
+        chatRoom: createRoomResponse.data.roomId,
+      };
+
+      console.log("postData ", postData.chatRoom);
+
+      // Post the project data
+      const response = await AxiosApi.postProject(postData);
+      console.log("response ", postData.chatRoom);
+      if (response.data) {
         alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
         navigate("/apueda/board");
       } else {
-        throw new Error("채팅방 생성이 실패했습니다.");
+        throw new Error("프로젝트 게시글 등록이 실패했습니다.");
       }
     } catch (error) {
       console.log(error);
       alert("등록 중 오류가 발생했습니다.");
     }
   };
-
   const cancel = () => {
     const confirmMessage =
       "뒤로 가면 변경 사항이 저장되지 않습니다. 계속 하시겠습니까?";

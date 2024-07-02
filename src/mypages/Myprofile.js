@@ -114,7 +114,6 @@ const Myprofile = ({ closeModal }) => {
       try {
         const rsp = await AxiosApi.getUserInfo(email);
         setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
-        console.log(rsp.data);
         if (rsp.data && rsp.data.profileImgPath) {
           setImageUrl(rsp.data.profileImgPath);
         }

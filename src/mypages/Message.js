@@ -18,8 +18,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  min-width: 45vw;
-  height: 50vw;
+  min-width: 40vw;
   padding: 20px;
   position: fixed;
   top: 50%;
@@ -31,11 +30,12 @@ const Container = styled.div`
   z-index: 1000;
 
   @media (max-width: 900px) {
-    width: 55vw;
+    height: 700px;
   }
 
   @media (max-width: 500px) {
     width: 80vw;
+    height: 600px;
   }
 `;
 
@@ -73,29 +73,29 @@ const ButtonWrapper = styled.div`
   flex-direction: column;
 `;
 
-const TitelBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 20vw;
-  height: 4vw;
-  color: white;
-  border-radius: 30px;
-  background-color: #ff5353;
-  font-size: 20px;
+// const TitelBox = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+//   width: 20vw;
+//   height: 4vw;
+//   color: white;
+//   border-radius: 30px;
+//   background-color: #ff5353;
+//   font-size: 20px;
 
-  @media (max-width: 700px) {
-    font-size: 15px;
-  }
+//   @media (max-width: 700px) {
+//     font-size: 15px;
+//   }
 
-  @media (max-width: 500px) {
-    font-size: 10px;
-    width: 50vw;
-    height: 6vh;
-    top: 20px;
-  }
-`;
+//   @media (max-width: 500px) {
+//     font-size: 10px;
+//     width: 50vw;
+//     height: 6vh;
+//     top: 20px;
+//   }
+// `;
 
 const PageBtn = styled.div`
   button {
@@ -106,8 +106,20 @@ const PageBtn = styled.div`
   }
 `;
 
+const Delbtn = styled.button`
+  color: white;
+  background-color: #ff5353;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  &:hover {
+    background-color: black;
+  }
+`;
+
 const MessageContainer = styled.div`
   flex: 1; /* 변경: 남은 공간을 차지하도록 설정 */
+  width: 90%;
   overflow-y: auto; /* 스크롤을 추가하여 내용이 넘치지 않도록 함 */
 `;
 
@@ -115,13 +127,15 @@ const MsgItem = styled.div`
   border-radius: 10px;
   background-color: white;
   margin-bottom: 20px; /* Adjust as needed */
-  text-align: center;
 
   h1 {
+    padding-top: 1px;
+    padding-left: 5px;
     font-size: 18px;
   }
   h5 {
     text-align: right;
+    padding: 2px;
   }
   @media (max-width: 1200px) {
     h1 {
@@ -189,13 +203,29 @@ const Message = ({ closeModal, friendEmail, friendProfile }) => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage; // 현재 페이지의 첫 번째 항목 위치 계산
   const currentItems = messageList.slice(indexOfFirstItem, indexOfLastItem); // 현재 페이지의 항목들을 잘라냄
 
+  const MessageDelete = async (postMsgId) => {
+    const confirm = window.confirm("메세지를 삭제하시겠습니까?");
+
+    if (confirm) {
+      try {
+        // API를 호출하여 게시글 삭제
+        await AxiosApi.delMsg(postMsgId);
+        // 삭제 성공 시, 상태 업데이트 등 추가 로직 처리
+        console.log("삭제 성공");
+        window.alert("삭제 완료");
+        setMessageList(
+          messageList.filter((msg) => msg.postMsgId !== postMsgId)
+        );
+      } catch (error) {
+        console.error("삭제 오류", error);
+      }
+    }
+  };
+
   return (
     <>
       <ContainerBack>
         <Container>
-          <TitelBox>
-            <h1>메세지</h1>
-          </TitelBox>
           <Profile>
             <img src={friendProfile[friendEmail]} alt="Profi" />
           </Profile>
@@ -203,7 +233,16 @@ const Message = ({ closeModal, friendEmail, friendProfile }) => {
             {currentItems.map((postMsg, index) => (
               <MsgItem key={index}>
                 <h1>{postMsg.content}</h1>
-                <h5>{postMsg.receiveTime}</h5>
+                <h5>
+                  {postMsg.receiveTime}{" "}
+                  <Delbtn
+                    onClick={() => {
+                      MessageDelete(postMsg.postMsgId);
+                    }}
+                  >
+                    삭제
+                  </Delbtn>
+                </h5>
               </MsgItem>
             ))}
           </MessageContainer>

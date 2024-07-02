@@ -113,7 +113,7 @@ const AxiosApi = {
 
   //------------------친구 기능---------------------------
 
-  //메세지
+  //-------------------------------------------메세지------------------------------------------------
   messageList: async (receiveEmail, sendEmail) => {
     return await axios.get(Apueda_Domain + "/messages/received", {
       params: {
@@ -131,6 +131,14 @@ const AxiosApi = {
     };
     return await axios.post(Apueda_Domain + "/messages/write", writeInfo);
   },
+  delMsg: async (postMsgId) => {
+    return await axios.get(Apueda_Domain + "/messages/delete", {
+      params: {
+        id: postMsgId,
+      },
+    });
+  },
+  //-------------------------------------------메세지------------------------------------------------
 
   // ----------------------- 게시판-----------------------
   // 스킬 리스트 가지고 오기(등록용)
@@ -159,7 +167,8 @@ const AxiosApi = {
   },
   // ----------------------- 게시판-----------------------
   // -----------------------채   팅-----------------------
-  creactRoom: async (roomName, userEmail) => { // 방이름, 작성자이메일 받아서 방생성
+  creactRoom: async (roomName, userEmail) => {
+    // 방이름, 작성자이메일 받아서 방생성
     return await axios.post(`${Apueda_Domain}/chat/room`, {
       roomName,
       creatorEmail: userEmail,
@@ -172,9 +181,9 @@ const AxiosApi = {
     return await axios.post(`${Apueda_Domain}/datingapp/cardlist`, null, {
       params: {
         myEmail: myEmail,
-      }
+      },
     });
-  }
+  },
   // -----------------------데이트 어플-----------------------
 };
 

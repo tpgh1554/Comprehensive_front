@@ -5,16 +5,15 @@ import letter from "../image/letter.png";
 import { useEffect, useState } from "react";
 import AxiosApi from "../api/AxiosApi";
 import Message from "./Message";
+
 const Container = styled.div`
   width: 100vw;
-  margin-bottom: 3vw;
-  position: relative; /* 상대적 위치 설정 */
   display: flex;
   background-color: white;
   text-align: center;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 `;
 
 const ExitWrapper = styled.div``;
@@ -61,7 +60,8 @@ const ButtonContainer = styled.div`
   margin-bottom: 30px;
 `;
 const Button = styled.button`
-  background-color: ${(props) => (props.primary ? "#ff5353" : "gray")};
+  background-color: ${(props) =>
+    props.primary === "true" ? "#ff5353" : "gray"};
   color: white;
   border: 1px solid black;
   padding: 6px;
@@ -77,10 +77,11 @@ const Button = styled.button`
 `;
 
 const Friendcontainer = styled.div`
-  min-width: 1100px;
+  width: 90vw;
   padding: 40px;
-  padding-bottom: 20px;
-  border: 3px solid #ff5353;
+  padding-bottom: 10px;
+  margin-bottom: 30px;
+  border: 4px solid #ff5353;
   border-radius: 30px;
 
   @media (max-width: 1200px) {
@@ -89,28 +90,30 @@ const Friendcontainer = styled.div`
     white-space: nowrap;
   }
   @media (max-width: 900px) {
-    min-width: 500px;
+    min-width: 400px;
     padding-top: 10px;
     white-space: nowrap;
   }
-  @media (max-width: 500px) {
-    min-width: 300px;
+  @media (max-width: 600px) {
+    border: none;
     white-space: nowrap;
   }
 `;
 
 const Requsetcontainer = styled.div`
-  min-width: 700px;
+  min-width: 50vw;
   padding: 40px;
   padding-bottom: 10px;
   border: 3px solid #ff5353;
   border-radius: 30px;
   flex-direction: column;
-  @media (max-width: 900px) {
-    width: 500px;
-  }
+
   @media (max-width: 500px) {
-    width: 300px;
+    min-width: 80vw;
+  }
+
+  @media (max-width: 380px) {
+    min-width: 20vw;
   }
 `;
 
@@ -154,7 +157,7 @@ const FriendItem = styled.div`
     height: 15vw;
   }
   @media (max-width: 600px) {
-    width: 80vw;
+    width: 95vw;
     height: 15vw;
   }
 `;
@@ -165,6 +168,7 @@ const RequestItem = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 20px;
+  padding-bottom: 0px;
   border-bottom: 3px solid gray;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -199,14 +203,24 @@ const ProfileNickNameWrapper = styled.div`
   margin-top: 5px;
 `;
 
-const ButtonWrapper = styled.div`
+const ReqBtn = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 500px) {
+    flex-direction: column;
+  }
+`;
+
+const LetterDelBtn = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
 const ButtonStyle = styled.button`
-  min-width: 70px;
+  min-width: 5vw;
   height: 30px;
   margin-left: 10px;
   color: white;
@@ -216,6 +230,11 @@ const ButtonStyle = styled.button`
 
   &:hover {
     cursor: pointer;
+  }
+
+  @media (max-width: 500px) {
+    width: 50px;
+    height: 25px;
   }
 `;
 
@@ -294,6 +313,7 @@ const Friend = () => {
     fechFriendRequest();
   }, []);
 
+  //친구 삭제
   const friendDelete = async (memberEmail, friendEmail) => {
     const confirm = window.confirm("친구를 삭제하시겠습니까?");
     if (confirm) {
@@ -301,14 +321,21 @@ const Friend = () => {
         // API를 호출하여 게시글 삭제
         await AxiosApi.friendDelete(memberEmail, friendEmail);
         // 삭제 성공 시, 상태 업데이트 등 추가 로직 처리
-        console.log(friendEmail);
+
+        // 삭제된 친구를 제외한 새로운 배열 생성
+        const updatedFriends = friends.filter(
+          (friend) =>
+            !(
+              (friend.member && friend.member.email === friendEmail) ||
+              (friend.toMember && friend.toMember.email === friendEmail)
+            )
+        );
+        // 상태 업데이트
+        setFriends(updatedFriends);
         console.log("삭제 성공");
         window.alert("삭제 완료");
-        window.location.reload();
       } catch (error) {
         console.error("삭제 오류", error);
-        console.log(friendEmail);
-        console.log(memberEmail);
       }
     }
   };
@@ -348,7 +375,7 @@ const Friend = () => {
 
         <ButtonContainer>
           <Button
-            primary={showFriend ? true : false}
+            primary={showFriend ? "true" : "false"}
             onClick={() => {
               setshowFriend(true);
               setShowApp(false);
@@ -358,7 +385,7 @@ const Friend = () => {
           </Button>
 
           <Button
-            primary={showApp ? true : false}
+            primary={showApp ? "true" : "false"}
             onClick={() => {
               setshowFriend(false);
               setShowApp(true);
@@ -391,7 +418,7 @@ const Friend = () => {
                       {friend.member ? friend.member.nickname : null}
                       {friend.toMember ? friend.toMember.nickname : null}
                     </ProfileNickNameWrapper>
-                    <ButtonWrapper>
+                    <LetterDelBtn>
                       {/* Letter Del로 감싸지 않으면 삭제와 메세지가 space-between으로 멀어짐*/}
                       <Letter
                         src={letter}
@@ -415,7 +442,7 @@ const Friend = () => {
                       >
                         삭제
                       </ButtonStyle>
-                    </ButtonWrapper>
+                    </LetterDelBtn>
                   </FriendItem>
                 </div>
               ))}
@@ -432,13 +459,13 @@ const Friend = () => {
           <Requsetcontainer>
             {friendReq.map((requset) => (
               <RequestItem key={requset.friendId}>
-                <ProfileNickNameWrapper ameWrapper>
+                <ProfileNickNameWrapper>
                   <ProfileImage>
                     <img src={reqImageUrls[requset.member.email]} alt="Profi" />
                   </ProfileImage>
                   {requset.member.nickname}
                 </ProfileNickNameWrapper>
-                <ButtonWrapper>
+                <ReqBtn>
                   <ButtonStyle
                     onClick={() =>
                       requsetAccept(
@@ -459,7 +486,7 @@ const Friend = () => {
                   >
                     거절
                   </ButtonStyle>
-                </ButtonWrapper>
+                </ReqBtn>
               </RequestItem>
             ))}
 

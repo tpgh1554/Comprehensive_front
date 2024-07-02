@@ -132,6 +132,15 @@ const AxiosApi = {
     return await axios.post(Apueda_Domain + "/messages/write", writeInfo);
   },
 
+  delMsg: async (postMsgId) => {
+    return await axios.get(Apueda_Domain + "/messages/delete", {
+      params: {
+        id: postMsgId,
+      },
+    });
+  },
+  //-------------------------------------------메세지------------------------------------------------
+
   // ----------------------- 게시판-----------------------
   // 스킬 리스트 가지고 오기(등록용)
   getSkilList: async () => {

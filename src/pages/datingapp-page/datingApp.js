@@ -104,6 +104,14 @@ function DatingApp() {
   const goBack = async () => {
     if (!canGoBack) return;
     const newIndex = currentIndex + 1;
+    const lastCard = cardList[newIndex];
+
+    if (lastDirection === "right") {
+      setLikedList((prev) => prev.filter(user => user.nickname !== lastCard.nickname));
+    } else if (lastDirection === "left") {
+      setUnlikedList((prev) => prev.filter(user => user.nickname !== lastCard.nickname));
+    }
+
     updateCurrentIndex(newIndex);
     await childRefs[newIndex].current.restoreCard();
   };

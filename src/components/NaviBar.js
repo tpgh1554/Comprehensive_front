@@ -138,7 +138,7 @@ export default function NaviBar() {
                 <Img src={profile} />
                 <Overlay>내정보</Overlay>
               </MenuItem>
-              <MenuItem>
+              <MenuItem onClick={()=> {localStorage.clear(); window.location.reload(); alert("로그아웃 되었습니다. (localStorage 모두 삭제)");  }}>
                 <Img src={logout} />
                 <Overlay>로그아웃</Overlay>
               </MenuItem>

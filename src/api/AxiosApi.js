@@ -228,6 +228,16 @@ const AxiosApi = {
       creatorEmail: userEmail,
     });
   },
+    //채팅메세지 갱신하여 가져오기
+  getChatMessages: async (roomId) => {
+    try {
+      const response = await axios.get(`${Apueda_Domain}/chat/room/${roomId}/messages`);
+      return response;
+    } catch (error) {
+      console.error("Error fetching chat messages:", error);
+      throw error;
+    }
+  },
   // -----------------------채   팅-----------------------
   // -----------------------데이트 어플-----------------------
   // 좋아요 이후 친구 신청
@@ -251,7 +261,7 @@ const AxiosApi = {
       },
     });
   },
-
+  // 카드리스트 가져오기 (백엔드에서 현재 5개만 가져오도록 설정 됨)
   getCardList: async (myEmail) => {
     return await axios.post(`${Apueda_Domain}/datingapp/cardlist`, null, {
       params: {

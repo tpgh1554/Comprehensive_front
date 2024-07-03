@@ -276,6 +276,7 @@ const Window = styled.div`
 // 카드 이미지 설정
 const CardImage = styled.div`
   position: absolute;
+  overflow: hidden;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%); // 절대위치의 카드를 가운데 정렬하기 위해 사용
@@ -343,16 +344,23 @@ const ResultBox = styled.div`
 //카드 내부 정보 정렬
 const SpanBox = styled.div`
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  height: 50%;
   font-size: 1.5vh;
   bottom: 0;
-  margin: 30px 5px;
+  margin: 5vh 0 0 0;
   color: #fff;
+  background-image: linear-gradient(to bottom, transparent 0%, rgb(0,0,0,0.5) 40%, rgba(0,0,0,0.8) 100%); // %는 처음기준 위치
 `;
 const Span = styled.span`
   display: flex;
   align-self: flex-start;
   justify-content: left;
   text-align: left;
+  margin: 1vh;
 `;
 
 

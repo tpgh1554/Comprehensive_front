@@ -111,10 +111,11 @@ const SignUp = () => {
   const [formattedIdentityNumber, setFormattedIdentityNumber] = useState("");
 
   // 이메일 코드 작성
-  const [inputcode, setInputCode] = useState("");
-
+  const [inputCode, setInputCode] = useState(null);
+  const [sentCode, setSentCode] = useState(null);
   // 유효성 검사
   const [emailValid, setEmailValid] = useState(false); // 이메일 형식 검사
+  const [codeValid, setCodeValid] = useState(false); // 인증번호 검사
   const [pwdValid, setPwdValid] = useState(false); // 비밀번호 유효성 검사
   const [pwdConcord, setPwdConcord] = useState(false); // 비밀번호 일치여부 확인
   // 주민번호 앞자리 6자리와 뒷자리 첫번째 자리 일치 확인
@@ -161,13 +162,9 @@ const SignUp = () => {
     }
   };
 
-  // 이메일 인증 번호 확인
-  const [sentCode, setSentCode] = useState("");
+  // 입력 인증 번호 확인
   const onChangeEmailCode = (e) => {
     const currCode = Number(e.target.value);
-    console.log("cur" + typeof currCode);
-    console.log("sentCode" + typeof sentCode);
-    console.log("code : " + (currCode === sentCode));
     setInputCode(currCode);
   };
 
@@ -175,8 +172,9 @@ const SignUp = () => {
   const authorizeMail = async () => {
     try {
       const rsp = await AxiosApi.mail(email);
-      console.log("이메일 응답 데이터:", rsp.data);
-
+      console.log("전송 인증번호:", rsp.data);
+      setEmailValid("");
+      setEmailError("");
       if (rsp.data !== null) {
         setSentCode(rsp.data);
         console.log("인증 코드 설정 후:", sentCode); // sentCode 값이 올바르게 설정되었는지 확인
@@ -184,6 +182,17 @@ const SignUp = () => {
     } catch (error) {
       console.error("이메일 요청 오류:", error);
       // 오류 처리 로직 추가
+    }
+  };
+
+  // 이메일 인증번호 입력
+  const checkCode = () => {
+    if (inputCode === sentCode) {
+      setCodeValid(true);
+      console.log("인증되었습니다");
+    } else {
+      setCodeValid(false);
+      console.log("다시 입력해 주세요");
     }
   };
 
@@ -221,6 +230,12 @@ const SignUp = () => {
     }
   };
 
+  // 이메일 인증 핸들러
+  const onChangeCode = (e) => {
+    const currCode = e.target.value;
+    setInputCode(currCode);
+  };
+
   // 비밀번호 인풋
   const onChangePassword = (e) => {
     const newPassword = e.target.value;
@@ -230,9 +245,7 @@ const SignUp = () => {
       /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}:;',.?/\\-]).{8,}$/; // 수정된 정규식
 
     if (!passwordRegex.test(newPassword)) {
-      setPasswordError(
-        "비밀번호는 숫자, 영어 소문자, 특수문자를 모두 포함하여 8자 이상이어야 합니다."
-      );
+      setPasswordError("숫자, 영어 소문자, 특수문자 포함하여 8자 이상 입력");
       setPwdValid(false);
     } else {
       setPasswordError("");
@@ -245,10 +258,10 @@ const SignUp = () => {
     setPassword2(newPassword);
     if (password === newPassword) {
       setPwdConcord(true);
-      setPasswordError("");
+      setPasswordError2("");
     } else {
       setPwdConcord(false);
-      setPasswordError("비밀번호가 일치하지 않습니다.");
+      setPasswordError2("비밀번호가 일치하지 않습니다.");
     }
   };
 
@@ -261,7 +274,6 @@ const SignUp = () => {
   };
 
   const onChangeIdentityNumber = (e) => {
-    setIdentityNumber(e.target.value);
     let value = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 입력받기
     if (value.length > 7) {
       value = value.slice(0, 7); // 최대 7자리까지만 입력받기
@@ -272,8 +284,9 @@ const SignUp = () => {
     if (value.length > 6) {
       formattedValue = value.slice(0, 6) + "-" + value.slice(6);
     }
-    setIdentityNumber(value);
-    setFormattedIdentityNumber(formattedValue);
+
+    setIdentityNumber(value); // 숫자만 입력된 값을 설정
+    setFormattedIdentityNumber(formattedValue); // 하이픈 포맷이 적용된 값을 설정
   };
 
   const test = async () => {
@@ -285,6 +298,10 @@ const SignUp = () => {
     const updatedChecked = [...isChecked];
     updatedChecked[index] = !updatedChecked[index];
     setIsChecked(updatedChecked);
+  };
+  // 자기소개
+  const onChangeMyinfo = (e) => {
+    setMyInfo(e.target.value);
   };
 
   const regist = async () => {
@@ -342,8 +359,12 @@ const SignUp = () => {
               </span>
             </EmailBox>
             <EmailBox>
-              <ShortInput placeholder="인증번호" />
-              <CheckBtn>확인</CheckBtn>
+              <ShortInput
+                placeholder="인증번호"
+                value={inputCode}
+                onChange={onChangeEmailCode}
+              />
+              <CheckBtn onClick={checkCode}>확인</CheckBtn>
             </EmailBox>
             <LongInput
               placeholder="비밀번호"
@@ -369,6 +390,7 @@ const SignUp = () => {
                 </p>
               )}
             </span>
+
             <LongInput
               placeholder="이름"
               value={name}
@@ -398,10 +420,7 @@ const SignUp = () => {
             </SkillCheck>
             <TextBox>
               <p>자기소개</p>
-              <Text
-                value={myInfo}
-                onChange={(e) => setMyInfo(e.target.value)}
-              />
+              <Text value={myInfo} onChange={onChangeMyinfo} />
             </TextBox>
           </InputContainer>
           <SubmitBtn onClick={regist}>가입</SubmitBtn>

@@ -39,11 +39,8 @@ const AxiosApi = {
     );
   },
   // 회원 탈퇴
-  signout: async (user) => {
-    return await axios.delete(
-      Apueda_Domain + "/members/delmember/${email}",
-      user
-    );
+  signout: async () => {
+    return await axios.delete(Apueda_Domain + "/members/delmember");
   },
   // 이메일 인증
   mail: async (email) => {
@@ -228,10 +225,12 @@ const AxiosApi = {
       creatorEmail: userEmail,
     });
   },
-    //채팅메세지 갱신하여 가져오기
+  //채팅메세지 갱신하여 가져오기
   getChatMessages: async (roomId) => {
     try {
-      const response = await axios.get(`${Apueda_Domain}/chat/room/${roomId}/messages`);
+      const response = await axios.get(
+        `${Apueda_Domain}/chat/room/${roomId}/messages`
+      );
       return response;
     } catch (error) {
       console.error("Error fetching chat messages:", error);

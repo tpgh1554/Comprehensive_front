@@ -15,8 +15,8 @@ const ProfileImg = styled.div`
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #f92f23;
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -39,15 +39,15 @@ const Upload = ({ setFile }) => {
       img.onload = () => {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        canvas.width = 150;
-        canvas.height = 150;
-        ctx.drawImage(img, 0, 0, 150, 150);
+        canvas.width = 200;
+        canvas.height = 200;
+        ctx.drawImage(img, 0, 0, 200, 200);
         console.log("이미지 그리기 완료");
         canvas.toBlob(
           (blob) => {
             if (blob) {
               const resizedFile = new File([blob], selectedFile.name, {
-                type: "image/jpeg",
+                type: "image/png",
               });
               setFile(resizedFile);
               setPreviewUrl(URL.createObjectURL(resizedFile));
@@ -55,7 +55,7 @@ const Upload = ({ setFile }) => {
               console.log("이미지 변환중 오류발생");
             }
           },
-          "image/jpeg",
+          "image/png",
           0.95
         );
         URL.revokeObjectURL(img.src);

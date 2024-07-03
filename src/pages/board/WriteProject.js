@@ -173,7 +173,7 @@ const WriteProject = () => {
     }
 
     try {
-      const email = localStorage.getItem("email");
+      const email = localStorage.getItem("accessToken");
       // First, create the chat room
       const rm = roomName;
       const createRoomResponse = await AxiosApi.createRoom(rm, email);
@@ -201,6 +201,7 @@ const WriteProject = () => {
       // Post the project data
       const response = await AxiosApi.postProject(postData);
       console.log("response ", postData.chatRoom);
+      console.log(" response 데이터 확인 :  ", response.data);
       if (response.data) {
         alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
         navigate("/apueda/board");

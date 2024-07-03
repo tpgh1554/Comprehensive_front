@@ -17,13 +17,13 @@ import {
   ReplyContainer,
   InputContainer,
   UpInert,
-  UnderInert,
-  ReplyListContainer,
-  PageNum,
+  ProfileImg,
 } from "../../style/ProjectDetailStyle";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import defaultImage from "../../image/person-icon2.png";
+import ReplyListComponent from "./ReplyListComponent";
+import formatDate from "../../utils/formatDate";
 const Title = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -61,20 +61,6 @@ const Recruit = styled.div`
   height: 60px;
   padding: 12px;
 `;
-const ProfileImg = styled.div`
-  padding: 8px;
-
-  & img {
-    width: 35px;
-    height: 35px;
-    border-radius: 40px;
-    object-fit: cover;
-  }
-`;
-
-const RegDate = styled.div`
-  padding: 4px;
-`;
 
 const RecruitMemNum = styled.div`
   padding: 4px;
@@ -108,6 +94,7 @@ const Input = styled.textarea`
   overflow: hidden;
   font-size: 1rem;
   z-index: 2;
+
   &:focus {
     border: 0.8px solid #000;
     outline: none; /* 추가: 기본 포커스 아웃라인 제거 */
@@ -120,34 +107,24 @@ const ConfirmReply = styled.div`
   justify-content: center;
   align-items: center;
 `;
-
 const NickName = styled.div`
   padding: 8px;
 `;
-const ReplyList = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  padding: 16px;
-`;
-const ReplyContent = styled.div`
-  width: 78%;
-  padding: 8px;
-`;
+
 const ProjectDetail = () => {
   const { projectId } = useParams();
   const [projectContent, setProjectContent] = useState("");
   const [imageUrl, setImageUrl] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const [replyContent, setReplyContent] = useState(null);
-  const id = localStorage.getItem("email");
+  const [repliesChanged, setRepliesChanged] = useState(false);
+
+  const id = localStorage.getItem("accessToken");
   useEffect(() => {
     const fetchUserInfo = async (email) => {
       try {
-        const rsp = await AxiosApi.getUserInfo(email);
+        const rsp = await AxiosApi.getUserInfo2(email);
         setUserInfo(rsp.data);
-        console.log("rsp.data", rsp.data.nickname);
 
         if (rsp.data && rsp.data.profileImgPath) {
           setImageUrl(rsp.data.profileImgPath);
@@ -159,25 +136,17 @@ const ProjectDetail = () => {
         setImageUrl(defaultImage);
       }
     };
-    console.log("userInfo", userInfo);
+    //console.log("userInfo", userInfo);
     fetchUserInfo(id);
   }, []);
-  // 년월일 표기로 바꾸기
-  const formatDate = (inputDate) => {
-    const date = new Date(inputDate);
-    const year = date.getFullYear().toString().slice(2);
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
 
-    return `${year}년 ${month.toString()}월 ${day.toString()}일`;
-  };
   // 플젝 상세 정보 가져오기
   useEffect(() => {
     const projectDetail = async (id) => {
-      console.log(projectId, " 플젝 아이디 값 넘기기 ");
+      // console.log(projectId, " 플젝 아이디 값 넘기기 ");
       try {
         const response = await AxiosApi.getProjectDetal(id);
-        console.log(response.data);
+        console.log("상세 보기 데이터 ", response.data);
         const formattedData = {
           ...response.data,
           regDate: formatDate(response.data.regDate),
@@ -186,7 +155,7 @@ const ProjectDetail = () => {
         setProjectContent(formattedData);
         // setBoardList(rsp.data); // 필터링된 데이터를 상태에 저장
       } catch (e) {
-        console.log(e);
+        console.log(e.response);
       }
     };
     projectDetail(projectId);
@@ -214,12 +183,14 @@ const ProjectDetail = () => {
       try {
         // Construct the postData with the room ID obtained from createRoomResponse
 
-        console.log("reply ", replyContent);
+        //console.log("reply ", replyContent);
 
         const response = await AxiosApi.postReply(replyContent, projectId);
-        console.log("response ", replyContent);
+        //console.log("response ", replyContent);
         if (response.data) {
           alert("댓글 등록 성공!!!!!!!!!!!!");
+          setRepliesChanged((prev) => !prev);
+          setReplyContent(""); // 댓글 입력 필드 초기화
         } else {
           throw new Error("댓글 등록이 실패했습니다.");
         }
@@ -230,6 +201,7 @@ const ProjectDetail = () => {
     };
     postReply();
   };
+
   return (
     <BoardLayout>
       <Container>
@@ -300,6 +272,7 @@ const ProjectDetail = () => {
                     rows={1}
                     maxLength={500}
                     onChange={(e) => setReplyContent(e.target.value)}
+                    value={replyContent}
                   ></Input>
                   <ConfirmReply>
                     <Button onClick={() => sendReply()}>등록</Button>
@@ -312,16 +285,19 @@ const ProjectDetail = () => {
                 </ConfirmReply>
               </UnderInert> */}
             </InputContainer>
-            <ReplyListContainer>
+            {/* <ReplyListContainer>
               <ReplyList>
-                {/* 프로필 묶고 ,댓글내용 또 포함해서 묶고 -> 피그마처럼(유튭, okky 참고) */}
                 <ProfileImg>이미지</ProfileImg>
                 <NickName>닉네임</NickName>
                 <ReplyContent>댓글 내용</ReplyContent>
                 <RegDate>8일전</RegDate>
               </ReplyList>
             </ReplyListContainer>
-            <PageNum>1 2 3 ... 11</PageNum>
+            <PageNum>1 2 3 ... 11</PageNum> */}
+            <ReplyListComponent
+              projectId={projectId}
+              repliesChanged={repliesChanged}
+            />
           </ReplyContainer>
         </ContentContainer>
       </Container>

@@ -1,4 +1,5 @@
 import axios from "axios";
+import AxiosInstance from "./AxiosInstance";
 
 const Apueda_Domain = "http://localhost:8118";
 
@@ -41,11 +42,11 @@ const AxiosApi = {
   },
 
   // 사용자 정보 가져오기
-  getUserInfo: async (email) => {
-    return await axios.get(
-      `${Apueda_Domain}/members/memberinfo?email=${email}`
-    );
-  },
+  // getUserInfo: async (email) => {
+  //   return await axios.get(
+  //     `${Apueda_Domain}/members/memberinfo?email=${email}`
+  //   );
+  // },
   getUserInfo2: async () => {
     return await axios.get(
       Apueda_Domain + "/members/memberinfo2",
@@ -78,7 +79,7 @@ const AxiosApi = {
   },
 
   getProjectList: async () => {
-    return await axios.get(Apueda_Domain + "/project/list");
+    return await AxiosInstance.get("/project/list");
   },
 
   boardDelete: async (id) => {
@@ -201,10 +202,10 @@ const AxiosApi = {
   },
   //-------------------------------------------메세지------------------------------------------------
 
-  // ----------------------- 게시판-----------------------
+  // ----------------------- 게시판 시작 -----------------------
   // 스킬 리스트 가지고 오기(등록용)
   getSkilList: async () => {
-    return await axios.get(Apueda_Domain + "/skill/list");
+    return await AxiosInstance.get("/skill/list");
   },
   // 플젝 글쓰기
   postProject: async (postData) => {
@@ -222,12 +223,16 @@ const AxiosApi = {
       chatRoom: { roomId: postData.chatRoom },
     };
     console.log("project roomID", project.chatRoom);
-    return await axios.post(Apueda_Domain + "/project/insert", project);
+    return await AxiosInstance.post("/project/insert", project);
   },
   // 플젝 상세 보기
   getProjectDetal: async (id) => {
-    return await axios.get(Apueda_Domain + `/project/detail/${id}`);
+    return await AxiosInstance.get(`/project/detail/${id}`);
   },
+
+  // getProjectList: async () => {
+  //   return await AxiosInstance.get("/project/list");
+  // },
   // 댓글 등록
   postReply: async (replyContent, projectId) => {
     const reply = {
@@ -235,9 +240,20 @@ const AxiosApi = {
       projectId: projectId,
     };
     console.log("axios ", replyContent);
-    return await axios.post(Apueda_Domain + "/reply/insert", reply);
+    return await AxiosInstance.post("/reply/insert", reply);
   },
-  // ----------------------- 게시판-----------------------
+  // 플젝 게시글 댓글 페이징 리스트 불러오기
+  getReplyList: async (projectId, page) => {
+    return await AxiosInstance.get(
+      `/reply/project-reply/${projectId}/page?page=${page}`
+    );
+  },
+  // 댓글 총 갯수 가지고 오기
+  getReplyCount: async (page) => {
+    return await AxiosInstance.get(`/reply/count?page=${page}`);
+  },
+
+  // ----------------------- 게시판 끝 -----------------------
   // -----------------------채   팅-----------------------
   createRoom: async (roomName, userEmail) => {
     // 방이름, 작성자이메일 받아서 방생성

@@ -105,6 +105,7 @@ const BoardList = () => {
     try {
       const rsp = await AxiosApi.getProjectList();
       // Sort project list by regDate in descending order (newest first)
+
       const sortedProjects = rsp.data.sort(
         (a, b) => new Date(b.regDate) - new Date(a.regDate)
       );

@@ -28,7 +28,7 @@ export const Body = styled.div`
   flex-direction: column;
   width: 100%;
   //height: 1000px;
-  height: 90%;
+  height: auto;
   padding: 16px;
 `;
 
@@ -43,22 +43,25 @@ export const ReplyContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 1000px;
-  //height: auto;
+  height: auto;
 `;
 
 export const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 150px;
+  height: auto;
+  /* border: solid #b9b9b9;
+  border-width: 0 0 1px; */
+  box-shadow: 2px 2px 0.2px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
 `;
 
 export const UpInert = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: 60%;
+  height: 100%;
   padding: 16px;
 `;
 
@@ -73,10 +76,26 @@ export const UnderInert = styled.div`
 `;
 
 export const ReplyListContainer = styled.div`
-  /* Add your styles here */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 16px;
 `;
 
 export const PageNum = styled.div`
   display: flex;
   justify-content: center;
+  align-content: center;
+  margin-top: 1rem;
+`;
+export const ProfileImg = styled.div`
+  padding: 8px;
+
+  & img {
+    width: 35px;
+    height: 35px;
+    border-radius: 40px;
+    object-fit: cover;
+  }
 `;

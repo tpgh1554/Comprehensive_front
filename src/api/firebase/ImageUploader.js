@@ -39,9 +39,9 @@ const Upload = ({ setFile }) => {
       img.onload = () => {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        canvas.width = 200;
-        canvas.height = 200;
-        ctx.drawImage(img, 0, 0, 200, 200);
+        canvas.width = 400;
+        canvas.height = 400;
+        ctx.drawImage(img, 0, 0, 400, 400);
         console.log("이미지 그리기 완료");
         canvas.toBlob(
           (blob) => {

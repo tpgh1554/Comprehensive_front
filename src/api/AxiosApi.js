@@ -3,6 +3,21 @@ import axios from "axios";
 const Apueda_Domain = "http://localhost:8118";
 
 const AxiosApi = {
+  // 로컬에 저장된 토큰 정보 가져오기
+  getAccessToken: () => {
+    return localStorage.getItem("accessToken");
+  },
+  // 토큰 권한 부여하기
+  tokenHeader: () => {
+    const accessToken = AxiosApi.getAccessToken();
+    return {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+    };
+  },
+
   // 사용자 전체리스트 조회
   getUserList: async () => {
     return await axios.get(Apueda_Domain + "/members/list");
@@ -22,7 +37,7 @@ const AxiosApi = {
   },
   // 사용자 존재 여부 확인
   userCheck: async (email) => {
-    return await axios.get(`${Apueda_Domain}/members/check?email=${email}`);
+    return await axios.get(`${Apueda_Domain}/auth/check?email=${email}`);
   },
 
   // 사용자 정보 가져오기
@@ -31,6 +46,13 @@ const AxiosApi = {
       `${Apueda_Domain}/members/memberinfo?email=${email}`
     );
   },
+  getUserInfo2: async () => {
+    return await axios.get(
+      Apueda_Domain + "/members/memberinfo2",
+      AxiosApi.tokenHeader()
+    );
+  },
+
   // 회원정보 수정
   memberUpdate: async (user) => {
     return await axios.put(

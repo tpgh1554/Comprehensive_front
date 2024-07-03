@@ -111,14 +111,18 @@ const ThirdLoginBtn = styled.button`
   background-color: #ffffde;
 `;
 const LoginPage = () => {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [accToken, setAccToken] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
-      await AxiosApi.login(email, password);
-      localStorage.setItem("email", email);
+      const rsp = await AxiosApi.login(email, password);
+      localStorage.setItem("email", email); // 삭제 예정
+      setAccToken(rsp.data.accessToken);
+      localStorage.setItem("accessToken", rsp.data.accessToken);
+      console.log(accToken);
       navigate("/apueda");
     } catch (e) {
       console.log(e);

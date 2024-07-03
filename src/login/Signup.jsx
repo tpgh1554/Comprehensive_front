@@ -197,7 +197,7 @@ const SignUp = () => {
   };
 
   // 회원 가입 여부 DB 확인
-  const memberRegCheck = async () => {
+  const memberRegCheck = async (email) => {
     try {
       const response = await AxiosApi.userCheck(email);
       console.log("회원 존재 여부 : ", response.data);

@@ -55,8 +55,6 @@ const ProfileBox = styled.div`
   gap: 10px;
 `;
 
-
-
 const FileSelBtn = styled.button``;
 
 const InputContainer = styled.div`
@@ -101,7 +99,7 @@ const SubmitBtn = styled.button`
 
 const MemberUpdate = () => {
   // 입력하는 값을 저장하기 위한 것들
-  const [userInfo, setUserInfo] = useState(null)
+  const [userInfo, setUserInfo] = useState([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
@@ -142,18 +140,16 @@ const MemberUpdate = () => {
   ]);
   useEffect(() => {
     const memberInfo = async () => {
-        const setEmail = localStorage.getItem("email")
-        try {
-            const rsp = await AxiosApi.getUserInfo(email);
-            setUserInfo(rsp.data)
-        } catch (e) {
-            console.log(e);
-        }
-    }
+      try {
+        const rsp = await AxiosApi.getUserInfo2();
+        setUserInfo(rsp.data);
+        console.log(rsp.data);
+      } catch (e) {
+        console.log(e);
+      }
+    };
     memberInfo();
-  })
-
-
+  }, []);
 
   const uploadImg = async () => {
     try {
@@ -183,8 +179,6 @@ const MemberUpdate = () => {
     setIsChecked(updatedChecked);
   };
 
-
-
   // 비밀번호 인풋
   const onChangePassword = (e) => {
     const newPassword = e.target.value;
@@ -212,23 +206,16 @@ const MemberUpdate = () => {
       setPasswordError("");
     } else {
       setPwdConcord(false);
-      setPasswordError(
-        "비밀번호가 일치하지 않습니다."
-      );
+      setPasswordError("비밀번호가 일치하지 않습니다.");
     }
-    
-  }
+  };
   const onChangeNickname = (e) => {
     setNickname(e.target.value);
   };
 
-    
-
   const test = async () => {
     return await uploadImg(); // 업로드 이미지 함수가 완료 될 때 까지 기다리는듯
   };
-
-  
 
   const regist = async () => {
     const user = {
@@ -270,12 +257,7 @@ const MemberUpdate = () => {
 
           <InputContainer>
             <span>이메일</span>
-              <LongInput
-                placeholder="이메일"
-                value={email}
-                disabled
-              />
-              
+            <LongInput placeholder="이메일" value={email} disabled />
             <LongInput
               placeholder="비밀번호"
               value={password}
@@ -288,7 +270,11 @@ const MemberUpdate = () => {
                 </p>
               )}
             </span>
-            <LongInput placeholder="비밀번호 확인" value={password2} onChange={onChangePassword2}/>
+            <LongInput
+              placeholder="비밀번호 확인"
+              value={password2}
+              onChange={onChangePassword2}
+            />
             <span id="hint">
               {password2.length > 0 && (
                 <p className={pwdConcord ? "success" : "error"}>
@@ -296,14 +282,8 @@ const MemberUpdate = () => {
                 </p>
               )}
             </span>
-            
             <span>이름</span>
-            <LongInput
-              placeholder="이름"
-              value={name}
-              disabled
-            />
-            
+            <LongInput placeholder="이름" value={name} disabled />
             <span>닉네임</span>
             <LongInput
               placeholder="닉네임"
@@ -316,7 +296,6 @@ const MemberUpdate = () => {
               value={identityNumber}
               disabled
             />
-
             <SkillCheck>
               <p>사용스킬</p>
               {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
@@ -337,8 +316,7 @@ const MemberUpdate = () => {
             </TextBox>
           </InputContainer>
           <SubmitBtn onClick={regist}>수정</SubmitBtn>
-          <SubmitBtn >탈퇴</SubmitBtn>
-
+          <SubmitBtn>탈퇴</SubmitBtn>
         </Contents>
       </Box>
     </Container>

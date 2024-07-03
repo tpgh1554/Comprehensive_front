@@ -33,12 +33,27 @@ const AxiosApi = {
   },
   // 회원정보 수정
   memberUpdate: async (user) => {
-    return await axios.put(Apueda_Domain + "/members/membermodify${email}", user);
+    return await axios.put(
+      Apueda_Domain + "/members/membermodify${email}",
+      user
+    );
   },
   // 회원 탈퇴
   signout: async (user) => {
-    return await axios.delete(Apueda_Domain + "/members/delmember/${email}", user);
+    return await axios.delete(
+      Apueda_Domain + "/members/delmember/${email}",
+      user
+    );
   },
+  // 이메일 인증
+  mail: async (email) => {
+    try {
+      return await axios.get(`${Apueda_Domain}/email/mail?email=${email}`);
+    } catch (error) {
+      throw new Error(`이메일 요청 실패: ${error.message}`);
+    }
+  },
+
   getBoardList: async () => {
     return await axios.get(Apueda_Domain + "/board/list");
   },

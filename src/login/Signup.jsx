@@ -55,8 +55,6 @@ const ProfileBox = styled.div`
   gap: 10px;
 `;
 
-
-
 const FileSelBtn = styled.button``;
 
 const InputContainer = styled.div`
@@ -112,6 +110,9 @@ const SignUp = () => {
   const [myInfo, setMyInfo] = useState("");
   const [formattedIdentityNumber, setFormattedIdentityNumber] = useState("");
 
+  // 이메일 코드 작성
+  const [inputcode, setInputCode] = useState("");
+
   // 유효성 검사
   const [emailValid, setEmailValid] = useState(false); // 이메일 형식 검사
   const [pwdValid, setPwdValid] = useState(false); // 비밀번호 유효성 검사
@@ -159,18 +160,54 @@ const SignUp = () => {
       throw e; // 에러 발생 시 예외 던짐
     }
   };
-  //
 
-  // 체크박스
-  const handleCheckboxChange = (index) => {
-    const updatedChecked = [...isChecked];
-    updatedChecked[index] = !updatedChecked[index];
-    setIsChecked(updatedChecked);
+  // 이메일 인증 번호 확인
+  const [sentCode, setSentCode] = useState("");
+  const onChangeEmailCode = (e) => {
+    const currCode = Number(e.target.value);
+    console.log("cur" + typeof currCode);
+    console.log("sentCode" + typeof sentCode);
+    console.log("code : " + (currCode === sentCode));
+    setInputCode(currCode);
+  };
+
+  // 이메일 인증
+  const authorizeMail = async () => {
+    try {
+      const rsp = await AxiosApi.mail(email);
+      console.log("이메일 응답 데이터:", rsp.data);
+
+      if (rsp.data !== null) {
+        setSentCode(rsp.data);
+        console.log("인증 코드 설정 후:", sentCode); // sentCode 값이 올바르게 설정되었는지 확인
+      }
+    } catch (error) {
+      console.error("이메일 요청 오류:", error);
+      // 오류 처리 로직 추가
+    }
+  };
+
+  // 회원 가입 여부 DB 확인
+  const memberRegCheck = async () => {
+    try {
+      const response = await AxiosApi.userCheck(email);
+      console.log("회원 존재 여부 : ", response.data);
+      if (response.data === false) {
+        setEmailError("가입 가능한 아이디입니다.");
+        setEmailValid(true);
+      } else {
+        setEmailError("중복된 이메일 입니다.");
+        setEmailValid(false);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   // 이메일 인풋
   const onChangeEmail = (e) => {
-    setEmail(e.target.value);
+    const currEmail = e.target.value;
+    setEmail(currEmail);
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/; // 이메일 입력 정규식
     if (!emailRegex.test(e.target.value)) {
       // 입력값이 정규식에 만족하지 않으면~
@@ -179,6 +216,7 @@ const SignUp = () => {
     } else {
       setEmailError("올바른 이메일 형식입니다.");
       setEmailValid(true);
+      memberRegCheck(currEmail);
       // memberRegCheck(e.target.value); //DB에 중복 이메일 확인
     }
   };
@@ -210,12 +248,9 @@ const SignUp = () => {
       setPasswordError("");
     } else {
       setPwdConcord(false);
-      setPasswordError(
-        "비밀번호가 일치하지 않습니다."
-      );
+      setPasswordError("비밀번호가 일치하지 않습니다.");
     }
-    
-  }
+  };
 
   const onChangeName = (e) => {
     setName(e.target.value);
@@ -227,7 +262,7 @@ const SignUp = () => {
 
   const onChangeIdentityNumber = (e) => {
     setIdentityNumber(e.target.value);
-    let value = e.target.value.replace(/[^0-9]/g, ''); // 숫자만 입력받기
+    let value = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 입력받기
     if (value.length > 7) {
       value = value.slice(0, 7); // 최대 7자리까지만 입력받기
     }
@@ -235,9 +270,8 @@ const SignUp = () => {
     // 하이픈 포맷팅 적용
     let formattedValue = value;
     if (value.length > 6) {
-      formattedValue = value.slice(0, 6) + '-' + value.slice(6);
+      formattedValue = value.slice(0, 6) + "-" + value.slice(6);
     }
-
     setIdentityNumber(value);
     setFormattedIdentityNumber(formattedValue);
   };
@@ -246,22 +280,11 @@ const SignUp = () => {
     return await uploadImg(); // 업로드 이미지 함수가 완료 될 때 까지 기다리는듯
   };
 
-  // 회원 가입 여부 DB 확인
-  const memberRegCheck = async () => {
-    try {
-      const response = await AxiosApi.userCheck(email);
-      console.log("회원 존재 여부 : ", response.data);
-
-      if (response.data === false) {
-        setEmailError("가입 가능한 아이디입니다.");
-        setEmailValid(true);
-      } else {
-        setEmailError("중복된 이메일 입니다.");
-        setEmailValid(false);
-      }
-    } catch (e) {
-      console.log(e);
-    }
+  // 체크박스
+  const handleCheckboxChange = (index) => {
+    const updatedChecked = [...isChecked];
+    updatedChecked[index] = !updatedChecked[index];
+    setIsChecked(updatedChecked);
   };
 
   const regist = async () => {
@@ -309,7 +332,7 @@ const SignUp = () => {
                 value={email}
                 onChange={onChangeEmail}
               />
-              <CheckBtn onClick={memberRegCheck}>인증</CheckBtn>
+              <CheckBtn onClick={authorizeMail}>인증</CheckBtn>
               <span id="hint">
                 {email.length > 0 && (
                   <p className={emailValid ? "success" : "error"}>
@@ -334,7 +357,11 @@ const SignUp = () => {
                 </p>
               )}
             </span>
-            <LongInput placeholder="비밀번호 확인" value={password2} onChange={onChangePassword2}/>
+            <LongInput
+              placeholder="비밀번호 확인"
+              value={password2}
+              onChange={onChangePassword2}
+            />
             <span id="hint">
               {password2.length > 0 && (
                 <p className={pwdConcord ? "success" : "error"}>

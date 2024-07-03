@@ -120,6 +120,8 @@ const MemberUpdate = () => {
   const [error, setError] = useState("");
   // Firebase 파일 설정
   const [file, setFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+  // 네비게이션
   const navigate = useNavigate();
   // 오류메세지
   const [emailError, setEmailError] = useState("");
@@ -143,6 +145,13 @@ const MemberUpdate = () => {
       try {
         const rsp = await AxiosApi.getUserInfo2();
         setUserInfo(rsp.data);
+        setProfileImgPath(userInfo.profileImgPath);
+        setEmail(userInfo.email);
+        setPassword(userInfo.password);
+        setName(userInfo.name);
+        setIdentityNumber(userInfo.identityNumber);
+        setSkill(userInfo.skill);
+        setMyInfo(userInfo.myInfo);
         console.log(rsp.data);
       } catch (e) {
         console.log(e);
@@ -150,6 +159,16 @@ const MemberUpdate = () => {
     };
     memberInfo();
   }, []);
+
+  const handleFileChange = (selectedFile) => {
+    setFile(selectedFile);
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      setPreviewUrl(fileReader.result);
+      // setProfileImgPath(setPreviewUrl);
+    };
+    fileReader.readAsDataURL(selectedFile);
+  };
 
   const uploadImg = async () => {
     try {
@@ -170,6 +189,7 @@ const MemberUpdate = () => {
       throw e; // 에러 발생 시 예외 던짐
     }
   };
+
   //
 
   // 체크박스
@@ -213,6 +233,10 @@ const MemberUpdate = () => {
     setNickname(e.target.value);
   };
 
+  const onChangeMyinfo = (e) => {
+    setMyInfo(e.target.value);
+  };
+
   const test = async () => {
     return await uploadImg(); // 업로드 이미지 함수가 완료 될 때 까지 기다리는듯
   };
@@ -252,12 +276,16 @@ const MemberUpdate = () => {
         <Contents>
           <h1>회원 정보 수정</h1>
           <ProfileBox>
-            <Upload setFile={setFile} />
+            <Upload
+              setFile={handleFileChange}
+              previewUrl={previewUrl}
+              alt={userInfo.profileImgPath}
+            />
           </ProfileBox>
 
           <InputContainer>
             <span>이메일</span>
-            <LongInput placeholder="이메일" value={email} disabled />
+            <LongInput placeholder={userInfo.email} value={email} disabled />
             <LongInput
               placeholder="비밀번호"
               value={password}
@@ -283,19 +311,19 @@ const MemberUpdate = () => {
               )}
             </span>
             <span>이름</span>
-            <LongInput placeholder="이름" value={name} disabled />
+            <LongInput placeholder={userInfo.name} value={name} disabled />
             <span>닉네임</span>
             <LongInput
-              placeholder="닉네임"
+              placeholder={userInfo.nickname}
               value={nickname}
               onChange={onChangeNickname}
             />
-            주민번호
+            {/* 주민번호
             <LongInput
               placeholder="주민번호(앞자리 6자리와 뒷자리 첫번째만)"
               value={identityNumber}
               disabled
-            />
+            /> */}
             <SkillCheck>
               <p>사용스킬</p>
               {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
@@ -311,7 +339,8 @@ const MemberUpdate = () => {
               <p>자기소개</p>
               <Text
                 value={myInfo}
-                onChange={(e) => setMyInfo(e.target.value)}
+                onChange={onChangeMyinfo}
+                placeholder={userInfo.myInfo}
               />
             </TextBox>
           </InputContainer>

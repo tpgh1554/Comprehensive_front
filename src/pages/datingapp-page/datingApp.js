@@ -5,6 +5,8 @@ import AxiosApi from "../../api/AxiosApi";
 import TinderCard from "react-tinder-card";
 import { FaRegCircleCheck, FaRegCircleXmark, FaArrowRotateLeft } from "react-icons/fa6";
 
+
+
 function DatingApp() {
   const [cardList, setCardList] = useState([]);
   const [likedList, setLikedList] = useState([]); // 좋아요 누른 사람들은 현재페이지에서 나갈때 일괄 신청 되도록 리스트에 입력

@@ -11,25 +11,28 @@ import friend from "../image/friend.png";
 import phone from "../image/mobile-in-hand.png";
 import card from "../image/credit-card.png";
 import profile from "../image/profile.png";
+import loginIcon from "../image/login-icon.png"
 import logout from "../image/logout.png";
 
 export default function NaviBar() {
   const email = localStorage.getItem("email");
+  const isLoginUser = localStorage.getItem("accessToken") !== null;
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
-
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const rsp = await AxiosApi.getUserInfo(email);
+        const rsp = await AxiosApi.getUserInfo2();
         setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
+        console.log(rsp.data);
         if (rsp.data && rsp.data.profileImgPath) {
           setImageUrl(rsp.data.profileImgPath);
         } else {
           setImageUrl(defaultImage);
         }
+
       } catch (e) {
         console.log(e);
         setImageUrl(defaultImage);
@@ -80,7 +83,7 @@ export default function NaviBar() {
     <Body>
       <Container className="menu" ref={scope}>
         <Box>
-          <ProfileButton>
+          <ProfileButton >
             <motion.button
               style={{
                 width: "60px",
@@ -138,7 +141,11 @@ export default function NaviBar() {
                 <Img src={profile} />
                 <Overlay>내정보</Overlay>
               </MenuItem>
-              <MenuItem onClick={()=> {localStorage.clear(); window.location.reload(); alert("로그아웃 되었습니다. (localStorage 모두 삭제)");  }}>
+              <MenuItem isLoginUser={isLoginUser} onClick={() => navigate("/apueda/login")}>
+                <Img src={loginIcon} />
+                <Overlay>로그인</Overlay>
+              </MenuItem>
+              <MenuItem isLoginUser={!isLoginUser} onClick={()=> {localStorage.clear(); window.location.reload(); alert("로그아웃 되었습니다. (localStorage 모두 삭제)");  }}>
                 <Img src={logout} />
                 <Overlay>로그아웃</Overlay>
               </MenuItem>
@@ -220,14 +227,15 @@ const Overlay = styled.div`
   transition: opacity 0.3s ease;
 `;
 
-const MenuItem = styled(motion.li)`
+const MenuItem = styled(motion.li).withConfig({
+  shouldForwardProp: (prop) => !["isLoginUser", "isLogOutUser"].includes(prop)
+})` // props를 다른 컴포넌트에 전달하지 않도록 막는 코드
   position: relative;
-  display: flex;
+  display: ${(props) => (props.isLoginUser ? "none" : "flex")}; // 로그인 상태이면 안보이고, 로그인 상태이면 보이도록 설정
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;
   cursor: pointer;
-
   &:hover {
     background-color: rgba(150, 150, 255, 0.9);
     border-radius: 50px;

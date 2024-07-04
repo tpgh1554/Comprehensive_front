@@ -9,7 +9,6 @@ const Container = styled.div`
 
 const ProfileImg = styled.div`
   border-radius: 50%;
-  object-fit: cover;
   border: 2px solid #f92f23;
   width: 200px;
   height: 200px;
@@ -18,6 +17,7 @@ const ProfileImg = styled.div`
   align-items: center;
   overflow: hidden;
   background-color: #f0f0f0; /* 이미지 없을 때 배경색 */
+
 `;
 
 const FileSelBtn = styled.button`
@@ -43,9 +43,9 @@ const Upload = ({ setFile, previewUrl }) => {
       img.onload = () => {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        canvas.width = 400;
-        canvas.height = 400;
-        ctx.drawImage(img, 0, 0, 400, 400);
+        canvas.width = 800;
+        canvas.height = 800;
+        ctx.drawImage(img, 0, 0, 800, 800);
         console.log("이미지 그리기 완료");
         canvas.toBlob(
           (blob) => {
@@ -82,7 +82,7 @@ const Upload = ({ setFile, previewUrl }) => {
           <img
             src={previewUrl || localPreviewUrl}
             alt="Profile Preview"
-            style={{ width: "100%", height: "100%" }}
+            style={{ width: "100%", height: "100%" , objectFit: "contain"}}
           />
         )}
       </ProfileImg>

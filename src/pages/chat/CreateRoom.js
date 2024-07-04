@@ -1,6 +1,7 @@
 // CreateRoom.js
 import React, { useState } from 'react';
 import axios from 'axios';
+import AxiosApi from '../../api/AxiosApi';
 
 const CreateRoom = ({ userEmail }) => {
   const [roomName, setRoomName] = useState('');
@@ -9,10 +10,7 @@ const CreateRoom = ({ userEmail }) => {
 
   const handleCreateRoom = async () => {
     try {
-      const response = await axios.post('http://localhost:8118/chat/room', {
-        roomName,
-        creatorEmail: userEmail,
-      });
+      const response = await AxiosApi.createRoom(roomId, roomName);
       setRoomId(response.data.roomId);
       setRoomName(response.data.roomName);
       setCreated(true);

@@ -42,7 +42,7 @@ export default function SimpleSlider() {
                 </div>
                 <div>
                   두근두근 데이트 시작하기
-                  <DatingAppButton onClick={() => navigate("/apueda/login")}>
+                  <DatingAppButton onClick={() => navigate("/apueda/datingapp")}>
                     <span>개발자 매칭</span>
                   </DatingAppButton>
                 </div>

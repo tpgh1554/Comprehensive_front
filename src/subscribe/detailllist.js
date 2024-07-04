@@ -9,13 +9,13 @@ const DetaildUl = styled.ul`
 `;
 
 const Detaillist = ({ historyList }) => {
-  const sortedhistoryList = historyList
-    .slice()
-    .sort((a, b) => b.paymentHistoryId - a.paymentHistoryId);
+  // const sortedhistoryList = historyList
+  //   .slice()
+  //   .sort((a, b) => b.paymentHistoryId - a.paymentHistoryId);
   return (
     <DetaildUl>
-      {sortedhistoryList &&
-        sortedhistoryList.map((history) => (
+      {historyList &&
+        historyList.map((history) => (
           <Detaillistitem key={history.paymentHistoryId} paymentDt={history} />
         ))}
     </DetaildUl>

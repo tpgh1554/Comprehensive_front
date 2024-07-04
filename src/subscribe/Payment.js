@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import PaymentApi from "../api/PaymentAxios";
 import axios from "axios";
 import styled from "styled-components";
 import Kapay from "../image/kakaopaymark-removebg-preview.png";
+import CheckModal from "./checkmodal";
+import { Navigate } from "react-router-dom";
 
 const Paybu = styled.button`
   width: 40%;
@@ -21,7 +23,23 @@ const Paybu = styled.button`
   }
 `;
 const Payment = ({ isChecked1, isChecked2 }) => {
+  const [subOpen, setSubOpen] = useState(false);
   const buyer_email = localStorage.getItem("email");
+  const [modalHeader, setModalHeader] = useState("");
+  const [modalContent, setModalContent] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const onClickSub = (e) => {
+    setSubOpen(true);
+  };
+  const closeSub = () => {
+    setSubOpen(false);
+  };
+
+  const confirm = () => {
+    Navigate("/apueda");
+  };
+
   const handleButtonClick = () => {
     if (isChecked1 && isChecked2) {
       Kakaopayment();
@@ -122,14 +140,14 @@ const Payment = ({ isChecked1, isChecked2 }) => {
         // const validUntil = new Date(paymentDate);
         // validUntil.setMinutes(validUntil.getMinutes() + 1);
         // const validUntilTimestamp = Math.floor(validUntil.getTime() / 1000); // 테스트용 날짜 1분뒤
-
+        const merchant_uid = `order_${new Date().getTime()}`;
         const scheduleData = {
           customer_uid: buyer_email,
           schedules: [
             {
               schedule_at: validUntilTimestamp,
               amount: 10,
-              merchant_uid: `order_${new Date().getTime()}`,
+              merchant_uid: merchant_uid,
               name: "아프다 1달 구독",
             },
           ],
@@ -172,6 +190,7 @@ const Payment = ({ isChecked1, isChecked2 }) => {
             paymentDate,
             createdAt,
             validUntil,
+            merchant_uid,
             customerUid,
             status
           );
@@ -197,8 +216,13 @@ const Payment = ({ isChecked1, isChecked2 }) => {
           console.error("결제 내역 저장 실패", error);
           alert("결제 내역 저장 실패");
         }
+        setSubOpen(true);
+        setModalHeader("성공");
+        setModalContent("아프다 구독 성공");
       } else {
-        alert(`Payment failed: ${response.error_msg}`);
+        setSubOpen(true);
+        setModalHeader("실패");
+        setModalContent("결재실패");
       }
     });
   };
@@ -214,6 +238,15 @@ const Payment = ({ isChecked1, isChecked2 }) => {
         />
         KakaoPay
       </Paybu>
+      <CheckModal
+        open={subOpen}
+        close={closeSub}
+        category="구독 확인 창"
+        confirm={confirm}
+        header={modalHeader}
+      >
+        {modalContent}
+      </CheckModal>
     </>
   );
 };

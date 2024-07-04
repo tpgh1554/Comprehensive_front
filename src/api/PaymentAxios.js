@@ -52,6 +52,7 @@ const PaymentApi = {
     paymentDate,
     createdAt,
     validUntil,
+    merchant_uid,
     customerUid,
     status
   ) => {
@@ -62,6 +63,7 @@ const PaymentApi = {
       customerUid: customerUid,
       createdAt: createdAt,
       validUntil: validUntil,
+      merchantuid: merchant_uid,
       status: status,
       billingKeyCreatedAt: paymentDate,
     };
@@ -70,11 +72,23 @@ const PaymentApi = {
       requestBillingKey
     );
   },
+
+  unsavesub: async (status) => {
+    const unsavesub = {
+      status: status,
+    };
+    return await axios.post(
+      Apueda_Domain + "/payments/unsubscriptions",
+      unsavesub
+    );
+  },
+
   // 결재내역 출력
-  historyList: async (member) => {
+  historyList: async (member, page, size) => {
     return await axios.get(`${Apueda_Domain}/payments/detail/${member}`, {
       params: {
-        member,
+        page: page,
+        size: size,
       },
     });
   },

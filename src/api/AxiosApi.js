@@ -135,11 +135,18 @@ const AxiosApi = {
 
   //------------------친구 기능---------------------------
 
-  friendlist: async (email) => {
+  friendlist: async () => {
     return await axios.get(
-      `${Apueda_Domain}/friends/list?memberEmail=${email}`
+      Apueda_Domain + "/friends/list2",
+      AxiosApi.tokenHeader()
     );
   },
+
+  // friendlist: async () => {
+  //   return await axios.get(
+  //     `${Apueda_Domain}/friends/list?memberEmail=${email}`
+  //   );
+  // },
 
   friendRequestList: async (email) => {
     return await axios.get(

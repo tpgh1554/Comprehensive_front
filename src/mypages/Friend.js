@@ -247,6 +247,7 @@ const Friend = () => {
   const [selectedFriendEmail, setSelectedFriendEmail] = useState("");
   const [friendImageUrls, setfriendImageUrls] = useState(null);
   const [reqImageUrls, setReqImageUrls] = useState({});
+  const [messageList, setMessageList] = useState([]);
 
   //메세지 모달창
   const openModal = (email) => {
@@ -265,7 +266,7 @@ const Friend = () => {
   useEffect(() => {
     const fechFriend = async () => {
       try {
-        const rsp = await AxiosApi.friendlist(localStorage.getItem("email"));
+        const rsp = await AxiosApi.friendlist();
         console.log(rsp.data);
         console.log(localStorage.getItem("email"));
         setFriends(rsp.data); // 백엔드에서 받아온 친구 목록을 상태에 저장

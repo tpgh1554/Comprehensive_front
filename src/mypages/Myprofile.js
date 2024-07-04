@@ -107,12 +107,11 @@ const ProfileImage = styled.div`
 const Myprofile = ({ closeModal }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
-  const email = localStorage.getItem("email");
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const rsp = await AxiosApi.getUserInfo(email);
+        const rsp = await AxiosApi.getUserInfo2();
         setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
         if (rsp.data && rsp.data.profileImgPath) {
           setImageUrl(rsp.data.profileImgPath);
@@ -123,7 +122,7 @@ const Myprofile = ({ closeModal }) => {
     };
 
     fetchUserInfo();
-  }, [email]);
+  }, []);
   return (
     <ContainerBack>
       <Container>

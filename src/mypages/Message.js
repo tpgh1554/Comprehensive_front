@@ -3,6 +3,7 @@ import styled from "styled-components";
 import AxiosApi from "../api/AxiosApi";
 import exit from "../image/exit.png";
 import WriteMessage from "./WriteMessage";
+import Friend from "./Friend";
 
 const ContainerBack = styled.div`
   position: fixed;
@@ -180,6 +181,7 @@ const Message = ({ closeModal, friendEmail, friendProfile }) => {
           friendEmail
         );
         //읽음 표시 하려고 아이디 추출
+        console.log(rsp.data);
         setMessageList(rsp.data);
         rsp.data.forEach((postMsg) => {
           markMessageAsRead(postMsg.postMsgId);
@@ -248,6 +250,7 @@ const Message = ({ closeModal, friendEmail, friendProfile }) => {
             {currentItems.map((postMsg, index) => (
               <MsgItem key={index}>
                 <h1>{postMsg.content}</h1>
+
                 <h5>
                   {postMsg.receiveTime}{" "}
                   <Delbtn

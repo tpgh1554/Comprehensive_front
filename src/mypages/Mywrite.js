@@ -64,7 +64,7 @@ const ListWrapper = styled.div`
   display: flex;
   justify-content: space-between; /* 내부 요소들을 양쪽에 배치 */
   align-items: center; /* 수직으로 가운데 정렬 */
-  width: 500px;
+  min-width: 450px;
   padding: 20px;
   background-color: aliceblue;
   border: 3px solid #ff5353;
@@ -215,8 +215,7 @@ const Mywrite = () => {
                 {projectList.map((project, index) => (
                   <div key={index}>
                     <ListWrapper>
-                      <h1>{project.projectName}</h1>
-                      <h1>{project.projectContent}</h1>
+                      <h1>프로젝트 명 : {project.projectTitle}</h1>
 
                       <DelButton
                         onClick={() => projectDelete(project.projectId)}

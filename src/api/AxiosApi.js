@@ -4,10 +4,23 @@ import AxiosInstance from "./AxiosInstance";
 const Apueda_Domain = "http://localhost:8118";
 
 const AxiosApi = {
+  // 발행된 토큰을 로컬에 저장
+  setAccessToken: (token) => {
+    localStorage.setItem("accessToken", token);
+  },
   // 로컬에 저장된 토큰 정보 가져오기
   getAccessToken: () => {
     return localStorage.getItem("accessToken");
   },
+  // 발행된 리프래시 토큰을 로컬에 저장
+  setRefreshToken: (token) => {
+    localStorage.setItem("refreshToken", token);
+  },
+  // 로컬에 저장된 리프레시 토큰 정보 가져옴
+  getRefreshToken: () => {
+    return localStorage.getItem("refreshToken");
+  },
+
   // 토큰 권한 부여하기
   tokenHeader: () => {
     const accessToken = AxiosApi.getAccessToken();
@@ -17,6 +30,27 @@ const AxiosApi = {
         Authorization: "Bearer " + accessToken,
       },
     };
+  },
+
+  // 로컬에 저장된 리프레시 토큰 정보 가져오기
+  getRefreshToken: () => {
+    return localStorage.getItem("refreshToken");
+  },
+
+  // 토큰 만료시 재발행하기
+  handleUnathorized: async () => {
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+    try {
+      const rsp = await axios.post(
+        `${Apueda_Domain}/auth/reissued`,
+        refreshToken
+      );
+      localStorage.setItem("accessToken", rsp.data.accessToken);
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
   },
 
   // 사용자 전체리스트 조회
@@ -55,10 +89,11 @@ const AxiosApi = {
   },
 
   // 회원정보 수정
-  memberUpdate: async (user) => {
+  memberUpdate: async (email, user) => {
     return await axios.put(
-      Apueda_Domain + "/members/membermodify${email}",
-      user
+      `${Apueda_Domain}/members/membermodify/${email}`,
+      user,
+      AxiosApi.tokenHeader()
     );
   },
   // 회원 탈퇴

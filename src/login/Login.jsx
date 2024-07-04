@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import logo from "../image/apueda-logo-black.png";
 import AxiosApi from "../api/AxiosApi";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserStore";
 
 const Container = styled.div`
   width: 100%;
@@ -115,6 +116,14 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [accToken, setAccToken] = useState("");
   const navigate = useNavigate();
+  const context = useContext(UserContext);
+  const { setLoginStatus, loginStatus } = context;
+
+  useEffect(() => {
+    if (loginStatus) {
+      navigate("/");
+    }
+  }, []);
 
   const handleLogin = async () => {
     try {
@@ -122,7 +131,9 @@ const LoginPage = () => {
       localStorage.setItem("email", email); // 삭제 예정
       setAccToken(rsp.data.accessToken);
       localStorage.setItem("accessToken", rsp.data.accessToken);
+      localStorage.setItem("refreshToken", rsp.data.refreshToken);
       console.log(accToken);
+      setLoginStatus(true);
       navigate("/apueda");
     } catch (e) {
       console.log(e);

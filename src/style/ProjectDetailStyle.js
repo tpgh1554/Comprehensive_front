@@ -21,6 +21,7 @@ export const UnderHead = styled.div`
   width: 100%;
   border: solid #b9b9b9;
   border-width: 0 0 1px;
+  padding: 12px;
 `;
 
 export const Body = styled.div`
@@ -53,7 +54,7 @@ export const InputContainer = styled.div`
   height: auto;
   /* border: solid #b9b9b9;
   border-width: 0 0 1px; */
-  box-shadow: 2px 2px 0.2px 0px rgba(0, 0, 0, 0.2);
+  border: 1px solid #bbbbbb;
   border-radius: 12px;
 `;
 

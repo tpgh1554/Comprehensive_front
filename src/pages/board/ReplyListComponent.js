@@ -59,6 +59,7 @@ const ReplyListComponent = ({ projectId, repliesChanged }) => {
       try {
         const response = await AxiosApi.getReplyList(id, page);
         console.log("댓글 리스트 : ", response.data.replies);
+        console.log("프로필 url : ", response.data.ProfileImg);
 
         // API 응답이 배열인지 확인
         if (Array.isArray(response.data.replies)) {

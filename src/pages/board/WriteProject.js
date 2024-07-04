@@ -17,40 +17,33 @@ import {
 } from "../../style/WriteStyle";
 import Modal from "./Modal";
 import AxiosApi from "../../api/AxiosApi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PasswordModal from "./PasswordModal";
 
 const WriteProject = () => {
   const inputRef = useRef(null); // 인원 입력용 ref 추가
   const inputRefForPeriod = useRef(null); // 기간 입력용 ref 추가
-  const inputRefForName = useRef(null); // 기간 입력용 ref 추가
   const fileInputRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [IsPwModalOpen, setIsPwModalOpen] = useState(false);
   const [isDropdownOpenForPeople, setIsDropdownOpenForPeople] = useState(false); // 인원 드롭다운 상태 추가
   const [isDropdownOpenForPeriod, setIsDropdownOpenForPeriod] = useState(false); // 기간 드롭다운 상태 추가
-  //const [isDropdownOpenForName, setIsDropdownOpenForName] = useState(false); // 플젝 이름 드롭다운
   const [currentDate, setCurrentDate] = useState(getFormattedDate()); // 기간선택시 최소 날짜를 오늘 날짜로 고정
   const [selectDate, setSelectDate] = useState(getFormattedDate()); // 기간 선택 값 상태로 관리
   const [title, setTitle] = useState("");
-  //const [projectName, setProjectName] = useState("");
   const [content, setContent] = useState("");
   const [roomName, setRoomName] = useState("");
-  // const [password, setPassword] = useState("");
   const [recruitNum, setRecruitNum] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([]);
-  const [imgPath, setImgPath] = useState("");
+  const { projectId } = useParams();
+
   const navigate = useNavigate();
 
   const handleSkillSelect = (skills) => {
     setSelectedSkills(skills);
     closeModal(); // 스킬 선택 모달 닫기
   };
-  // const handlePwValue = (pw) => {
-  //   setPassword(pw);
-  //   //console.log(password, "!!");
-  //   //closePwModal();
-  // };
+
   const handleRoomNameValue = (rm) => {
     console.log(rm, "!");
     setRoomName(rm);
@@ -89,29 +82,22 @@ const WriteProject = () => {
     setIsDropdownOpenForPeople(false); // 인원 드롭다운 닫기
   };
 
-  // 플젝 이름 드롭다운 토글 함수
-  // const toggleDropdownForName = () => {
-  //   setIsDropdownOpenForName(!isDropdownOpenForName);
-  //   setIsDropdownOpenForPeople(false); // 인원 드롭다운 닫기
-  //   setIsDropdownOpenForPeriod(false); // 기간 드롭다운 닫기
-  // };
-
-  // Open modal
+  // 스킬 모달
   const openModal = () => {
     setIsModalOpen(true);
   };
 
-  // Close modal
+  // 스킬 모달
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
-  // Open modal
+  // 프로젝트 이름 작성 모달
   const openPwModal = () => {
     setIsPwModalOpen(true);
   };
 
-  // Close modal
+  // 프로젝트 이름 작성 모달
   const closePwModal = () => {
     setIsPwModalOpen(false);
   };
@@ -132,24 +118,13 @@ const WriteProject = () => {
     const seconds = String(dateObj.getSeconds()).padStart(2, "0");
     return `T${hours}:${minutes}:${seconds}`;
   }
-  // 이미지 저장 핸들러
-  const handleFileChange = (e) => {
-    setImgPath(e.target.files[0]);
-    console.log("파일 체인지 button clicked.", e.target.files[0]);
-  };
 
-  // 이미지 버튼 클릭시 input실행
-  const handleFileClick = () => {
-    if (fileInputRef.current) {
-      console.log("파일 button clicked.");
-      fileInputRef.current.click();
-    }
-  };
   useEffect(() => {
     if (roomName) {
       handleRegister();
     }
   }, [roomName]);
+  //
   const handleRegister = async () => {
     if (!title) {
       alert("제목을 입력해주세요");
@@ -171,48 +146,54 @@ const WriteProject = () => {
       alert("등록일을 입력해주세요");
       return;
     }
+    const email = localStorage.getItem("accessToken");
+    if (projectId === null) {
+      const createRoomResponse = await AxiosApi.createRoom(roomName, email);
+      try {
+        if (!createRoomResponse.data) {
+          throw new Error("채팅방 생성이 실패했습니다.");
+        }
 
-    try {
-      const email = localStorage.getItem("accessToken");
-      // First, create the chat room
-      const rm = roomName;
-      const createRoomResponse = await AxiosApi.createRoom(rm, email);
+        const postData = {
+          title,
+          content,
+          skills: selectedSkills,
+          endDate: selectDate + getCurrentTime(),
+          recruitNum: recruitNum,
+          roomName: roomName,
+          regDate: currentDate,
+          chatRoom: createRoomResponse.data.roomId,
+        };
 
-      if (!createRoomResponse.data) {
-        throw new Error("채팅방 생성이 실패했습니다.");
+        console.log("postData ", postData.chatRoom);
+
+        const response = await AxiosApi.postProject(postData);
+        console.log("response ", postData.chatRoom);
+        console.log(" response 데이터 확인 :  ", response.data);
+        if (response.data) {
+          alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
+          navigate("/apueda/board");
+        } else {
+          throw new Error("프로젝트 게시글 등록이 실패했습니다.");
+        }
+      } catch (error) {
+        console.log(error);
+        alert("등록 중 오류가 발생했습니다.");
       }
-
-      // Construct the postData with the room ID obtained from createRoomResponse
-      const postData = {
-        title,
-        content,
-        skills: selectedSkills,
-        // pw: password,
-        endDate: selectDate + getCurrentTime(),
-        recruitNum: recruitNum,
-        roomName: roomName,
-        regDate: currentDate,
-        imgPath: imgPath,
-        chatRoom: createRoomResponse.data.roomId,
-      };
-
-      console.log("postData ", postData.chatRoom);
-
-      // Post the project data
-      const response = await AxiosApi.postProject(postData);
-      console.log("response ", postData.chatRoom);
-      console.log(" response 데이터 확인 :  ", response.data);
-      if (response.data) {
-        alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
-        navigate("/apueda/board");
-      } else {
-        throw new Error("프로젝트 게시글 등록이 실패했습니다.");
-      }
-    } catch (error) {
-      console.log(error);
-      alert("등록 중 오류가 발생했습니다.");
+    } else {
+      //   const modifyProject = async (projectId, postData) => {
+      //   try{
+      //     const response = await AxiosApi.modifyProject(projectId, postData);
+      //       if (response.status === 200) {
+      //         setContent
+      //       }
+      //   }catch(e){
+      //     console.log(e)
+      //   }
+      // }
     }
   };
+
   const cancel = () => {
     const confirmMessage =
       "뒤로 가면 변경 사항이 저장되지 않습니다. 계속 하시겠습니까?";
@@ -221,6 +202,12 @@ const WriteProject = () => {
     } else {
     }
   };
+  useEffect(() => {
+    const modifyProject = async (projectId, postData) => {
+      const response = await AxiosApi.modifyProject(projectId, postData);
+    };
+    modifyProject();
+  }, [projectId]);
   return (
     <BoardLayout>
       <Container>
@@ -256,26 +243,7 @@ const WriteProject = () => {
                 </DropdownInput>
               )}
             </div>
-            {/* <div style={{ position: "relative" }}>
-              <Button
-                onClick={toggleDropdownForName}
-                style={{ marginRight: "16px" }}
-              >
-                플젝이름
-              </Button>
-              {isDropdownOpenForName && (
-                <DropdownInput>
-                  <input
-                    ref={inputRefForName}
-                    type="text"
-                    placeholder="프로젝트 제목을 입력하세요."
-                    onChange={(e) => setProjectName(e.target.value)}
-                    value={projectName}
-                  />
-                  <InsertConfirm>확인</InsertConfirm>
-                </DropdownInput>
-              )}
-            </div> */}
+
             <div style={{ position: "relative" }}>
               <Button
                 onClick={toggleDropdownForPeriod}
@@ -297,14 +265,14 @@ const WriteProject = () => {
                 </DropdownInput>
               )}
             </div>
-            <Button alt="Upload" onClick={handleFileClick}>
+            {/* <Button alt="Upload" onClick={handleFileClick}>
               이미지
-            </Button>
+            </Button> */}
             <InputImage
               type="file"
               accept="image/*"
               ref={fileInputRef}
-              onChange={handleFileChange}
+              // onChange={handleFileChange}
             />
 
             <Button>모임 장소</Button>

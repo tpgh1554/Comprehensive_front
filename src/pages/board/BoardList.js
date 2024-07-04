@@ -98,14 +98,15 @@ const BoardList = () => {
   const [sortBy, setSortBy] = useState(true); // Default sort by newest
   const navigate = useNavigate();
   useEffect(() => {
-    fetchProjectList(); // Fetch projects when component mounts
+    fetchProjectList();
   }, []);
 
   const fetchProjectList = async () => {
+    console.log("보내기전 토큰:", localStorage.getItem("accessToken"));
     try {
       const rsp = await AxiosApi.getProjectList();
       // Sort project list by regDate in descending order (newest first)
-
+      console.log("보내기후 토큰:", localStorage.getItem("accessToken"));
       const sortedProjects = rsp.data.sort(
         (a, b) => new Date(b.regDate) - new Date(a.regDate)
       );
@@ -152,7 +153,7 @@ const BoardList = () => {
 
   const projectClick = (projectId) => {
     console.log(projectId, "플젝id값");
-    navigate(`/apueda/projectDetail/${projectId}`);
+    navigate(`/apueda/board/projectDetail/${projectId}`);
   };
 
   return (

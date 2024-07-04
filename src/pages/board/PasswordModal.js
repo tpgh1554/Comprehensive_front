@@ -23,16 +23,9 @@ const PasswordModal = ({ onRoomNameSave, closePwModal, onClick }) => {
   }, []);
   const handleSave = async () => {
     try {
-      // Save input values to parent component
       await onRoomNameSave(inputRoomName);
-
-      // Call onClick callback from parent component
       onClick(inputRoomName);
-
-      // Reset input fields after successful save
       setInputRoomName("");
-
-      // Close modal
       closePwModal();
     } catch (error) {
       console.error("Error saving:", error);
@@ -45,7 +38,11 @@ const PasswordModal = ({ onRoomNameSave, closePwModal, onClick }) => {
         <Notice>
           <span>프로젝트 채팅방의 이름을 입력해주세요</span>
         </Notice>
-        방이름<Input onChange={(e) => setInputRoomName(e.target.value)}></Input>
+        방이름
+        <Input
+          onChange={(e) => setInputRoomName(e.target.value)}
+          value={inputRoomName}
+        ></Input>
         <Button onClick={handleSave}>저장</Button>
       </Container>
     </ContainerBack>

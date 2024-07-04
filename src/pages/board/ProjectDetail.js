@@ -20,10 +20,12 @@ import {
   ProfileImg,
 } from "../../style/ProjectDetailStyle";
 import styled from "styled-components";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import defaultImage from "../../image/person-icon2.png";
 import ReplyListComponent from "./ReplyListComponent";
 import formatDate from "../../utils/formatDate";
+import DetailSetting from "./DetailSetting";
+import DeleteBoard from "./DeleteBoard";
 const Title = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -37,9 +39,9 @@ const ProjectTime = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: end;
-  width: 20%;
-  height: 60px;
-  padding: 12px;
+  /*width: 20%;
+   height: 60px;
+  padding: 12px;*/
   font-size: 12px;
 `;
 const Profile = styled.div`
@@ -49,7 +51,6 @@ const Profile = styled.div`
   align-items: center;
   width: 50%;
   height: 60px;
-  padding: 12px;
 `;
 const Recruit = styled.div`
   display: flex;
@@ -63,7 +64,7 @@ const Recruit = styled.div`
 `;
 
 const RecruitMemNum = styled.div`
-  padding: 4px;
+  font-size: 12px;
 `;
 
 const Content = styled.div`
@@ -111,6 +112,34 @@ const NickName = styled.div`
   padding: 8px;
 `;
 
+const Notice = styled.div``;
+const Setting = styled.div`
+  width: 50%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+`;
+
+const Dropdown = styled.div`
+  position: absolute;
+  top: 14px;
+  left: -85px;
+  border-radius: 7px;
+  padding: 10px;
+  background-color: #ff5353;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100px;
+  padding: 12px;
+`;
+const ModifyBtt = styled.button`
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: none;
+  padding: 5px;
+  font-size: 14px;
+`;
 const ProjectDetail = () => {
   const { projectId } = useParams();
   const [projectContent, setProjectContent] = useState("");
@@ -118,7 +147,24 @@ const ProjectDetail = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [replyContent, setReplyContent] = useState(null);
   const [repliesChanged, setRepliesChanged] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+  const modalRef = useRef(null);
 
+  const toggleDropdown = () => {
+    setIsDropdownOpen(true);
+  };
+  const handleClickOutside = (event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      setIsDropdownOpen(false);
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const id = localStorage.getItem("accessToken");
   useEffect(() => {
     const fetchUserInfo = async (email) => {
@@ -201,7 +247,26 @@ const ProjectDetail = () => {
     };
     postReply();
   };
-
+  // useEffect(() => {}, []);
+  const navSetting = (e) => {
+    if (e) {
+      navigate(`/apueda/modify/${projectId}`);
+    } else {
+      deleteProject(projectId);
+    }
+  };
+  const deleteProject = async (projectId) => {
+    try {
+      const response = await AxiosApi.projectDelete(projectId);
+      if (response.data) {
+        console.log("프로젝트가 삭제되었습니다.");
+      } else {
+        console.log("삭제할 프로젝트 데이터가 없습니다.");
+      }
+    } catch (e) {
+      console.log("삭제중 오류가 발생하였습니다.", e);
+    }
+  };
   return (
     <BoardLayout>
       <Container>
@@ -213,22 +278,38 @@ const ProjectDetail = () => {
             <Head>
               <UpHead>
                 <Title>{projectContent.projectTitle}</Title>
-                <ProjectTime>~ {projectContent.projectTime}까지</ProjectTime>
+                <Recruit>
+                  <Notice>모집 정보</Notice>
+                  <ProjectTime>{projectContent.projectTime}까지</ProjectTime>
+                  <RecruitMemNum>{projectContent.recruitNum}명</RecruitMemNum>
+                </Recruit>
               </UpHead>
               <UnderHead>
                 <Profile>
                   <ProfileImg>
                     <img src={projectContent.profileImg}></img>
                   </ProfileImg>
-
                   <NickName>{projectContent.nickName}</NickName>
                 </Profile>
-                <Recruit>
-                  {/* <RegDate>{projectContent.regDate}</RegDate> */}
-                  <RecruitMemNum>
-                    모집 인원 : {projectContent.recruitNum}명
-                  </RecruitMemNum>
-                </Recruit>
+                <Setting>
+                  {/* <div onClick={openModal}>...</div> */}
+                  {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
+
+                  <div style={{ position: "relative" }}>
+                    <div onClick={toggleDropdown}>...</div>
+                    {isDropdownOpen && (
+                      <Dropdown ref={modalRef}>
+                        <ModifyBtt onClick={(e) => navSetting()} value={true}>
+                          수정하기
+                        </ModifyBtt>
+                        <ModifyBtt onClick={(e) => navSetting()} value={false}>
+                          삭제하기
+                        </ModifyBtt>
+                      </Dropdown>
+                    )}
+                  </div>
+                  {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
+                </Setting>
               </UnderHead>
             </Head>
           )}
@@ -285,15 +366,7 @@ const ProjectDetail = () => {
                 </ConfirmReply>
               </UnderInert> */}
             </InputContainer>
-            {/* <ReplyListContainer>
-              <ReplyList>
-                <ProfileImg>이미지</ProfileImg>
-                <NickName>닉네임</NickName>
-                <ReplyContent>댓글 내용</ReplyContent>
-                <RegDate>8일전</RegDate>
-              </ReplyList>
-            </ReplyListContainer>
-            <PageNum>1 2 3 ... 11</PageNum> */}
+
             <ReplyListComponent
               projectId={projectId}
               repliesChanged={repliesChanged}

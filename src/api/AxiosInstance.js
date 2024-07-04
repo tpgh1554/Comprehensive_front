@@ -2,7 +2,6 @@
 
 import axios from "axios";
 const Apueda_Domain = "http://localhost:8118";
-const getAccessToken = localStorage.getItem("accessToken");
 
 const AxiosInstance = axios.create({
   // axios 인스턴스 생성
@@ -12,7 +11,7 @@ const AxiosInstance = axios.create({
 AxiosInstance.interceptors.request.use(
   // 요청 인터셉터 추가
   async (config) => {
-    const accessToken = getAccessToken;
+    const accessToken = localStorage.getItem("accessToken");
     config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
   },

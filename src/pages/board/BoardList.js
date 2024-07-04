@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import AxiosApi from "../../api/AxiosApi";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../context/UserStore";
+import useTokenAxios from "../../hooks/useTokenAxios";
 
 const Container = styled.div`
   width: 100%;
@@ -115,6 +117,16 @@ const BoardList = () => {
       console.error("Error fetching project list:", e);
     }
   };
+
+  // const context = useContext(UserContext);
+  // const { loginStatus } = context;
+  // const getProjectList = useTokenAxios(fetchProjectList);
+
+  // useEffect(() => {
+  //   if (loginStatus) {
+  //     getProjectList();
+  //   }
+  // }, []);
 
   const sortByCreatedAt = () => {
     const sortedProjects = [...projectList].sort((a, b) => {

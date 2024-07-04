@@ -11,8 +11,10 @@ const useTokenAxios = (axiosEvt) => {
   // 엑세스 토큰 만료시 재발행 후 Api 재실행
   const handleTokenAxios = async () => {
     const accessToken = AxiosApi.getAccessToken();
+    console.log("handleTokenAxios 실행 ");
     try {
       await axiosEvt();
+      console.log("axiosEvt 실행 ");
     } catch (e) {
       if (e.response && e.response.status === 401) {
         console.log("엑세스 토큰 만료");

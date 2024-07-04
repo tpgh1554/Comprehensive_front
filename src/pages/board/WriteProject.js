@@ -119,11 +119,6 @@ const WriteProject = () => {
     return `T${hours}:${minutes}:${seconds}`;
   }
 
-  useEffect(() => {
-    if (roomName) {
-      handleRegister();
-    }
-  }, [roomName]);
   //
   const handleRegister = async () => {
     if (!title) {
@@ -147,13 +142,67 @@ const WriteProject = () => {
       return;
     }
     const email = localStorage.getItem("accessToken");
-    if (projectId === null) {
-      const createRoomResponse = await AxiosApi.createRoom(roomName, email);
-      try {
-        if (!createRoomResponse.data) {
-          throw new Error("채팅방 생성이 실패했습니다.");
-        }
+    const createRoomResponse = await AxiosApi.createRoom(roomName, email);
+    try {
+      if (!createRoomResponse.data) {
+        throw new Error("채팅방 생성이 실패했습니다.");
+      }
 
+      const postData = {
+        title,
+        content,
+        skills: selectedSkills,
+        endDate: selectDate + getCurrentTime(),
+        recruitNum: recruitNum,
+        roomName: roomName,
+        regDate: currentDate,
+        chatRoom: createRoomResponse.data.roomId,
+      };
+
+      console.log("postData ", postData.chatRoom);
+
+      const response = await AxiosApi.postProject(postData);
+      console.log("response ", postData.chatRoom);
+      console.log(" response 데이터 확인 :  ", response.data);
+      if (response.data) {
+        alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
+        navigate("/apueda/board");
+      } else {
+        throw new Error("프로젝트 게시글 등록이 실패했습니다.");
+      }
+    } catch (error) {
+      console.log(error);
+      alert("등록 중 오류가 발생했습니다.");
+    }
+  };
+  // 수정
+  const handleModify = async (projectId, postData) => {
+    // if (!projectId) {
+    //   console.error("Invalid projectId:", projectId);
+
+    //   return;
+    // }
+    try {
+      const response = await AxiosApi.modifyProject(projectId, postData);
+      if (response.status === 200) {
+        alert("프로젝트가 성공적으로 수정되었습니다.");
+        navigate("/apueda/board");
+      } else {
+        throw new Error("프로젝트 수정에 실패했습니다.");
+      }
+    } catch (e) {
+      console.error("Error modifying project:", e);
+      alert("수정 중 오류가 발생했습니다.");
+    }
+  };
+
+  useEffect(() => {
+    if (roomName) {
+      if (!projectId) {
+        console.log("등록실행", projectId);
+        handleRegister();
+      } else {
+        console.log("수정실행", projectId);
         const postData = {
           title,
           content,
@@ -162,38 +211,12 @@ const WriteProject = () => {
           recruitNum: recruitNum,
           roomName: roomName,
           regDate: currentDate,
-          chatRoom: createRoomResponse.data.roomId,
+          chatRoom: roomName, // Assuming chatRoom id is roomName for this example
         };
-
-        console.log("postData ", postData.chatRoom);
-
-        const response = await AxiosApi.postProject(postData);
-        console.log("response ", postData.chatRoom);
-        console.log(" response 데이터 확인 :  ", response.data);
-        if (response.data) {
-          alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
-          navigate("/apueda/board");
-        } else {
-          throw new Error("프로젝트 게시글 등록이 실패했습니다.");
-        }
-      } catch (error) {
-        console.log(error);
-        alert("등록 중 오류가 발생했습니다.");
+        handleModify(projectId, postData);
       }
-    } else {
-      //   const modifyProject = async (projectId, postData) => {
-      //   try{
-      //     const response = await AxiosApi.modifyProject(projectId, postData);
-      //       if (response.status === 200) {
-      //         setContent
-      //       }
-      //   }catch(e){
-      //     console.log(e)
-      //   }
-      // }
     }
-  };
-
+  }, [roomName, projectId]);
   const cancel = () => {
     const confirmMessage =
       "뒤로 가면 변경 사항이 저장되지 않습니다. 계속 하시겠습니까?";
@@ -202,12 +225,7 @@ const WriteProject = () => {
     } else {
     }
   };
-  useEffect(() => {
-    const modifyProject = async (projectId, postData) => {
-      const response = await AxiosApi.modifyProject(projectId, postData);
-    };
-    modifyProject();
-  }, [projectId]);
+
   return (
     <BoardLayout>
       <Container>

@@ -25,7 +25,6 @@ import defaultImage from "../../image/person-icon2.png";
 import ReplyListComponent from "./ReplyListComponent";
 import formatDate from "../../utils/formatDate";
 import DetailSetting from "./DetailSetting";
-import DeleteBoard from "./DeleteBoard";
 const Title = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -148,6 +147,7 @@ const ProjectDetail = () => {
   const [replyContent, setReplyContent] = useState(null);
   const [repliesChanged, setRepliesChanged] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isModify, setIsModify] = useState(true);
   const navigate = useNavigate();
   const modalRef = useRef(null);
 
@@ -247,15 +247,14 @@ const ProjectDetail = () => {
     };
     postReply();
   };
-  // useEffect(() => {}, []);
-  const navSetting = (e) => {
-    if (e) {
-      navigate(`/apueda/modify/${projectId}`);
-    } else {
-      deleteProject(projectId);
-    }
+  const handleModfiy = () => {
+    navigate(`/apueda/modify/${projectId}`);
+  };
+  const handleDelete = () => {
+    deleteProject(projectId);
   };
   const deleteProject = async (projectId) => {
+    console.log("dele 실행");
     try {
       const response = await AxiosApi.projectDelete(projectId);
       if (response.data) {
@@ -299,10 +298,16 @@ const ProjectDetail = () => {
                     <div onClick={toggleDropdown}>...</div>
                     {isDropdownOpen && (
                       <Dropdown ref={modalRef}>
-                        <ModifyBtt onClick={(e) => navSetting()} value={true}>
+                        <ModifyBtt
+                          onClick={() => handleModfiy()}
+                          value={isModify}
+                        >
                           수정하기
                         </ModifyBtt>
-                        <ModifyBtt onClick={(e) => navSetting()} value={false}>
+                        <ModifyBtt
+                          onClick={() => handleDelete()}
+                          value={!isModify}
+                        >
                           삭제하기
                         </ModifyBtt>
                       </Dropdown>

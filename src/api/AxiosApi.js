@@ -261,7 +261,6 @@ const AxiosApi = {
       recruitNum: postData.recruitNum,
       projectName: postData.roomName,
       regDate: postData.currentDate,
-      imgPath: postData.imgPath.name,
       chatRoom: { roomId: postData.chatRoom },
     };
     console.log("project roomID", project.chatRoom);
@@ -271,10 +270,11 @@ const AxiosApi = {
   getProjectDetal: async (id) => {
     return await AxiosInstance.get(`/project/detail/${id}`);
   },
+  // 플젝 수정
+  modifyProject: async (projectId, postData) => {
+    return await AxiosInstance.put(`/project/modify/${projectId}`, postData);
+  },
 
-  // getProjectList: async () => {
-  //   return await AxiosInstance.get("/project/list");
-  // },
   // 댓글 등록
   postReply: async (replyContent, projectId) => {
     const reply = {
@@ -300,7 +300,7 @@ const AxiosApi = {
   createRoom: async (roomName, userEmail) => {
     // 방이름, 작성자이메일 받아서 방생성
     console.log("createRoom 방이름 , ", roomName, "아이디 : ", userEmail);
-    return await axios.post(`${Apueda_Domain}/chat/room`, {
+    return await AxiosInstance.post(`/chat/room`, {
       roomName,
       creatorEmail: userEmail,
     });

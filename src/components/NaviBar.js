@@ -118,7 +118,7 @@ export default function NaviBar() {
                 <Img src={file} />
                 <Overlay>게시판</Overlay>
               </MenuItem>
-              <MenuItem>
+              <MenuItem onClick={()=> navigate("/apueda/chatmanage")}>
                 <Img src={chat} />
                 <Overlay>채팅</Overlay>
               </MenuItem>
@@ -133,7 +133,7 @@ export default function NaviBar() {
                   <br /> 매칭
                 </Overlay>
               </MenuItem>
-              <MenuItem>
+              <MenuItem onClick={()=> navigate("/apueda/mysub")}>
                 <Img src={card} />
                 <Overlay>구독관리</Overlay>
               </MenuItem>

@@ -30,6 +30,8 @@ import WriteProject from "./pages/board/WriteProject";
 import ProjectDetail from "./pages/board/ProjectDetail";
 import Mysub from "./subscribe/mysub";
 import UserStore from "./context/UserStore";
+import Footer from "./components/Footer";
+
 function App() {
   return (
     <>
@@ -65,6 +67,7 @@ function App() {
             <Route path="/apueda/mypage/friend" element={<Friend />} />
             <Route path="/apueda/mysub" element={<Mysub />} />
           </Routes>
+          <Footer />
         </Router>
       </UserStore>
     </>

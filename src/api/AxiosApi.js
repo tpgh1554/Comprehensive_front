@@ -145,17 +145,8 @@ const AxiosApi = {
   },
 
   friendlist: async () => {
-    return await axios.get(
-      Apueda_Domain + "/friends/list",
-      AxiosApi.tokenHeader()
-    );
+    return await AxiosInstance.get("/friends/list");
   },
-
-  // friendlist: async () => {
-  //   return await axios.get(
-  //     `${Apueda_Domain}/friends/list?memberEmail=${email}`
-  //   );
-  // },
 
   friendRequestList: async () => {
     return await AxiosInstance.get(`/friends/findrequest`);

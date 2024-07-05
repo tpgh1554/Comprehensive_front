@@ -1,6 +1,7 @@
 // axiosInstance.js
 
 import axios from "axios";
+import AxiosApi from "./AxiosApi";
 const Apueda_Domain = "http://localhost:8118";
 
 const AxiosInstance = axios.create({
@@ -20,23 +21,38 @@ AxiosInstance.interceptors.request.use(
   }
 );
 
-// AxiosInstance.interceptors.response.use(
-//   // 응답 인터셉터 추가
-//   (response) => {
-//     return response;
-//   },
-//   async (error) => {
-//     if (error.response && error.response.status === 401) {
-//       // 401 에러 발생시
-//       const newToken = await Common.handleUnauthorized();
-//       if (newToken) {
-//         // 재시도
-//         error.config.headers.Authorization = `Bearer ${Common.getAccessToken()}`;
-//         return AxiosInstance.request(error.config);
-//       }
-//     }
-//     return Promise.reject(error);
-//   }
-// );
+AxiosInstance.interceptors.response.use(
+  // 응답 인터셉터 추가
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    if (error.response) {
+      switch (error.response.status) {
+        case 400:
+          break;
+        case 401:
+          // 401 에러 발생시
+          const newToken = await AxiosApi.handleUnauthorized();
+          if (newToken) {
+            // 재시도
+            error.config.headers.Authorization = `Bearer ${AxiosApi.getAccessToken()}`;
+            return AxiosInstance.request(error.config);
+          } else {
+          }
+          break;
+        case 403:
+          break;
+        case 404:
+          break;
+        case 500:
+          break;
+        default:
+          break;
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default AxiosInstance;

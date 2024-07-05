@@ -179,7 +179,7 @@ const MemberUpdate = () => {
   const uploadImg = async () => {
     try {
       if (!file) {
-        return;
+        throw new Error("파일이 선택되지 않았습니다.");
       }
       const fileRef = ref(storage, `images/${email}`);
       const snapshot = await uploadBytes(fileRef, file, {

@@ -33,12 +33,23 @@ const AxiosApi = {
   },
 
   // 토큰 만료시 재발행하기
-  handleUnathorized: async (refreshToken) => {
+  // 401 에러 처리 함수
+  handleUnauthorized: async () => {
+    console.log("handleUnauthorized");
+    const refreshToken = AxiosApi.getAccessToken();
+    const accessToken = AxiosApi.getRefreshToken();
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
     try {
-      const rsp = await AxiosInstance.get("/auth/reissued", refreshToken);
-      localStorage.setItem("accessToken", rsp.data.accessToken);
-    } catch (e) {
-      console.log(e);
+      const res = await axios.post(`/auth/refresh`, refreshToken, config);
+      console.log(res.data);
+      AxiosApi.setAccessToken(res.data);
+      return true;
+    } catch (err) {
+      console.log(err);
       return false;
     }
   },

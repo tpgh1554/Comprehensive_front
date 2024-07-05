@@ -103,20 +103,42 @@ const Payment = ({ isChecked1, isChecked2 }) => {
     }
   };
 
-  const Kakaopayment = () => {
+  const Kakaopayment = async () => {
     const { IMP } = window;
     IMP.init("imp63702282"); // 포트원 테스트 가맹점 식별코드
 
+    const merchant = `mid_${new Date().getTime()}`;
     const paymentData = {
       pg: "kakaopay", // 카카오페이 사용 시 'kakaopay'로 설정
       pay_method: "card", // 결제 수단 (카드, 계좌이체, 가상계좌 등)
-      merchant_uid: `mid_${new Date().getTime()}`, // 가맹점 주문번호 생성
+      merchant_uid: merchant, // 가맹점 주문번호 생성
       name: "아프다 1달 구독", // 상품명
       customer_uid: buyer_email,
       amount: 10, // 결제 금액
       buyer_id: buyer_email, // 구매자 ID 설정
       m_redirect_url: "http://localhost:3000/apueda", // 결제 완료 후 이동할 페이지 URL
     };
+
+    // 3. IAMPORT 토큰 요청
+    const tokenResponse = await axios.post(
+      "http://localhost:5000/api/iamport/getToken",
+      {}, // 데이터는 비어 있어도 됩니다.
+      { withCredentials: true } // credentials 포함
+    );
+    const iamportToken = tokenResponse.data.response.access_token;
+
+    const regitem = await axios.post(
+      "http://localhost:5000/api/iamport/preparePayment",
+      { merchant_uid: merchant, amount: 10 },
+      {
+        headers: {
+          Authorization: iamportToken,
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, // credentials 포함
+      }
+    );
+    console.log("사전검정데이터 등록 성공", regitem.data);
 
     IMP.request_pay(paymentData, async (response) => {
       if (response.success) {
@@ -152,14 +174,6 @@ const Payment = ({ isChecked1, isChecked2 }) => {
             },
           ],
         };
-
-        // 3. IAMPORT 토큰 요청
-        const tokenResponse = await axios.post(
-          "http://localhost:5000/api/iamport/getToken",
-          {}, // 데이터는 비어 있어도 됩니다.
-          { withCredentials: true } // credentials 포함
-        );
-        const iamportToken = tokenResponse.data.response.access_token;
 
         // 4. 결제 스케줄링 요청
         const scheduleResponse = await axios.post(
@@ -216,13 +230,13 @@ const Payment = ({ isChecked1, isChecked2 }) => {
           console.error("결제 내역 저장 실패", error);
           alert("결제 내역 저장 실패");
         }
-        setSubOpen(true);
-        setModalHeader("성공");
-        setModalContent("아프다 구독 성공");
+        // setSubOpen(true);
+        // setModalHeader("성공");
+        // setModalContent("아프다 구독 성공");
       } else {
-        setSubOpen(true);
-        setModalHeader("실패");
-        setModalContent("결재실패");
+        // setSubOpen(true);
+        // setModalHeader("실패");
+        // setModalContent("결재실패");
       }
     });
   };

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { SiNamecheap } from "react-icons/si";
+import AxiosInstance from "./AxiosInstance";
 
 const Apueda_Domain = "http://localhost:8118";
 
@@ -23,10 +24,7 @@ const PaymentApi = {
       amount: amount,
       cancellationDate: cancellationDate,
     };
-    return await axios.post(
-      Apueda_Domain + "/payments/save",
-      savePaymentHistory
-    );
+    return await AxiosInstance.post("/payments/save", savePaymentHistory);
   },
   // 결재정보저장
   savePaymentinfo: async (
@@ -43,7 +41,7 @@ const PaymentApi = {
       isPaymentAvailable: isPaymentAvailable,
       isDeleted: isDeleted,
     };
-    return await axios.post(Apueda_Domain + "/payments/info", savePaymentinfo);
+    return await AxiosInstance.post("/payments/info", savePaymentinfo);
   },
   // 구독 상태 및 빌링키 저장
   requestBillingKey: async (
@@ -67,8 +65,8 @@ const PaymentApi = {
       status: status,
       billingKeyCreatedAt: paymentDate,
     };
-    return await axios.post(
-      Apueda_Domain + "/payments/subscriptions",
+    return await AxiosInstance.post(
+      "/payments/subscriptions",
       requestBillingKey
     );
   },
@@ -77,15 +75,12 @@ const PaymentApi = {
     const unsavesub = {
       status: status,
     };
-    return await axios.post(
-      Apueda_Domain + "/payments/unsubscriptions",
-      unsavesub
-    );
+    return await AxiosInstance.post("/payments/unsubscriptions", unsavesub);
   },
 
   // 결재내역 출력
   historyList: async (member, page, size) => {
-    return await axios.get(`${Apueda_Domain}/payments/detail/${member}`, {
+    return await AxiosInstance.get(`/payments/detail/${member}`, {
       params: {
         page: page,
         size: size,
@@ -94,7 +89,7 @@ const PaymentApi = {
   },
   // 구독일 출력
   deadline: async (member) => {
-    return await axios.get(`${Apueda_Domain}/payments/deadline/${member}`, {
+    return await AxiosInstance.get(`/payments/deadline/${member}`, {
       params: {
         member,
       },

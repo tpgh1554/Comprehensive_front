@@ -161,7 +161,7 @@ const Unsubmodal = (props) => {
           withCredentials: true, // credentials 포함
         }
       );
-      console.log("Unschedule payment response:", unscheduleResponse.data);
+      console.log("예약해지:", unscheduleResponse.data);
       const rsp = await PaymentApi.unsavesub(status);
       if (rsp.data) {
         setSubOpen(true);

@@ -247,7 +247,6 @@ const Friend = () => {
   const [selectedFriendEmail, setSelectedFriendEmail] = useState("");
   const [friendImageUrls, setfriendImageUrls] = useState(null);
   const [reqImageUrls, setReqImageUrls] = useState({});
-  const [messageList, setMessageList] = useState([]);
 
   //메세지 모달창
   const openModal = (email) => {
@@ -293,10 +292,7 @@ const Friend = () => {
   useEffect(() => {
     const fechFriendRequest = async () => {
       try {
-        const rsp = await AxiosApi.friendRequestList(
-          localStorage.getItem("email")
-        );
-        console.log(rsp.data);
+        const rsp = await AxiosApi.friendRequestList();
         setFriendReq(rsp.data); // 백엔드에서 받아온 친구 목록을 상태에 저장
 
         const urls = {};
@@ -315,12 +311,12 @@ const Friend = () => {
   }, []);
 
   //친구 삭제
-  const friendDelete = async (memberEmail, friendEmail) => {
+  const friendDelete = async (friendEmail) => {
     const confirm = window.confirm("친구를 삭제하시겠습니까?");
     if (confirm) {
       try {
         // API를 호출하여 게시글 삭제
-        await AxiosApi.friendDelete(memberEmail, friendEmail);
+        await AxiosApi.friendDelete(friendEmail);
         // 삭제 성공 시, 상태 업데이트 등 추가 로직 처리
 
         // 삭제된 친구를 제외한 새로운 배열 생성
@@ -342,30 +338,28 @@ const Friend = () => {
   };
 
   //요청 수락
-  const requsetAccept = async (memberEmail, toMemberEmail) => {
+  const requsetAccept = async (memberEmail) => {
     try {
-      await AxiosApi.friendRequestAccept(memberEmail, toMemberEmail);
+      await AxiosApi.friendRequestAccept(memberEmail);
       console.log("친추 성공");
       window.alert("추가 완료");
       window.location.reload();
     } catch (error) {
       console.error("오류 : ", error);
       console.log(memberEmail);
-      console.log(toMemberEmail);
     }
   };
 
   //요청 거절
-  const requestReject = async (memberEmail, toMemberEmail) => {
+  const requestReject = async (memberEmail) => {
     try {
-      await AxiosApi.friendRequestReject(memberEmail, toMemberEmail);
+      await AxiosApi.friendRequestReject(memberEmail);
       console.log("거절 완료");
       window.alert("거절 완료");
       window.location.reload();
     } catch (error) {
       console.error("오류 : ", error);
       console.log(memberEmail);
-      console.log(toMemberEmail);
     }
   };
 
@@ -434,7 +428,6 @@ const Friend = () => {
                       <ButtonStyle
                         onClick={() =>
                           friendDelete(
-                            localStorage.getItem("email"),
                             friend.member
                               ? friend.member.email
                               : friend.toMember.email
@@ -468,22 +461,12 @@ const Friend = () => {
                 </ProfileNickNameWrapper>
                 <ReqBtn>
                   <ButtonStyle
-                    onClick={() =>
-                      requsetAccept(
-                        requset.member.email,
-                        localStorage.getItem("email")
-                      )
-                    }
+                    onClick={() => requsetAccept(requset.member.email)}
                   >
                     수락
                   </ButtonStyle>
                   <ButtonStyle
-                    onClick={() =>
-                      requestReject(
-                        requset.member.email,
-                        localStorage.getItem("email")
-                      )
-                    }
+                    onClick={() => requestReject(requset.member.email)}
                   >
                     거절
                   </ButtonStyle>

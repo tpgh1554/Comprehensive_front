@@ -176,10 +176,7 @@ const Message = ({ closeModal, friendEmail, friendProfile }) => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const rsp = await AxiosApi.messageList(
-          localStorage.getItem("email"),
-          friendEmail
-        );
+        const rsp = await AxiosApi.messageList(friendEmail);
         //읽음 표시 하려고 아이디 추출
         console.log(rsp.data);
         setMessageList(rsp.data);

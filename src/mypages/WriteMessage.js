@@ -100,7 +100,6 @@ const WriteButton = styled.button`
 
 const WriteMessage = ({ closeModal, friendEmail }) => {
   const [content, setContent] = useState("");
-  const senderEmail = localStorage.getItem("email");
   const receiveEmail = friendEmail;
   const calculateByteLength = (str) => {
     let byteLength = 0;
@@ -126,7 +125,7 @@ const WriteMessage = ({ closeModal, friendEmail }) => {
         alert("내용은 최소 2글자 이상이어야 합니다.");
         return;
       }
-      await AxiosApi.writeMessage(receiveEmail, senderEmail, content);
+      await AxiosApi.writeMessage(receiveEmail, content);
       alert("전송이 완료 되었습니다!");
       closeModal();
     } catch (error) {

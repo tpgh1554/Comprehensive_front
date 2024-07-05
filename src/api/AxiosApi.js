@@ -135,9 +135,18 @@ const AxiosApi = {
 
   //------------------친구 기능---------------------------
 
+  friendRequest: async (memberEmail, toMemberEmail) => {
+    return await axios.post(`${Apueda_Domain}/friends/request`, null, {
+      params: {
+        memberEmail: memberEmail,
+        toMemberEmail: toMemberEmail,
+      },
+    });
+  },
+
   friendlist: async () => {
     return await axios.get(
-      Apueda_Domain + "/friends/list2",
+      Apueda_Domain + "/friends/list",
       AxiosApi.tokenHeader()
     );
   },
@@ -148,49 +157,29 @@ const AxiosApi = {
   //   );
   // },
 
-  friendRequestList: async (email) => {
-    return await axios.get(
-      `${Apueda_Domain}/friends/findrequest?memberEmail=${email}`
-    );
+  friendRequestList: async () => {
+    return await AxiosInstance.get(`/friends/findrequest`);
   },
 
-  // friendRequestAccept: async (userEmail, toUserEmail) => {
-  //   return await axios.post(Apueda_Domain + "/friends/accept", {
-  //     userEmail: userEmail,
-  //     toUserEmail: toUserEmail,
-  //   });
-  // },
-
-  friendRequestAccept: async (memberEmail, toMemberEmail) => {
-    // FormData 객체 생성
-    const formData = new FormData();
-    formData.append("memberEmail", memberEmail);
-    formData.append("toMemberEmail", toMemberEmail);
-
-    return await axios.post(Apueda_Domain + "/friends/accept", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data", // FormData를 사용할 때는 Content-Type을 명시적으로 설정해야 합니다.
-      },
-    });
-  },
-
-  friendRequestReject: async (memberEmail, toMemberEmail) => {
-    // FormData 객체 생성
-    const formData = new FormData();
-    formData.append("memberEmail", memberEmail);
-    formData.append("toMemberEmail", toMemberEmail);
-
-    return await axios.post(Apueda_Domain + "/friends/reject", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data", // FormData를 사용할 때는 Content-Type을 명시적으로 설정해야 합니다.
-      },
-    });
-  },
-
-  friendDelete: async (memberEmail, friendEmail) => {
-    return await axios.get(Apueda_Domain + "/friends/delete", {
+  friendRequestAccept: async (memberEmail) => {
+    return await AxiosInstance.get("/friends/accept", {
       params: {
         memberEmail: memberEmail,
+      },
+    });
+  },
+
+  friendRequestReject: async (memberEmail) => {
+    return await AxiosInstance.get("/friends/reject", {
+      params: {
+        memberEmail: memberEmail,
+      },
+    });
+  },
+
+  friendDelete: async (friendEmail) => {
+    return await AxiosInstance.get("/friends/delete", {
+      params: {
         friendEmail: friendEmail,
       },
     });
@@ -199,26 +188,23 @@ const AxiosApi = {
   //------------------친구 기능---------------------------
 
   //메세지
-  messageList: async (receiveEmail, sendEmail) => {
-    return await axios.get(Apueda_Domain + "/messages/received", {
+  messageList: async (sendEmail) => {
+    return await AxiosInstance.get("/messages/received", {
       params: {
-        receiveEmail: receiveEmail,
         sendEmail: sendEmail,
       },
     });
   },
 
-  writeMessage: async (receiverMemberName, senderMemberName, content) => {
-    const writeInfo = {
+  writeMessage: async (receiverMemberName, content) => {
+    return await AxiosInstance.post("/messages/write", {
       receiverMemberName: receiverMemberName,
-      senderMemberName: senderMemberName,
       content: content,
-    };
-    return await axios.post(Apueda_Domain + "/messages/write", writeInfo);
+    });
   },
 
   delMsg: async (postMsgId) => {
-    return await axios.get(Apueda_Domain + "/messages/delete", {
+    return await AxiosInstance.get("/messages/delete", {
       params: {
         id: postMsgId,
       },
@@ -226,22 +212,12 @@ const AxiosApi = {
   },
 
   updateReadStatus: async (postMsgId, readStatus) => {
-    //메세지 읽음
-    const requestData = {
+    return await AxiosInstance.post("/messages/updateReadStatus", {
       postMsgId: postMsgId,
       readStatus: readStatus,
-    };
-    try {
-      const response = await axios.post(
-        Apueda_Domain + "/messages/updateReadStatus",
-        requestData
-      );
-      return response.data; // 서버에서 반환한 데이터를 처리하거나 반환할 수 있음
-    } catch (error) {
-      console.error("오류 발생:", error);
-      throw error; // 오류를 처리하거나 상위 호출자에게 넘김
-    }
+    });
   },
+
   //-------------------------------------------메세지------------------------------------------------
 
   // ----------------------- 게시판 시작 -----------------------
@@ -320,15 +296,6 @@ const AxiosApi = {
   // -----------------------채   팅-----------------------
   // -----------------------데이트 어플-----------------------
   // 좋아요 이후 친구 신청
-
-  friendRequest: async (memberEmail, toMemberEmail) => {
-    return await axios.post(`${Apueda_Domain}/friends/request`, null, {
-      params: {
-        memberEmail: memberEmail,
-        toMemberEmail: toMemberEmail,
-      },
-    });
-  },
 
   // 싫어요 이후 DB 저장
   unlikeFriendRequest: async (memberEmail, unlikeMemberEmail) => {

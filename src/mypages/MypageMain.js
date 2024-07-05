@@ -78,7 +78,7 @@ const MypageMain = () => {
       <Container>
         <Title>마이페이지</Title>
         <ButtonContainer>
-          <Button as={Link} to="/apueda/mypage/editinfo">
+          <Button as={Link} to="/apueda/mypage/memberupdate">
             회원 정보 수정
           </Button>
 

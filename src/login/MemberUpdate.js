@@ -147,7 +147,7 @@ const MemberUpdate = () => {
         setUserInfo(rsp.data);
         setProfileImgPath(userInfo.profileImgPath);
         setEmail(userInfo.email);
-        setPassword(userInfo.password);
+        // setPassword(userInfo.password);
         setName(userInfo.name);
         setIdentityNumber(userInfo.identityNumber);
         setSkill(userInfo.skill);

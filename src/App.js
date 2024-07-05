@@ -57,7 +57,10 @@ function App() {
             <Route path="/apueda/subinfo" element={<Subinfo />} />
             <Route path="/apueda/login" element={<LoginPage />} />
             <Route path="/apueda/signup" element={<SignUp />} />
-            <Route path="/apueda/memberupdate" element={<MemberUpdate />} />
+            <Route
+              path="/apueda/mypage/memberupdate"
+              element={<MemberUpdate />}
+            />
             <Route path="/apueda/mypage/editinfo" element={<EditInfo />} />
             <Route path="/apueda/mypage/friend" element={<Friend />} />
             <Route path="/apueda/mysub" element={<Mysub />} />

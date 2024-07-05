@@ -204,7 +204,6 @@ const Unsubmodal = (props) => {
                 </Unsubinfoul>
               </Uninfo>
               <Unbutton onClick={unSavesub}>해지</Unbutton>
-              <Unbutton onClick={unSavesub}>모달창 오픈</Unbutton>
             </Unsubbox>
             <CheckModal
               open={subOpen}

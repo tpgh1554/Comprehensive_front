@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Unsubmodal from "./unsubmodal";
 import Paging from "./paging";
+import Resubmodal from "./resubmodal";
 
 const Subpage = styled.div`
   width: 100%;
@@ -108,7 +109,9 @@ const Mysub = () => {
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
   const [subOpen, setSubOpen] = useState(false);
+  const [resubOpen, setResubOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [resubmodalOpen, setResubmodalOpen] = useState(false);
   const [modalContent, setModalContent] = useState("");
   const [header, setHeader] = useState("");
   const [merchantuid, setMerchantuid] = useState("");
@@ -121,6 +124,13 @@ const Mysub = () => {
   };
   const closeSub = () => {
     setSubOpen(false);
+  };
+
+  const onClickreSub = (e) => {
+    setResubOpen(true);
+  };
+  const closereSub = () => {
+    setResubOpen(false);
   };
 
   useEffect(() => {
@@ -175,6 +185,7 @@ const Mysub = () => {
     if (substatus === "구독" && new Date(deadLine) > new Date()) {
       onClickSub();
     } else if (substatus === "해지" && new Date(deadLine) > new Date()) {
+      onClickreSub();
     } else {
       navigate("/apueda/subinfo");
     }
@@ -223,7 +234,15 @@ const Mysub = () => {
         deadLine={deadLine}
         merchantuid={merchantuid}
         member={member}
-      ></Unsubmodal>
+      />
+      <Resubmodal
+        open={resubOpen}
+        close={closereSub}
+        category="재구독 창"
+        setModalOpen={setResubmodalOpen}
+        merchantuid={merchantuid}
+        deadLine={deadLine}
+      />
     </Subpage>
   );
 };

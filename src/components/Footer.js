@@ -39,7 +39,11 @@ const Footer = () => {
         <Item>전화번호 02-123-4567</Item>
         <Item>이메일 : sick@example.com</Item>
       </Box>
-      <Box>
+      <Box style={{ flexDirection: "column" }}>
+        <Item>
+          https://github.com/tpgh1554/Comprehensive_front/commits/master/
+        </Item>
+        <Item>https://github.com/kimfjd/Comprehensive_back</Item>
         <Item>CopyRight © 2024 sick All Rights Reserved.</Item>
       </Box>
       <Box></Box>
@@ -70,9 +74,10 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
-  background-color: #ced4da;
+  background-color: #ff5353;
   width: 100%;
   height: 350px;
+  /* color: white; */
 `;
 const Box = styled.div`
   display: flex;

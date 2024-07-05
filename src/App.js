@@ -42,7 +42,7 @@ function App() {
           <NaviBar />
           <Routes>
             {/*첫 메인 페이지 경로*/}
-            <Route path="/" element={<Navigate to="/apueda" />} />{" "}
+            <Route path="/" element={<Navigate to="/apueda" />} />
             <Route path="/apueda" element={<Mainpage />} />
             <Route path="/apueda/mypage" element={<MypageMain />} />
             <Route path="/apueda/chatmainpage" element={<ChatMain />} />
@@ -67,7 +67,6 @@ function App() {
             <Route path="/apueda/mypage/friend" element={<Friend />} />
             <Route path="/apueda/mysub" element={<Mysub />} />
           </Routes>
-          <Footer />
         </Router>
       </UserStore>
     </>

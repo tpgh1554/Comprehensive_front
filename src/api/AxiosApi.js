@@ -32,20 +32,10 @@ const AxiosApi = {
     };
   },
 
-  // 로컬에 저장된 리프레시 토큰 정보 가져오기
-  getRefreshToken: () => {
-    return localStorage.getItem("refreshToken");
-  },
-
   // 토큰 만료시 재발행하기
-  handleUnathorized: async () => {
-    const accessToken = localStorage.getItem("accessToken");
-    const refreshToken = localStorage.getItem("refreshToken");
+  handleUnathorized: async (refreshToken) => {
     try {
-      const rsp = await axios.post(
-        `${Apueda_Domain}/auth/reissued`,
-        refreshToken
-      );
+      const rsp = await AxiosInstance.get("/auth/reissued", refreshToken);
       localStorage.setItem("accessToken", rsp.data.accessToken);
     } catch (e) {
       console.log(e);
@@ -55,7 +45,7 @@ const AxiosApi = {
 
   // 사용자 전체리스트 조회
   getUserList: async () => {
-    return await axios.get(Apueda_Domain + "/members/list");
+    return await AxiosInstance.get("/members/list");
   },
 
   // 로그인
@@ -66,13 +56,22 @@ const AxiosApi = {
     };
     return await axios.post(Apueda_Domain + "/auth/login", user);
   },
-  // 회원가입
-  signup: async (user) => {
-    return await axios.post(Apueda_Domain + "/auth/signup", user);
-  },
+
   // 사용자 존재 여부 확인
   userCheck: async (email) => {
     return await axios.get(`${Apueda_Domain}/auth/check?email=${email}`);
+  },
+  // 이메일 인증
+  mail: async (email) => {
+    try {
+      return await axios.get(`${Apueda_Domain}/email/mail?email=${email}`);
+    } catch (error) {
+      throw new Error(`이메일 요청 실패: ${error.message}`);
+    }
+  },
+  // 회원가입
+  signup: async (user) => {
+    return await axios.post(Apueda_Domain + "/auth/signup", user);
   },
 
   // 사용자 정보 가져오기
@@ -82,31 +81,20 @@ const AxiosApi = {
   //   );
   // },
   getUserInfo2: async () => {
-    return await axios.get(
-      Apueda_Domain + "/members/memberinfo2",
-      AxiosApi.tokenHeader()
-    );
+    return await AxiosInstance.get("/members/memberinfo2");
   },
 
   // 회원정보 수정
-  memberUpdate: async (email, user) => {
-    return await axios.put(
-      `${Apueda_Domain}/members/membermodify/${email}`,
-      user,
-      AxiosApi.tokenHeader()
+  memberUpdate: async (user) => {
+    return await AxiosInstance.post(
+      `/members/membermodify/${user.email}`,
+      user
     );
   },
+
   // 회원 탈퇴
   signout: async () => {
-    return await axios.delete(Apueda_Domain + "/members/delmember");
-  },
-  // 이메일 인증
-  mail: async (email) => {
-    try {
-      return await axios.get(`${Apueda_Domain}/email/mail?email=${email}`);
-    } catch (error) {
-      throw new Error(`이메일 요청 실패: ${error.message}`);
-    }
+    return await AxiosInstance.get(Apueda_Domain + "/members/delmember");
   },
 
   getBoardList: async () => {
@@ -136,7 +124,7 @@ const AxiosApi = {
   //------------------친구 기능---------------------------
 
   friendRequest: async (memberEmail, toMemberEmail) => {
-    return await axios.post(`${Apueda_Domain}/friends/request`, null, {
+    return await AxiosInstance.post(`/friends/request`, null, {
       params: {
         memberEmail: memberEmail,
         toMemberEmail: toMemberEmail,
@@ -291,7 +279,7 @@ const AxiosApi = {
   // 싫어요 이후 DB 저장
   unlikeFriendRequest: async (memberEmail, unlikeMemberEmail) => {
     console.log("Sending unlike request:", memberEmail, unlikeMemberEmail);
-    return await axios.post(`${Apueda_Domain}/datingapp/unlike`, null, {
+    return await AxiosInstance.post(`/datingapp/unlike`, null, {
       params: {
         memberEmail: memberEmail,
         unlikeMemberEmail: unlikeMemberEmail,
@@ -300,7 +288,7 @@ const AxiosApi = {
   },
   // 카드리스트 가져오기 (백엔드에서 현재 5개만 가져오도록 설정 됨)
   getCardList: async (myEmail) => {
-    return await axios.post(`${Apueda_Domain}/datingapp/cardlist`, null, {
+    return await AxiosInstance.post(`/datingapp/cardlist`, null, {
       params: {
         myEmail: myEmail,
       },

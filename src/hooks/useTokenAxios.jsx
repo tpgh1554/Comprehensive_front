@@ -8,9 +8,10 @@ const useTokenAxios = (axiosEvt) => {
   const context = useContext(UserContext);
   const { loginStatus, setLoginStatus } = context;
 
+  const accessToken = AxiosApi.getAccessToken();
+  const refreshToken = AxiosApi.getRefreshToken();
   // 엑세스 토큰 만료시 재발행 후 Api 재실행
-  const handleTokenAxios = async () => {
-    const accessToken = AxiosApi.getAccessToken();
+  const handleTokenAxios = async (refreshToken) => {
     console.log("handleTokenAxios 실행 ");
     try {
       await axiosEvt();
@@ -18,7 +19,7 @@ const useTokenAxios = (axiosEvt) => {
     } catch (e) {
       if (e.response && e.response.status === 401) {
         console.log("엑세스 토큰 만료");
-        await AxiosApi.handleUnathorized();
+        await AxiosApi.handleUnathorized(refreshToken);
         const newToken = AxiosApi.getAccessToken();
         if (newToken !== accessToken) {
           try {

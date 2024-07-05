@@ -141,13 +141,20 @@ const MemberUpdate = () => {
     false,
   ]);
   useEffect(() => {
+    const imgUrl = localStorage.getItem("imgUrl");
+    if (imgUrl) {
+      setPreviewUrl(imgUrl);
+      setProfileImgPath(imgUrl);
+    }
+  }, []); // 빈 배열을 의존성 배열로 사용
+
+  useEffect(() => {
     const memberInfo = async () => {
       try {
         const rsp = await AxiosApi.getUserInfo2();
         setUserInfo(rsp.data);
-        setProfileImgPath(userInfo.profileImgPath);
+        // setFile(imgUrl);
         setEmail(userInfo.email);
-        // setPassword(userInfo.password);
         setName(userInfo.name);
         setIdentityNumber(userInfo.identityNumber);
         setSkill(userInfo.skill);
@@ -165,7 +172,6 @@ const MemberUpdate = () => {
     const fileReader = new FileReader();
     fileReader.onload = () => {
       setPreviewUrl(fileReader.result);
-      // setProfileImgPath(setPreviewUrl);
     };
     fileReader.readAsDataURL(selectedFile);
   };
@@ -173,7 +179,7 @@ const MemberUpdate = () => {
   const uploadImg = async () => {
     try {
       if (!file) {
-        throw new Error("파일이 선택되지 않았습니다.");
+        return;
       }
       const fileRef = ref(storage, `images/${email}`);
       const snapshot = await uploadBytes(fileRef, file, {
@@ -270,17 +276,29 @@ const MemberUpdate = () => {
     }
   };
 
+  const memberDel = async () => {
+    const accToken = localStorage.getItem("accessToken");
+    try {
+      const response = await AxiosApi.signout(accToken);
+      if (response.data) {
+        alert("회원 삭제에 성공했습니다.");
+        navigate("/apueda");
+      } else {
+        alert("회원 삭제에 실패했습니다.");
+      }
+    } catch (e) {
+      console.log(e);
+      alert("회원 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   return (
     <Container>
       <Box>
         <Contents>
           <h1>회원 정보 수정</h1>
           <ProfileBox>
-            <Upload
-              setFile={handleFileChange}
-              previewUrl={previewUrl}
-              alt={userInfo.profileImgPath}
-            />
+            <Upload setFile={handleFileChange} previewUrl={previewUrl} />
           </ProfileBox>
 
           <InputContainer>
@@ -345,7 +363,7 @@ const MemberUpdate = () => {
             </TextBox>
           </InputContainer>
           <SubmitBtn onClick={regist}>수정</SubmitBtn>
-          <SubmitBtn>탈퇴</SubmitBtn>
+          <SubmitBtn onClick={memberDel}>탈퇴</SubmitBtn>
         </Contents>
       </Box>
     </Container>

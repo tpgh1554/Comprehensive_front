@@ -11,7 +11,7 @@ import friend from "../image/friend.png";
 import phone from "../image/mobile-in-hand.png";
 import card from "../image/credit-card.png";
 import profile from "../image/profile.png";
-import loginIcon from "../image/login-icon.png"
+import loginIcon from "../image/login-icon.png";
 import logout from "../image/logout.png";
 
 export default function NaviBar() {
@@ -29,10 +29,12 @@ export default function NaviBar() {
         console.log(rsp.data);
         if (rsp.data && rsp.data.profileImgPath) {
           setImageUrl(rsp.data.profileImgPath);
+          localStorage.setItem("imgUrl", rsp.data.profileImgPath);
         } else {
           setImageUrl(defaultImage);
-        }
 
+          localStorage.setItem("imgUrl", defaultImage);
+        }
       } catch (e) {
         console.log(e);
         setImageUrl(defaultImage);
@@ -83,7 +85,7 @@ export default function NaviBar() {
     <Body>
       <Container className="menu" ref={scope}>
         <Box>
-          <ProfileButton >
+          <ProfileButton>
             <motion.button
               style={{
                 width: "60px",
@@ -118,7 +120,7 @@ export default function NaviBar() {
                 <Img src={file} />
                 <Overlay>게시판</Overlay>
               </MenuItem>
-              <MenuItem onClick={()=> navigate("/apueda/chatmanage")}>
+              <MenuItem onClick={() => navigate("/apueda/chatmanage")}>
                 <Img src={chat} />
                 <Overlay>채팅</Overlay>
               </MenuItem>
@@ -133,7 +135,7 @@ export default function NaviBar() {
                   <br /> 매칭
                 </Overlay>
               </MenuItem>
-              <MenuItem onClick={()=> navigate("/apueda/mysub")}>
+              <MenuItem onClick={() => navigate("/apueda/mysub")}>
                 <Img src={card} />
                 <Overlay>구독관리</Overlay>
               </MenuItem>
@@ -141,11 +143,21 @@ export default function NaviBar() {
                 <Img src={profile} />
                 <Overlay>내정보</Overlay>
               </MenuItem>
-              <MenuItem isLoginUser={isLoginUser} onClick={() => navigate("/apueda/login")}>
+              <MenuItem
+                isLoginUser={isLoginUser}
+                onClick={() => navigate("/apueda/login")}
+              >
                 <Img src={loginIcon} />
                 <Overlay>로그인</Overlay>
               </MenuItem>
-              <MenuItem isLoginUser={!isLoginUser} onClick={()=> {localStorage.clear(); window.location.reload(); alert("로그아웃 되었습니다. (localStorage 모두 삭제)");  }}>
+              <MenuItem
+                isLoginUser={!isLoginUser}
+                onClick={() => {
+                  localStorage.clear();
+                  window.location.reload();
+                  alert("로그아웃 되었습니다. (localStorage 모두 삭제)");
+                }}
+              >
                 <Img src={logout} />
                 <Overlay>로그아웃</Overlay>
               </MenuItem>
@@ -228,10 +240,14 @@ const Overlay = styled.div`
 `;
 
 const MenuItem = styled(motion.li).withConfig({
-  shouldForwardProp: (prop) => !["isLoginUser", "isLogOutUser"].includes(prop)
-})` // props를 다른 컴포넌트에 전달하지 않도록 막는 코드
+  shouldForwardProp: (prop) => !["isLoginUser", "isLogOutUser"].includes(prop),
+})`
+  // props를 다른 컴포넌트에 전달하지 않도록 막는 코드
   position: relative;
-  display: ${(props) => (props.isLoginUser ? "none" : "flex")}; // 로그인 상태이면 안보이고, 로그인 상태이면 보이도록 설정
+  display: ${(props) =>
+    props.isLoginUser
+      ? "none"
+      : "flex"}; // 로그인 상태이면 안보이고, 로그인 상태이면 보이도록 설정
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;

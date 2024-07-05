@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import AxiosApi from "../api/AxiosApi";
 const Container = styled.div`
   height: auto;
-  width: 100vw;
+  width: 100%;
   position: relative; /* 상대적 위치 설정 */
   display: flex;
   background-color: white;

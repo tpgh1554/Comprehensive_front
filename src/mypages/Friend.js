@@ -7,13 +7,14 @@ import AxiosApi from "../api/AxiosApi";
 import Message from "./Message";
 
 const Container = styled.div`
-  width: 100vw;
+  width: 100%;
   display: flex;
   background-color: white;
   text-align: center;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-bottom: 200px; //푸터랑 멀게
 `;
 
 const ExitWrapper = styled.div``;

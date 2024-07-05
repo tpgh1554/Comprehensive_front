@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 const Container = styled.div`
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   position: relative; /* 상대적 위치 설정 */
   display: flex;
   background-color: white;

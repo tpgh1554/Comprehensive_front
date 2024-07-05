@@ -7,13 +7,14 @@ import Myprofile from "./Myprofile";
 
 const Container = styled.div`
   height: 80vh;
-  width: 100vw;
+  width: 100%;
   display: flex;
   background-color: white;
   text-align: center;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-bottom: 50px;
 `;
 
 const Title = styled.div`
@@ -68,10 +69,12 @@ const MypageMain = () => {
 
   const openModal = () => {
     setIsModalOpen(true);
+    document.body.style.overflow = "hidden"; //모달창 열렸을 때 스크롤 금지
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    document.body.style.overflow = "auto";
   };
   return (
     <>

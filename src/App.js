@@ -29,14 +29,12 @@ import BoardMain from "./pages/board/BoardMain";
 import WriteProject from "./pages/board/WriteProject";
 import ProjectDetail from "./pages/board/ProjectDetail";
 import Mysub from "./subscribe/mysub";
-import UserStore from "./context/UserStore";
 import Footer from "./components/Footer";
 
 function App() {
   return (
     <>
       <GlobalStyle />
-      {/* <UserStore> */}
       <Router>
         <Header />
         <NaviBar />
@@ -70,7 +68,6 @@ function App() {
           <Route path="/apueda/mysub" element={<Mysub />} />
         </Routes>
       </Router>
-      {/* </UserStore> */}
     </>
   );
 }

@@ -1,5 +1,3 @@
-// axiosInstance.js
-
 import axios from "axios";
 import AxiosApi from "./AxiosApi";
 const Apueda_Domain = "http://localhost:8118";
@@ -34,6 +32,7 @@ AxiosInstance.interceptors.response.use(
         case 401:
           // 401 에러 발생시
           const newToken = await AxiosApi.handleUnauthorized();
+          AxiosApi.setAccessToken(newToken.rsp.accessToken);
           if (newToken) {
             // 재시도
             error.config.headers.Authorization = `Bearer ${AxiosApi.getAccessToken()}`;

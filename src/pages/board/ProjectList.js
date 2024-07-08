@@ -2,8 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import AxiosApi from "../../api/AxiosApi";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../context/UserStore";
-import useTokenAxios from "../../hooks/useTokenAxios";
 
 const Container = styled.div`
   width: 100%;

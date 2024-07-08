@@ -36,21 +36,21 @@ const AxiosApi = {
   // 401 에러 처리 함수
   handleUnauthorized: async () => {
     console.log("handleUnauthorized");
-    const accessToken = AxiosApi.getAccessToken();
     const refreshToken = AxiosApi.getRefreshToken();
-    const refreshToken1 = { refreshToken: refreshToken };
     const config = {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${refreshToken}`,
       },
     };
     try {
-      const rsp = await AxiosInstance.post(
+      const rsp = await axios.post(
         `${Apueda_Domain}/auth/reissued`,
-        refreshToken1
+        refreshToken,
+        config
       );
       console.log(rsp.data.accessToken);
       AxiosApi.setAccessToken(rsp.data.accessToken);
+
       return true;
     } catch (err) {
       console.log(err);

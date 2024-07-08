@@ -1,9 +1,9 @@
 import styled, { keyframes } from "styled-components";
 import exit from "../../image/exit.png";
 import { Container, ContainerBack, Exit } from "../../style/ModalStyle.js";
-import AxiosApi from "../../api/AxiosApi";
+import AxiosApi from "../../api/AxiosApi.js";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "../../style/WriteStyle";
+import { Button } from "../../style/WriteStyle.js";
 
 const Input = styled.input``;
 const SearchResult = styled.div``;
@@ -69,7 +69,7 @@ const Save = styled.div`
   margin-top: 16px;
 `;
 
-const Modal = ({ closeModal, onSave }) => {
+const SkillModal = ({ closeSkillModal, onSave, modifySkills }) => {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [skillsArray, setSkillsArray] = useState([]);
@@ -98,6 +98,12 @@ const Modal = ({ closeModal, onSave }) => {
     getSkills();
   }, []);
 
+  // 수정모드시 내가 저장했던 스킬 불러오기
+  useEffect(() => {
+    console.log("modifySkills", modifySkills);
+    setClickList(modifySkills);
+  }, [modifySkills]);
+
   // 입력한 스킬 값과 db스킬 비교
   const filterSkillResult = skillsArray.filter((skill) => {
     const trimmedInputValue = inputValue.replace(/\s+/g, "").toLowerCase();
@@ -123,7 +129,7 @@ const Modal = ({ closeModal, onSave }) => {
   const handleSave = () => {
     onSave(clickList);
     //console.log("check", clickList);
-    closeModal();
+    closeSkillModal();
   };
 
   const onRemove = (skill) => {
@@ -138,15 +144,17 @@ const Modal = ({ closeModal, onSave }) => {
   // 모달 외 다른 곳 클릭 시 모달 닫기
   const handleOutsideClick = (event) => {
     if (modalRef.current && !modalRef.current.contains(event.target)) {
-      closeModal();
+      closeSkillModal();
     }
   };
+
   useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
+
   return (
     <ContainerBack>
       <Container ref={modalRef}>
@@ -188,6 +196,7 @@ const Modal = ({ closeModal, onSave }) => {
                   fontSize: "12px",
                   margin: "4px",
                 }}
+                value={modifySkills}
               >
                 {skill.skillName}
               </Button>
@@ -203,4 +212,4 @@ const Modal = ({ closeModal, onSave }) => {
   );
 };
 
-export default Modal;
+export default SkillModal;

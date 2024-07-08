@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { HeadContainer, SelectBoardButton } from "../../style/SelectBoardStyle";
 
-const SelectBoard = () => {
+const SelectBoard = ({ setIsClick }) => {
   const [selectedButton, setSelectedButton] = useState({
     a: true,
     b: false,
@@ -13,6 +13,7 @@ const SelectBoard = () => {
       [buttonType]: true,
       [buttonType === "a" ? "b" : "a"]: false,
     }));
+    setIsClick(selectedButton);
   };
 
   return (
@@ -22,14 +23,14 @@ const SelectBoard = () => {
         buttonType="a"
         onClick={() => handleClick("a")}
       >
-        <span>자유 게시판</span>
+        <span>프로젝트 구인</span>
       </SelectBoardButton>
       <SelectBoardButton
         isSelected={selectedButton.b}
         buttonType="b"
         onClick={() => handleClick("b")}
       >
-        <span>프로젝트 구인</span>
+        <span>자유 게시판</span>
       </SelectBoardButton>
     </HeadContainer>
   );

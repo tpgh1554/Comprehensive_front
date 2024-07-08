@@ -125,7 +125,7 @@ const AxiosApi = {
   },
 
   projectDelete: async (id) => {
-    return await axios.get(Apueda_Domain + "/project/delete", {
+    return await AxiosInstance.get("/project/delete", {
       params: {
         id: id,
       },
@@ -229,15 +229,15 @@ const AxiosApi = {
       regDate: postData.currentDate,
       chatRoom: { roomId: postData.chatRoom },
     };
-    console.log("project roomID", project.chatRoom);
     return await AxiosInstance.post("/project/insert", project);
   },
   // 플젝 상세 보기
-  getProjectDetal: async (id) => {
-    return await AxiosInstance.get(`/project/detail/${id}`);
+  getProjectDetail: async (projectId) => {
+    return await AxiosInstance.get(`/project/detail/${projectId}`);
   },
   // 플젝 수정
   modifyProject: async (projectId, postData) => {
+    console.log("modifyProject postData", postData);
     return await AxiosInstance.put(`/project/modify/${projectId}`, postData);
   },
 

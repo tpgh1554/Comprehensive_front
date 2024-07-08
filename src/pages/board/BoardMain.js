@@ -2,6 +2,8 @@ import styled from "styled-components";
 import SelectBoard from "./SelectBoard";
 import BoardList from "./BoardList";
 import HeadBar from "./HeadBar";
+import ProjectList from "./ProjectList";
+import { useEffect, useState } from "react";
 
 const BoardLayout = styled.div`
   display: flex;
@@ -23,12 +25,16 @@ const Container = styled.div`
 `;
 
 const BoardMain = () => {
+  const [isClick, setIsClick] = useState(true);
+  useEffect(() => {
+    console.log("setIsClick", isClick);
+  }, [isClick]);
   return (
     <BoardLayout>
       <Container>
-        <SelectBoard />
+        <SelectBoard setIsClick={setIsClick} />
         <HeadBar />
-        <BoardList />
+        {isClick.b ? <ProjectList /> : <BoardList></BoardList>}
       </Container>
     </BoardLayout>
   );

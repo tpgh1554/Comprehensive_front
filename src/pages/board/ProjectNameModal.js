@@ -6,13 +6,18 @@ import styled from "styled-components";
 
 const Notice = styled.div``;
 const Input = styled.input``;
-const PasswordModal = ({ onRoomNameSave, closePwModal, onClick }) => {
+const ProjectNameModal = ({
+  onRoomNameSave,
+  closeProjectNameModal,
+  onClick,
+  modifyData,
+}) => {
   const modalRef = useRef(null);
   const [inputRoomName, setInputRoomName] = useState(""); // 채팅방(플젝)이름 입력 상태 관리
   // 모달 외 다른 곳 클릭 시 모달 닫기
   const handleOutsideClick = (event) => {
     if (modalRef.current && !modalRef.current.contains(event.target)) {
-      closePwModal();
+      closeProjectNameModal();
     }
   };
   useEffect(() => {
@@ -22,16 +27,21 @@ const PasswordModal = ({ onRoomNameSave, closePwModal, onClick }) => {
     };
   }, []);
   const handleSave = async () => {
+    console.log("수정실행");
     try {
       await onRoomNameSave(inputRoomName);
       onClick(inputRoomName);
       setInputRoomName("");
-      closePwModal();
+      closeProjectNameModal();
     } catch (error) {
       console.error("Error saving:", error);
       // Handle error saving room name or password if needed
     }
   };
+  useEffect(() => {
+    console.log("수정데이터 제목 불러옴", modifyData);
+    setInputRoomName(modifyData);
+  }, [modifyData]);
   return (
     <ContainerBack>
       <Container ref={modalRef} style={{ width: "500px", height: "500px" }}>
@@ -49,4 +59,4 @@ const PasswordModal = ({ onRoomNameSave, closePwModal, onClick }) => {
   );
 };
 
-export default PasswordModal;
+export default ProjectNameModal;

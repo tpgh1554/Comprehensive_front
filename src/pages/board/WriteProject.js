@@ -15,25 +15,31 @@ import {
   InputImage,
   InsertConfirm,
 } from "../../style/WriteStyle";
-import Modal from "./Modal";
+import Modal from "./SkillModal";
 import AxiosApi from "../../api/AxiosApi";
 import { useNavigate, useParams } from "react-router-dom";
-import PasswordModal from "./PasswordModal";
+import PasswordModal from "./ProjectNameModal";
+import SkillModal from "./SkillModal";
+import ProjectNameModal from "./ProjectNameModal";
 
 const WriteProject = () => {
   const inputRef = useRef(null); // 인원 입력용 ref 추가
   const inputRefForPeriod = useRef(null); // 기간 입력용 ref 추가
   const fileInputRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [IsPwModalOpen, setIsPwModalOpen] = useState(false);
+  const [IsPwModalOpen, setIsProjectNameModalOpen] = useState(false);
   const [isDropdownOpenForPeople, setIsDropdownOpenForPeople] = useState(false); // 인원 드롭다운 상태 추가
   const [isDropdownOpenForPeriod, setIsDropdownOpenForPeriod] = useState(false); // 기간 드롭다운 상태 추가
   const [currentDate, setCurrentDate] = useState(getFormattedDate()); // 기간선택시 최소 날짜를 오늘 날짜로 고정
-  const [selectDate, setSelectDate] = useState(getFormattedDate()); // 기간 선택 값 상태로 관리
+  const [modifytDate, setModifyDate] = useState(
+    new Date().toISOString().split("T")[0]
+  ); // 수정 버튼시 날짜 포맷 다시 되돌리기
+  const [selectDate, setSelectDate] = useState(getFormattedDate()); // 프로젝트 마감 기간
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [roomName, setRoomName] = useState("");
   const [recruitNum, setRecruitNum] = useState("");
+  const [projectName, setProjectName] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([]);
   const { projectId } = useParams();
 
@@ -41,11 +47,11 @@ const WriteProject = () => {
 
   const handleSkillSelect = (skills) => {
     setSelectedSkills(skills);
-    closeModal(); // 스킬 선택 모달 닫기
+    closeSkillModal(); // 스킬 선택 모달 닫기
   };
 
   const handleRoomNameValue = (rm) => {
-    console.log(rm, "!");
+    //console.log(rm, "!");
     setRoomName(rm);
     // closePwModal();
   };
@@ -83,23 +89,23 @@ const WriteProject = () => {
   };
 
   // 스킬 모달
-  const openModal = () => {
+  const openSkillModal = () => {
     setIsModalOpen(true);
   };
 
   // 스킬 모달
-  const closeModal = () => {
+  const closeSkillModal = () => {
     setIsModalOpen(false);
   };
 
   // 프로젝트 이름 작성 모달
-  const openPwModal = () => {
-    setIsPwModalOpen(true);
+  const openProjectNameModal = () => {
+    setIsProjectNameModalOpen(true);
   };
 
   // 프로젝트 이름 작성 모달
-  const closePwModal = () => {
-    setIsPwModalOpen(false);
+  const closeProjectNameModal = () => {
+    setIsProjectNameModalOpen(false);
   };
 
   // 현재 날짜를 반환하는 함수
@@ -118,9 +124,8 @@ const WriteProject = () => {
     const seconds = String(dateObj.getSeconds()).padStart(2, "0");
     return `T${hours}:${minutes}:${seconds}`;
   }
-
-  //
-  const handleRegister = async () => {
+  // 등록 버튼
+  const handleSubmit = async () => {
     if (!title) {
       alert("제목을 입력해주세요");
       return;
@@ -141,68 +146,41 @@ const WriteProject = () => {
       alert("등록일을 입력해주세요");
       return;
     }
-    const email = localStorage.getItem("accessToken");
-    const createRoomResponse = await AxiosApi.createRoom(roomName, email);
+
     try {
-      if (!createRoomResponse.data) {
-        throw new Error("채팅방 생성이 실패했습니다.");
-      }
-
-      const postData = {
-        title,
-        content,
-        skills: selectedSkills,
-        endDate: selectDate + getCurrentTime(),
-        recruitNum: recruitNum,
-        roomName: roomName,
-        regDate: currentDate,
-        chatRoom: createRoomResponse.data.roomId,
-      };
-
-      console.log("postData ", postData.chatRoom);
-
-      const response = await AxiosApi.postProject(postData);
-      console.log("response ", postData.chatRoom);
-      console.log(" response 데이터 확인 :  ", response.data);
-      if (response.data) {
-        alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
-        navigate("/apueda/board");
-      } else {
-        throw new Error("프로젝트 게시글 등록이 실패했습니다.");
-      }
-    } catch (error) {
-      console.log(error);
-      alert("등록 중 오류가 발생했습니다.");
-    }
-  };
-  // 수정
-  const handleModify = async (projectId, postData) => {
-    // if (!projectId) {
-    //   console.error("Invalid projectId:", projectId);
-
-    //   return;
-    // }
-    try {
-      const response = await AxiosApi.modifyProject(projectId, postData);
-      if (response.status === 200) {
-        alert("프로젝트가 성공적으로 수정되었습니다.");
-        navigate("/apueda/board");
-      } else {
-        throw new Error("프로젝트 수정에 실패했습니다.");
-      }
-    } catch (e) {
-      console.error("Error modifying project:", e);
-      alert("수정 중 오류가 발생했습니다.");
-    }
-  };
-
-  useEffect(() => {
-    if (roomName) {
+      const email = localStorage.getItem("accessToken");
+      let chatRoom = roomName;
       if (!projectId) {
-        console.log("등록실행", projectId);
-        handleRegister();
+        // 등록 로직
+        const createRoomResponse = await AxiosApi.createRoom(roomName, email);
+        if (!createRoomResponse.data) {
+          throw new Error("채팅방 생성이 실패했습니다.");
+        }
+        chatRoom = createRoomResponse.data.roomId;
+      }
+
+      let response;
+      if (projectId) {
+        // 수정 로직
+        console.log("수정 실행");
+        const postData = {
+          projectTitle: title,
+          projectContent: content,
+          skillName: selectedSkills,
+          projectTime: selectDate + getCurrentTime(),
+          recruitNum: recruitNum,
+          projectName: roomName,
+          regDate: currentDate + getCurrentTime(),
+        };
+        console.log("postData", postData, "currentDate", currentDate);
+        response = await AxiosApi.modifyProject(projectId, postData);
+        if (response.status === 200) {
+          alert("프로젝트가 성공적으로 수정되었습니다.");
+        } else {
+          throw new Error("프로젝트 수정에 실패했습니다.");
+        }
       } else {
-        console.log("수정실행", projectId);
+        console.log("등록 실행");
         const postData = {
           title,
           content,
@@ -210,13 +188,139 @@ const WriteProject = () => {
           endDate: selectDate + getCurrentTime(),
           recruitNum: recruitNum,
           roomName: roomName,
+          chatRoom: chatRoom,
           regDate: currentDate,
-          chatRoom: roomName, // Assuming chatRoom id is roomName for this example
         };
-        handleModify(projectId, postData);
+        // 등록 로직
+        response = await AxiosApi.postProject(postData);
+        if (response.data) {
+          alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
+        } else {
+          throw new Error("프로젝트 게시글 등록이 실패했습니다.");
+        }
       }
+
+      navigate("/apueda/board");
+    } catch (error) {
+      console.log(error);
+      alert("처리 중 오류가 발생했습니다.");
+    }
+  };
+  //
+  // const handleRegister = async () => {
+  //   if (!title) {
+  //     alert("제목을 입력해주세요");
+  //     return;
+  //   }
+  //   if (!content) {
+  //     alert("내용을 입력해주세요");
+  //     return;
+  //   }
+  //   if (!recruitNum) {
+  //     alert("인원을 입력해주세요");
+  //     return;
+  //   }
+  //   if (selectDate === currentDate) {
+  //     alert("날짜를 오늘 이후로 선택해주세요");
+  //     return;
+  //   }
+  //   if (!currentDate) {
+  //     alert("등록일을 입력해주세요");
+  //     return;
+  //   }
+  //   const email = localStorage.getItem("accessToken");
+  //   const createRoomResponse = await AxiosApi.createRoom(roomName, email);
+
+  //   try {
+  //     if (!createRoomResponse.data) {
+  //       throw new Error("채팅방 생성이 실패했습니다.");
+  //     }
+
+  //     const postData = {
+  //       title,
+  //       content,
+  //       skills: selectedSkills,
+  //       endDate: selectDate + getCurrentTime(),
+  //       recruitNum: recruitNum,
+  //       roomName: roomName,
+  //       regDate: currentDate,
+  //       chatRoom: createRoomResponse.data.roomId,
+  //     };
+
+  //     console.log("postData ", postData.chatRoom);
+
+  //     const response = await AxiosApi.postProject(postData);
+  //     console.log("response ", postData.chatRoom);
+  //     console.log(" response 데이터 확인 :  ", response.data);
+  //     if (response.data) {
+  //       alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
+  //       navigate("/apueda/board");
+  //     } else {
+  //       throw new Error("프로젝트 게시글 등록이 실패했습니다.");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     alert("등록 중 오류가 발생했습니다.");
+  //   }
+  // };
+  // // 수정
+  // const handleModify = async (projectId, postData) => {
+  //   try {
+  //     const postData = {
+  //       title,
+  //       content,
+  //       skills: selectedSkills,
+  //       endDate: selectDate + getCurrentTime(),
+  //       recruitNum: recruitNum,
+  //       roomName: roomName,
+  //       regDate: currentDate,
+  //     };
+  //     const response = await AxiosApi.modifyProject(projectId, postData);
+  //     if (response.status === 200) {
+  //       alert("프로젝트가 성공적으로 수정되었습니다.");
+  //       navigate("/apueda/board");
+  //     } else {
+  //       throw new Error("프로젝트 수정에 실패했습니다.");
+  //     }
+  //   } catch (e) {
+  //     console.error("Error modifying project:", e);
+  //     alert("수정 중 오류가 발생했습니다.");
+  //   }
+  // };
+
+  useEffect(() => {
+    if (!projectId) {
+      console.log("등록실행", projectId);
+      //handleRegister();
+    } else {
+      console.log("수정실행", projectId);
+      const handleSubmit = async () => {
+        try {
+          const rsp = await AxiosApi.getProjectDetail(projectId);
+          console.log("수정 데이터 불러오기 ", rsp.data);
+          console.log("수정 데이터 projectTime ", rsp.data.projectTime);
+          setTitle(rsp.data.projectTitle);
+          setSelectedSkills(rsp.data.skillName);
+          setRecruitNum(rsp.data.recruitNum);
+          setContent(rsp.data.projectContent);
+          //setSelectDate(rsp.data.projectTime);
+          setProjectName(rsp.data.projectName);
+          setModifyDate(rsp.data.projectTime);
+          console.log(" modifytDate ", modifytDate);
+        } catch (e) {
+          console.log(e);
+        }
+      };
+      handleSubmit();
+    }
+  }, [projectId]);
+
+  useEffect(() => {
+    if (roomName) {
+      handleSubmit();
     }
   }, [roomName, projectId]);
+  // 뒤로가기시
   const cancel = () => {
     const confirmMessage =
       "뒤로 가면 변경 사항이 저장되지 않습니다. 계속 하시겠습니까?";
@@ -237,9 +341,10 @@ const WriteProject = () => {
             placeholder="글 제목을 입력해주세요(100자 이내)"
             maxLength={100}
             onChange={(e) => setTitle(e.target.value)}
+            value={title}
           />
           <InputButtonSection>
-            <Button onClick={openModal}>스킬</Button>
+            <Button onClick={openSkillModal}>스킬</Button>
             <div style={{ position: "relative" }}>
               <Button
                 onClick={toggleDropdownForPeople}
@@ -261,7 +366,6 @@ const WriteProject = () => {
                 </DropdownInput>
               )}
             </div>
-
             <div style={{ position: "relative" }}>
               <Button
                 onClick={toggleDropdownForPeriod}
@@ -292,7 +396,6 @@ const WriteProject = () => {
               ref={fileInputRef}
               // onChange={handleFileChange}
             />
-
             <Button>모임 장소</Button>
             {/* <input
               type="text"
@@ -306,23 +409,28 @@ const WriteProject = () => {
             style={{ resize: "none" }}
             maxLength={10000}
             onChange={(e) => setContent(e.target.value)}
+            value={content}
           />
           <Bottom>
             {/* <ConfirmButton onClick={handleRegister}>등록</ConfirmButton> */}
-            <ConfirmButton onClick={openPwModal}>등록</ConfirmButton>
+            <ConfirmButton onClick={openProjectNameModal}>등록</ConfirmButton>
             <ConfirmButton onClick={cancel}>취소</ConfirmButton>
           </Bottom>
         </ContentContainer>
       </Container>
       {isModalOpen && (
-        <Modal closeModal={closeModal} onSave={handleSkillSelect} />
+        <SkillModal
+          closeSkillModal={closeSkillModal}
+          onSave={handleSkillSelect}
+          modifySkills={selectedSkills}
+        />
       )}
       {IsPwModalOpen && (
-        <PasswordModal
+        <ProjectNameModal
           onRoomNameSave={handleRoomNameValue}
-          closePwModal={closePwModal}
-          // onPasswordSave={handlePwValue}
+          closeProjectNameModal={closeProjectNameModal}
           onClick={setRoomName}
+          modifyData={projectName}
         />
       )}
     </BoardLayout>

@@ -53,6 +53,8 @@ function App() {
             path="/apueda/board/projectDetail/:projectId"
             element={<ProjectDetail />}
           />
+
+          <Route path="/apueda/modify/:projectId" element={<WriteProject />} />
           <Route path="/apueda/writeproject" element={<WriteProject />} />
           <Route path="/apueda/mypage/mypj" element={<Mypj />} />
           <Route path="/apueda/mypage/mywrite" element={<Mywrite />} />

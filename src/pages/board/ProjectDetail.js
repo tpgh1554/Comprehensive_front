@@ -24,7 +24,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import defaultImage from "../../image/person-icon2.png";
 import ReplyListComponent from "./ReplyListComponent";
 import formatDate from "../../utils/formatDate";
-import DetailSetting from "./DetailSetting";
 const Title = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -150,7 +149,7 @@ const ProjectDetail = () => {
   const [isModify, setIsModify] = useState(true);
   const navigate = useNavigate();
   const modalRef = useRef(null);
-
+  const email = localStorage.getItem("email");
   const toggleDropdown = () => {
     setIsDropdownOpen(true);
   };
@@ -191,7 +190,7 @@ const ProjectDetail = () => {
     const projectDetail = async (id) => {
       // console.log(projectId, " 플젝 아이디 값 넘기기 ");
       try {
-        const response = await AxiosApi.getProjectDetal(id);
+        const response = await AxiosApi.getProjectDetail(id);
         console.log("상세 보기 데이터 ", response.data);
         const formattedData = {
           ...response.data,
@@ -254,16 +253,25 @@ const ProjectDetail = () => {
     deleteProject(projectId);
   };
   const deleteProject = async (projectId) => {
-    console.log("dele 실행");
-    try {
-      const response = await AxiosApi.projectDelete(projectId);
-      if (response.data) {
-        console.log("프로젝트가 삭제되었습니다.");
-      } else {
-        console.log("삭제할 프로젝트 데이터가 없습니다.");
+    const rspWriter = await AxiosApi.getProjectDetail(projectId);
+    console.log("dele 실행", rspWriter.data.memberId.email);
+    if (email !== rspWriter.data.memberId.email) {
+      alert("너..작성자가 아니구나?...");
+    } else {
+      const isDel = window.confirm("정말로 삭제 하시겠습니까?");
+      if (isDel) {
+        try {
+          const response = await AxiosApi.projectDelete(projectId);
+          if (response.data) {
+            alert("프로젝트가 삭제되었습니다.");
+            navigate("/apueda/board");
+          } else {
+            alert("삭제할 프로젝트 데이터가 없습니다.");
+          }
+        } catch (e) {
+          console.log("삭제중 오류가 발생하였습니다.", e);
+        }
       }
-    } catch (e) {
-      console.log("삭제중 오류가 발생하였습니다.", e);
     }
   };
   return (
@@ -291,28 +299,36 @@ const ProjectDetail = () => {
                   <NickName>{projectContent.nickName}</NickName>
                 </Profile>
                 <Setting>
-                  {/* <div onClick={openModal}>...</div> */}
                   {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
+                  {email !== projectContent.memberId ? (
+                    <div style={{ position: "relative" }}>
+                      {projectContent.memberId.email === email ? (
+                        <div onClick={toggleDropdown}>...</div>
+                      ) : (
+                        <divs></divs>
+                      )}
 
-                  <div style={{ position: "relative" }}>
-                    <div onClick={toggleDropdown}>...</div>
-                    {isDropdownOpen && (
-                      <Dropdown ref={modalRef}>
-                        <ModifyBtt
-                          onClick={() => handleModfiy()}
-                          value={isModify}
-                        >
-                          수정하기
-                        </ModifyBtt>
-                        <ModifyBtt
-                          onClick={() => handleDelete()}
-                          value={!isModify}
-                        >
-                          삭제하기
-                        </ModifyBtt>
-                      </Dropdown>
-                    )}
-                  </div>
+                      {isDropdownOpen && (
+                        <Dropdown ref={modalRef}>
+                          <ModifyBtt
+                            onClick={() => handleModfiy()}
+                            value={isModify}
+                          >
+                            수정하기
+                          </ModifyBtt>
+                          <ModifyBtt
+                            onClick={() => handleDelete()}
+                            value={!isModify}
+                          >
+                            삭제하기
+                          </ModifyBtt>
+                        </Dropdown>
+                      )}
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+
                   {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
                 </Setting>
               </UnderHead>

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import exit from "../image/exit.png";
 import letter from "../image/letter.png";
+import newLetter from "../image/NewLetter.png";
 import { useEffect, useState } from "react";
 import AxiosApi from "../api/AxiosApi";
 import Message from "./Message";
@@ -34,6 +35,16 @@ const Exit = styled.img`
 const Letter = styled.img`
   width: 40px;
   height: 40px;
+  cursor: pointer;
+  transition: all 0.2s ease-in;
+  &:hover {
+    opacity: 0.5;
+    transition: all 0.2s ease-in;
+  }
+`;
+const NewLetter = styled.img`
+  width: 40px;
+  height: 35px;
   cursor: pointer;
   transition: all 0.2s ease-in;
   &:hover {
@@ -274,10 +285,8 @@ const Friend = () => {
         // 각 친구의 이미지 URL을 설정
         const urls = {};
         rsp.data.forEach((friend) => {
-          if (friend.member) {
-            urls[friend.member.email] = friend.member.profileImgPath;
-          } else if (friend.toMember) {
-            urls[friend.toMember.email] = friend.toMember.profileImgPath;
+          if (friend.member2) {
+            urls[friend.member2.email] = friend.member2.profileImgPath;
           }
         });
         setfriendImageUrls(urls);
@@ -288,6 +297,32 @@ const Friend = () => {
 
     fechFriend();
   }, []);
+
+  const updateReadCheck = async (friendEmail) => {
+    try {
+      // 서버 API를 호출하여 읽은 상태를 업데이트
+      await AxiosApi.updateReadCheck(friendEmail);
+
+      // 친구 목록(friends)을 업데이트하여 읽은 상태가 변경된 것을 반영
+      const updatedFriends = friends.map((friend) => {
+        if (friend.member2.email === friendEmail) {
+          // 읽음으로 표시된 친구를 업데이트
+          return {
+            ...friend,
+            readCheck: true,
+          };
+        }
+        return friend;
+      });
+
+      // 상태 업데이트
+      setFriends(updatedFriends);
+
+      console.log("읽음으로 변경");
+    } catch (error) {
+      console.error("상태 업데이트 오류:", error);
+    }
+  };
 
   //친구요청관리
   useEffect(() => {
@@ -322,11 +357,7 @@ const Friend = () => {
 
         // 삭제된 친구를 제외한 새로운 배열 생성
         const updatedFriends = friends.filter(
-          (friend) =>
-            !(
-              (friend.member && friend.member.email === friendEmail) ||
-              (friend.toMember && friend.toMember.email === friendEmail)
-            )
+          (friend) => !(friend.member2 && friend.member2.email === friendEmail)
         );
         // 상태 업데이트
         setFriends(updatedFriends);
@@ -394,46 +425,40 @@ const Friend = () => {
         {showFriend && (
           <Friendcontainer>
             <ItemGrid>
-              {friends.map((friend) => (
-                <div key={friend.friendId}>
+              {friends.map((friend, index) => (
+                <div key={index}>
                   <FriendItem>
                     {/* 친구 이름이 user/touser에 있기 때문에 두 가지로 부름*/}
                     <ProfileNickNameWrapper>
                       <ProfileImage>
                         <img
-                          src={
-                            friendImageUrls[
-                              friend.member
-                                ? friend.member.email
-                                : friend.toMember.email
-                            ]
-                          }
+                          src={friend.member2.profileImgPath}
                           alt="이미지x"
                         />
                       </ProfileImage>
-                      {friend.member ? friend.member.nickname : null}
-                      {friend.toMember ? friend.toMember.nickname : null}
+                      {friend.member2.nickname}
                     </ProfileNickNameWrapper>
                     <LetterDelBtn>
                       {/* Letter Del로 감싸지 않으면 삭제와 메세지가 space-between으로 멀어짐*/}
-                      <Letter
-                        src={letter}
-                        onClick={() => {
-                          openModal(
-                            friend.member
-                              ? friend.member.email
-                              : friend.toMember.email
-                          );
-                        }}
-                      />
+                      {friend.readCheck ? (
+                        <Letter
+                          src={letter}
+                          onClick={() => {
+                            openModal(friend.member2.email);
+                            updateReadCheck(friend.member2.email);
+                          }}
+                        />
+                      ) : (
+                        <NewLetter
+                          src={newLetter}
+                          onClick={() => {
+                            openModal(friend.member2.email);
+                            updateReadCheck(friend.member2.email);
+                          }}
+                        />
+                      )}
                       <ButtonStyle
-                        onClick={() =>
-                          friendDelete(
-                            friend.member
-                              ? friend.member.email
-                              : friend.toMember.email
-                          )
-                        }
+                        onClick={() => friendDelete(friend.member2.email)}
                       >
                         삭제
                       </ButtonStyle>

@@ -180,10 +180,10 @@ const Message = ({ closeModal, friendEmail, friendProfile }) => {
         //읽음 표시 하려고 아이디 추출
         console.log(rsp.data);
         setMessageList(rsp.data);
-        rsp.data.forEach((postMsg) => {
-          markMessageAsRead(postMsg.postMsgId);
-          console.log(postMsg.postMsgId);
-        });
+        // rsp.data.forEach((postMsg) => {
+        //   markMessageAsRead(postMsg.postMsgId);
+        //   console.log(postMsg.postMsgId);
+        // });
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
@@ -225,16 +225,16 @@ const Message = ({ closeModal, friendEmail, friendProfile }) => {
     }
   };
 
-  const markMessageAsRead = async (postMsgId) => {
-    try {
-      // 클라이언트에서 readStatus를 true로 설정한 후 서버에 업데이트 요청 보내기
-      await AxiosApi.updateReadStatus(postMsgId, true);
-      // 업데이트 성공 시 UI 업데이트 등 추가 로직 처리
-      console.log("메시지 읽음 상태 업데이트 성공");
-    } catch (error) {
-      console.error("메시지 읽음 상태 업데이트 오류:", error);
-    }
-  };
+  // const markMessageAsRead = async (postMsgId) => {
+  //   try {
+  //     // 클라이언트에서 readStatus를 true로 설정한 후 서버에 업데이트 요청 보내기
+  //     await AxiosApi.updateReadStatus(postMsgId, true);
+  //     // 업데이트 성공 시 UI 업데이트 등 추가 로직 처리
+  //     console.log("메시지 읽음 상태 업데이트 성공");
+  //   } catch (error) {
+  //     console.error("메시지 읽음 상태 업데이트 오류:", error);
+  //   }
+  // };
 
   return (
     <>

@@ -201,10 +201,11 @@ const AxiosApi = {
     });
   },
 
-  updateReadStatus: async (postMsgId, readStatus) => {
-    return await AxiosInstance.post("/messages/updateReadStatus", {
-      postMsgId: postMsgId,
-      readStatus: readStatus,
+  updateReadCheck: async (friendEmail) => {
+    return await AxiosInstance.post("/friends/updateReadCheck", null, {
+      params: {
+        friendEmail: friendEmail,
+      },
     });
   },
 

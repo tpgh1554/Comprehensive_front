@@ -28,6 +28,8 @@ const Payment = ({ isChecked1, isChecked2 }) => {
   const [modalHeader, setModalHeader] = useState("");
   const [modalContent, setModalContent] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [paymentData, setPaymentData] = useState(null);
+  const [error, setError] = useState(null);
 
   const onClickSub = (e) => {
     setSubOpen(true);
@@ -163,76 +165,108 @@ const Payment = ({ isChecked1, isChecked2 }) => {
         // validUntil.setMinutes(validUntil.getMinutes() + 1);
         // const validUntilTimestamp = Math.floor(validUntil.getTime() / 1000); // 테스트용 날짜 1분뒤
         const merchant_uid = `order_${new Date().getTime()}`;
-        const scheduleData = {
-          customer_uid: buyer_email,
-          schedules: [
+
+        // 결제 사후검증
+        // 결제 결과 단건 조회
+        try {
+          const verifyResponse = await axios.post(
+            "http://localhost:5000/api/iamport/verifyPayment",
+            { imp_uid: response.imp_uid },
             {
-              schedule_at: validUntilTimestamp,
-              amount: 10,
-              merchant_uid: merchant_uid,
-              name: "아프다 1달 구독",
-            },
-          ],
-        };
+              headers: {
+                Authorization: iamportToken,
+                "Content-Type": "application/json",
+              },
+              withCredentials: true,
+            }
+          );
+          setPaymentData(verifyResponse.data);
+          console.log("결제 검증 성공", verifyResponse.data);
 
-        // 4. 결제 스케줄링 요청
-        const scheduleResponse = await axios.post(
-          "http://localhost:5000/api/iamport/schedulePayment",
-          scheduleData,
-          {
-            headers: {
-              Authorization: iamportToken,
-              "Content-Type": "application/json",
-            },
-            withCredentials: true, // credentials 포함
+          console.log("paymentData:", paymentData);
+          console.log("등록된", paymentData.amount);
+
+          const portamount = paymentData.amount;
+          console.log("portamount:", portamount);
+          if (paymentData.amount == amount) {
+            console.log("결제 금액 일치");
+            const scheduleData = {
+              customer_uid: buyer_email,
+              schedules: [
+                {
+                  schedule_at: validUntilTimestamp,
+                  amount: 10,
+                  merchant_uid: merchant_uid,
+                  name: "아프다 1달 구독",
+                },
+              ],
+            };
+
+            // 4. 결제 스케줄링 요청
+            const scheduleResponse = await axios.post(
+              "http://localhost:5000/api/iamport/schedulePayment",
+              scheduleData,
+              {
+                headers: {
+                  Authorization: iamportToken,
+                  "Content-Type": "application/json",
+                },
+                withCredentials: true, // credentials 포함
+              }
+            );
+            console.log("Scheduled payment response:", scheduleResponse.data);
+            try {
+              const sp = await PaymentApi.savePaymentinfo(
+                buyer_email,
+                paymentMethodCode,
+                paymentDetails,
+                isPaymentAvailable,
+                isDeleted
+              );
+              console.log("결제 정보 저장 성공", sp);
+
+              const subscriptionResponse = await PaymentApi.requestBillingKey(
+                buyer_email,
+                transactionId,
+                paymentDate,
+                createdAt,
+                validUntil,
+                merchant_uid,
+                customerUid,
+                status
+              );
+
+              console.log("빌링키 발급 성공", subscriptionResponse);
+            } catch (error) {
+              console.error("결제 정보 저장 실패", error);
+              alert("결제 정보 저장 실패");
+            }
+
+            try {
+              const rsp = await PaymentApi.savePaymentHistory(
+                buyer_email, // 사용자 ID로 수정
+                amount,
+                paymentStatus,
+                transactionId,
+                paymentDate,
+                name,
+                cancellationDate
+              );
+              console.log("결제 내역 저장 성공", rsp);
+            } catch (error) {
+              console.error("결제 내역 저장 실패", error);
+              alert("결제 내역 저장 실패");
+            }
+            // setSubOpen(true);
+            // setModalHeader("성공");
+            // setModalContent("아프다 구독 성공");
+          } else {
+            console.log("결제 금액 불일치:", portamount, amount);
           }
-        );
-        console.log("Scheduled payment response:", scheduleResponse.data);
-        try {
-          const sp = await PaymentApi.savePaymentinfo(
-            buyer_email,
-            paymentMethodCode,
-            paymentDetails,
-            isPaymentAvailable,
-            isDeleted
-          );
-          console.log("결제 정보 저장 성공", sp);
-
-          const subscriptionResponse = await PaymentApi.requestBillingKey(
-            buyer_email,
-            transactionId,
-            paymentDate,
-            createdAt,
-            validUntil,
-            merchant_uid,
-            customerUid,
-            status
-          );
-
-          console.log("빌링키 발급 성공", subscriptionResponse);
         } catch (error) {
-          console.error("결제 정보 저장 실패", error);
-          alert("결제 정보 저장 실패");
+          setError(error);
+          console.error("결제 검증 실패", error);
         }
-
-        try {
-          const rsp = await PaymentApi.savePaymentHistory(
-            buyer_email, // 사용자 ID로 수정
-            amount,
-            paymentStatus,
-            transactionId,
-            paymentDate,
-            name,
-            cancellationDate
-          );
-          console.log("결제 내역 저장 성공", rsp);
-        } catch (error) {
-          console.error("결제 내역 저장 실패", error);
-          alert("결제 내역 저장 실패");
-        }
-        // setSubOpen(true);
-        // setModalHeader("성공");
-        // setModalContent("아프다 구독 성공");
       } else {
         // setSubOpen(true);
         // setModalHeader("실패");

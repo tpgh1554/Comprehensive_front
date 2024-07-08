@@ -36,17 +36,21 @@ const AxiosApi = {
   // 401 에러 처리 함수
   handleUnauthorized: async () => {
     console.log("handleUnauthorized");
-    const refreshToken = AxiosApi.getAccessToken();
-    const accessToken = AxiosApi.getRefreshToken();
+    const accessToken = AxiosApi.getAccessToken();
+    const refreshToken = AxiosApi.getRefreshToken();
+    const refreshToken1 = { refreshToken: refreshToken };
     const config = {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     };
     try {
-      const rsp = await AxiosInstance.post(`/auth/reissued`, refreshToken);
-      console.log(rsp.data);
-      AxiosApi.setAccessToken(rsp.data);
+      const rsp = await AxiosInstance.post(
+        `${Apueda_Domain}/auth/reissued`,
+        refreshToken1
+      );
+      console.log(rsp.data.accessToken);
+      AxiosApi.setAccessToken(rsp.data.accessToken);
       return true;
     } catch (err) {
       console.log(err);
@@ -97,10 +101,7 @@ const AxiosApi = {
 
   // 회원정보 수정
   memberUpdate: async (user) => {
-    return await AxiosInstance.post(
-      `/members/membermodify/${user.email}`,
-      user
-    );
+    return await AxiosInstance.post(`/members/membermodify`, user);
   },
 
   // 회원 탈퇴

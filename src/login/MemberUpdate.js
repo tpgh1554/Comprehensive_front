@@ -251,9 +251,7 @@ const MemberUpdate = () => {
     const user = {
       email,
       password,
-      name,
       nickname,
-      identityNumber,
       profileImgPath,
       skill,
       myInfo,
@@ -266,7 +264,7 @@ const MemberUpdate = () => {
       if (response.data) {
         alert("회원 정보 수정에 성공했습니다.");
         console.log(user);
-        navigate("/apueda");
+        navigate("/apueda/mypage");
       } else {
         alert("회원 정보 수정에 실패했습니다.");
       }

@@ -12,7 +12,7 @@ const AxiosInstance = axios.create({
 AxiosInstance.interceptors.request.use(
   // 요청 인터셉터 추가
   async (config) => {
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = AxiosApi.getAccessToken();
     config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
   },

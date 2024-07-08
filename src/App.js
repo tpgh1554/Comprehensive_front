@@ -30,6 +30,8 @@ import WriteProject from "./pages/board/WriteProject";
 import ProjectDetail from "./pages/board/ProjectDetail";
 import Mysub from "./subscribe/mysub";
 import Footer from "./components/Footer";
+import BoardDetail from "./pages/board/BoardDetail";
+import WriteBoard from "./pages/board/WirteBoard";
 
 function App() {
   return (
@@ -51,9 +53,21 @@ function App() {
             path="/apueda/board/projectDetail/:projectId"
             element={<ProjectDetail />}
           />
+          <Route
+            path="/apueda/board/boardDetail/:boardId"
+            element={<BoardDetail />}
+          />
 
-          <Route path="/apueda/modify/:projectId" element={<WriteProject />} />
+          <Route
+            path="/apueda/modify/project/:projectId"
+            element={<WriteProject />}
+          />
+          <Route
+            path="/apueda/modify/board/:boardId"
+            element={<WriteBoard />}
+          />
           <Route path="/apueda/writeproject" element={<WriteProject />} />
+          <Route path="/apueda/writeboard" element={<WriteBoard />} />
           <Route path="/apueda/mypage/mypj" element={<Mypj />} />
           <Route path="/apueda/mypage/mywrite" element={<Mywrite />} />
           <Route path="/apueda/subinfo" element={<Subinfo />} />

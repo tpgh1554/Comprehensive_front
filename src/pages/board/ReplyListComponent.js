@@ -1,14 +1,18 @@
-// ReplyListContainer.js
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import {
-  ReplyListContainer,
   PageNum,
+  ReplyListContainer,
+  ReplyContainer,
+  InputContainer,
+  UpInert,
   ProfileImg,
 } from "../../style/ProjectDetailStyle";
 import AxiosApi from "../../api/AxiosApi";
-import formatDate from "../../utils/formatDate";
+import { formatDate, formatTimestamp } from "../../utils/formatDate";
 import { Button } from "../../style/WriteStyle";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../context/UserStore";
 
 const NickName = styled.div`
   padding: 8px;
@@ -17,7 +21,41 @@ const NickName = styled.div`
 const RegDate = styled.div`
   padding: 4px;
 `;
+const Profile = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 50%;
+  height: 60px;
+`;
+const Input = styled.textarea`
+  width: 70%;
+  height: auto;
+  margin-left: 10px;
+  resize: none;
+  background-color: #fbfcfc;
+  border: 0.5px solid #d0d3d7;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 1rem;
+  z-index: 2;
 
+  &:focus {
+    border: 0.8px solid #000;
+    outline: none; /* 추가: 기본 포커스 아웃라인 제거 */
+  }
+`;
+
+const ConfirmReply = styled.div`
+  display: flex;
+  width: 20%;
+  justify-content: center;
+  align-items: center;
+`;
+
+const List = styled.div``;
+const ListResult = styled.div``;
 const ReplyList = styled.div`
   display: flex;
   flex-direction: column;
@@ -49,21 +87,59 @@ const NoReply = styled.div`
   align-items: center;
   justify-content: center;
 `;
+const Setting = styled.div`
+  width: 50%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+`;
 
-const ReplyListComponent = ({ projectId, repliesChanged }) => {
+const Dropdown = styled.div`
+  position: absolute;
+  top: 14px;
+  left: -85px;
+  border-radius: 7px;
+  padding: 10px;
+  background-color: #ff5353;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100px;
+  padding: 12px;
+`;
+const ModifyBtt = styled.button`
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: none;
+  padding: 5px;
+  font-size: 14px;
+`;
+const ReplyListComponent = ({ projectId, boardId, type, userInfo }) => {
   const [replies, setReplies] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPageSize, setTotalPageSize] = useState(0); // 총 페이지 수
-  useEffect(() => {
-    const getReplyList = async (id, page) => {
-      try {
-        const response = await AxiosApi.getReplyList(id, page);
-        console.log("댓글 리스트 : ", response.data.replies);
-        console.log("프로필 url : ", response.data.ProfileImg);
+  const [imageUrl, setImageUrl] = useState(null);
+  const email = localStorage.getItem("email");
+  //const [userInfo, setUserInfo] = useState(null);
+  //const { userInfo } = useContext(UserContext);
+  const [replyContent, setReplyContent] = useState("");
+  const [repliesChanged, setRepliesChanged] = useState(false);
+  const navigate = useNavigate();
+  const textareaRef = useRef(null);
+  // const imageUrl = userInfo?.profileImg || "";
 
-        // API 응답이 배열인지 확인
+  useEffect(() => {
+    getReplyList(projectId, currentPage);
+  }, [projectId, repliesChanged, currentPage]);
+
+  const getReplyList = async (id, page) => {
+    try {
+      if (type === "project") {
+        const response = await AxiosApi.getProjectReplyList(projectId, page);
+        console.log(" 플젝 댓글 리스트 : ", response.data.replies);
+        // console.log("프로필 url : ", response.data.ProfileImg);
+
         if (Array.isArray(response.data.replies)) {
-          // 각 댓글 객체의 regDate를 포맷
           const formattedData = response.data.replies.map((reply) => ({
             ...reply,
             regDate: formatDate(reply.regDate),
@@ -73,13 +149,58 @@ const ReplyListComponent = ({ projectId, repliesChanged }) => {
         } else {
           console.error("Unexpected response format:", response.data);
         }
-      } catch (e) {
-        console.log(e);
+      } else {
+        const response = await AxiosApi.getBoardReplyList(boardId, page);
+        console.log(" 게시판 댓글 리스트 : ", response.data);
+        // console.log("프로필 url : ", response.data.ProfileImg);
+
+        if (Array.isArray(response.data.replies)) {
+          const formattedData = response.data.replies.map((reply) => ({
+            ...reply,
+            regDate: formatDate(reply.regDate),
+          }));
+          setReplies(formattedData);
+          setTotalPageSize(response.data.totalPages);
+        } else {
+          console.error("Unexpected response format:", response.data);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const handleInput = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto"; // 높이를 초기화
+      textarea.style.height = `${textarea.scrollHeight}px`; // 스크롤 높이에 따라 높이 조절
+    }
+  };
+
+  const sendReply = () => {
+    const postReply = async () => {
+      try {
+        const response = await AxiosApi.postReply(
+          replyContent,
+          projectId,
+          boardId
+        );
+        //console.log("response ", replyContent);
+        if (response.data) {
+          alert("댓글 등록 성공!!!!!!!!!!!!");
+          setRepliesChanged((prev) => !prev);
+          setReplyContent(""); // 댓글 입력 필드 초기화
+        } else {
+          throw new Error("댓글 등록이 실패했습니다.");
+        }
+      } catch (error) {
+        console.log(error);
+        alert("댓글 등록 실패ㅠㅠㅠㅠㅠㅠㅠㅠㅠ");
       }
     };
-    getReplyList(projectId, currentPage);
-  }, [projectId, repliesChanged, currentPage]);
-
+    postReply();
+  };
   // 페이지 이동
   const handlePageChange = (number) => {
     console.log("클릭 버튼 ", number);
@@ -93,9 +214,7 @@ const ReplyListComponent = ({ projectId, repliesChanged }) => {
       console.log(pageNum);
     }
   };
-  // useEffect(() => {
-  //   next();
-  // },[])
+
   const next = () => {
     if (currentPage < totalPageSize - 1) {
       // currentPage가 totalPageSize보다 작을 때만 다음 페이지로 이동
@@ -105,61 +224,114 @@ const ReplyListComponent = ({ projectId, repliesChanged }) => {
     }
   };
   return (
-    <ReplyListContainer>
-      {replies.length !== 0 ? (
-        replies.map((reply, index) => (
-          <ReplyList>
-            <div className="replies" key={index}>
+    <ReplyContainer>
+      <InputContainer>
+        {userInfo && (
+          <UpInert>
+            <Profile>
               <ProfileImg>
-                <img src={reply.profileImg} alt="profile" />
+                <img src={imageUrl} alt="profile" />
               </ProfileImg>
-              <NickName>{reply.nickName}</NickName>
-              <ReplyContent>{reply.content}</ReplyContent>
-              <RegDate>{reply.regDate}</RegDate>
-            </div>
-          </ReplyList>
-        ))
-      ) : (
-        <ReplyList>
-          <NoReply>
-            댓글이 아직 등록 되지 않았습니다. 먼저 댓글을 등록해보세요!
-          </NoReply>
-        </ReplyList>
-      )}
-      <PageNum>
-        <Button
-          onClick={() => prev(currentPage)}
-          style={{ width: "40px", marginRight: "0px" }}
-        >
-          &lt;
-        </Button>
-        {replies.length === 0 ? (
-          <PageButton> 1 </PageButton>
-        ) : (
-          Array.from({ length: totalPageSize }, (_, i) => i + 1).map((page) => {
-            // 현재 페이지 기준으로 10개씩 그룹화
-            const startPage = Math.floor(currentPage / 10) * 10 + 1;
-            if (page >= startPage && page < startPage + 10) {
-              // startPage부터 startPage + 9까지의 페이지만 표시
-              return (
-                <PageButton
-                  key={page}
-                  onClick={() => handlePageChange(page - 1)}
-                  active={currentPage === page - 1}
-                >
-                  {page}
-                </PageButton>
-              );
-            } else {
-              return null; // 현재 그룹에 속하지 않는 페이지는 렌더링하지 않음
-            }
-          })
+              <NickName>{userInfo.nickname}</NickName>
+            </Profile>
+            <Input
+              ref={textareaRef}
+              placeholder="클린한 댓글을 입력해주세요(500자)"
+              onInput={handleInput}
+              rows={1}
+              maxLength={500}
+              onChange={(e) => setReplyContent(e.target.value)}
+              value={replyContent}
+            />
+            <ConfirmReply>
+              <Button onClick={sendReply}>등록</Button>
+            </ConfirmReply>
+          </UpInert>
         )}
-        <Button onClick={() => next(currentPage)} style={{ width: "40px" }}>
-          &gt;
-        </Button>
-      </PageNum>
-    </ReplyListContainer>
+      </InputContainer>
+
+      <ReplyListContainer>
+        {replies.length !== 0 ? (
+          replies.map((reply, index) => (
+            <ReplyList>
+              <div className="replies" key={index}>
+                <ProfileImg>
+                  <img src={reply.profileImg} alt="profile" />
+                </ProfileImg>
+                <NickName>{reply.nickName}</NickName>
+                <ReplyContent>{reply.content}</ReplyContent>
+                <RegDate style={{ fontSize: "0.8rem", whiteSpace: "nowrap" }}>
+                  {" "}
+                  {reply.regDate}
+                </RegDate>
+                {/* <Setting>
+                  {email === replies.memberId.email ? (
+                    <div style={{ position: "relative" }}>
+                      <div onClick={toggleDropdown}>...</div>
+
+                      {isDropdownOpen && (
+                        <Dropdown ref={modalRef}>
+                          <ModifyBtt
+                            onClick={() => handleModfiy()}
+                            value={isModify}
+                          >
+                            수정하기
+                          </ModifyBtt>
+                          <ModifyBtt
+                            onClick={() => handleDelete()}
+                            value={!isModify}
+                          >
+                            삭제하기
+                          </ModifyBtt>
+                        </Dropdown>
+                      )}
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </Setting> */}
+              </div>
+            </ReplyList>
+          ))
+        ) : (
+          <ReplyList>
+            <NoReply>
+              댓글이 아직 등록 되지 않았습니다. 먼저 댓글을 등록해보세요!
+            </NoReply>
+          </ReplyList>
+        )}
+        <PageNum>
+          <Button onClick={prev} style={{ width: "40px", marginRight: "0px" }}>
+            &lt;
+          </Button>
+          {replies.length === 0 ? (
+            <PageButton> 1 </PageButton>
+          ) : (
+            Array.from({ length: totalPageSize }, (_, i) => i + 1).map(
+              (page) => {
+                const startPage = Math.floor(currentPage / 10) * 10 + 1;
+                if (page >= startPage && page < startPage + 10) {
+                  return (
+                    <PageButton
+                      key={page}
+                      onClick={() => handlePageChange(page - 1)}
+                      active={currentPage === page - 1}
+                    >
+                      {page}
+                    </PageButton>
+                  );
+                } else {
+                  return null;
+                }
+              }
+            )
+          )}
+          <Button onClick={next} style={{ width: "40px" }}>
+            &gt;
+          </Button>
+        </PageNum>
+      </ReplyListContainer>
+    </ReplyContainer>
   );
 };
 

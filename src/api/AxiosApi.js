@@ -110,7 +110,7 @@ const AxiosApi = {
   },
 
   getBoardList: async () => {
-    return await axios.get(Apueda_Domain + "/board/list");
+    return await AxiosInstance.get("/board/list");
   },
 
   getProjectList: async () => {
@@ -118,7 +118,7 @@ const AxiosApi = {
   },
 
   boardDelete: async (id) => {
-    return await axios.get(Apueda_Domain + "/board/delete", {
+    return await AxiosInstance.get("/board/delete", {
       params: {
         id: id,
       },
@@ -243,19 +243,35 @@ const AxiosApi = {
     return await AxiosInstance.put(`/project/modify/${projectId}`, postData);
   },
 
+  // 자유 게시판 상세 보기
+  getBoardDetail: async (boardId) => {
+    return await AxiosInstance.get(`/board/detail/${boardId}`);
+  },
+  // 자유 게시판 글쓰기
+  postBoard: async (postData) => {
+    return await AxiosInstance.post("/board/insert", postData);
+  },
+
   // 댓글 등록
-  postReply: async (replyContent, projectId) => {
+  postReply: async (replyContent, projectId, boardId) => {
     const reply = {
       content: replyContent,
       projectId: projectId,
+      boardId: boardId,
     };
     console.log("axios ", replyContent);
     return await AxiosInstance.post("/reply/insert", reply);
   },
   // 플젝 게시글 댓글 페이징 리스트 불러오기
-  getReplyList: async (projectId, page) => {
+  getProjectReplyList: async (projectId, page) => {
     return await AxiosInstance.get(
       `/reply/project-reply/${projectId}/page?page=${page}`
+    );
+  },
+  // 자유 게시글 댓글 페이징 리스트 불러오기
+  getBoardReplyList: async (boardId, page) => {
+    return await AxiosInstance.get(
+      `/reply/board-reply/${boardId}/page?page=${page}`
     );
   },
   // 댓글 총 갯수 가지고 오기

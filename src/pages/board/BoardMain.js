@@ -23,20 +23,19 @@ const Container = styled.div`
   border-radius: 37px;
   background-color: #ff5353;
 `;
-
 const BoardMain = () => {
-  const [isClick, setIsClick] = useState(true);
-  useEffect(() => {
-    console.log("setIsClick", isClick);
-  }, [isClick]);
+  const [isClick, setIsClick] = useState({ a: true, b: false });
+
   return (
     <BoardLayout>
       <Container>
-        <SelectBoard setIsClick={setIsClick} />
-        <HeadBar />
-        {isClick.b ? <ProjectList /> : <BoardList></BoardList>}
+        {/* Use the combined HeadBar component */}
+        <HeadBar setIsClick={setIsClick} />
+        {/* Render ProjectList or BoardList based on isClick state */}
+        {isClick.a ? <ProjectList /> : <BoardList />}
       </Container>
     </BoardLayout>
   );
 };
+
 export default BoardMain;

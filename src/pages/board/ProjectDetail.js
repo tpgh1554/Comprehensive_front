@@ -23,7 +23,7 @@ import styled from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 import defaultImage from "../../image/person-icon2.png";
 import ReplyListComponent from "./ReplyListComponent";
-import formatDate from "../../utils/formatDate";
+import { formatDate, formatTimestamp } from "../../utils/formatDate";
 const Title = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -144,7 +144,6 @@ const ProjectDetail = () => {
   const [imageUrl, setImageUrl] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const [replyContent, setReplyContent] = useState(null);
-  const [repliesChanged, setRepliesChanged] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModify, setIsModify] = useState(true);
   const navigate = useNavigate();
@@ -215,39 +214,8 @@ const ProjectDetail = () => {
     }
   }, []); // 빈 배열을 전달하여 컴포넌트가 마운트될 때 한 번만 실행
 
-  const handleInput = () => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = "auto"; // 높이를 초기화
-      textarea.style.height = `${textarea.scrollHeight}px`; // 스크롤 높이에 따라 높이 조절
-    }
-  };
-
-  const sendReply = () => {
-    const postReply = async () => {
-      try {
-        // Construct the postData with the room ID obtained from createRoomResponse
-
-        //console.log("reply ", replyContent);
-
-        const response = await AxiosApi.postReply(replyContent, projectId);
-        //console.log("response ", replyContent);
-        if (response.data) {
-          alert("댓글 등록 성공!!!!!!!!!!!!");
-          setRepliesChanged((prev) => !prev);
-          setReplyContent(""); // 댓글 입력 필드 초기화
-        } else {
-          throw new Error("댓글 등록이 실패했습니다.");
-        }
-      } catch (error) {
-        console.log(error);
-        alert("댓글 등록 실패ㅠㅠㅠㅠㅠㅠㅠㅠㅠ");
-      }
-    };
-    postReply();
-  };
   const handleModfiy = () => {
-    navigate(`/apueda/modify/${projectId}`);
+    navigate(`/apueda/modify/project/${projectId}`);
   };
   const handleDelete = () => {
     deleteProject(projectId);
@@ -353,44 +321,17 @@ const ProjectDetail = () => {
                   ))}
               </Skills>
               <ListBtt>
-                <Button>목록</Button>
+                <Button onClick={() => navigate("/apueda/board")}>목록</Button>
               </ListBtt>
             </Footer>
           )}
           <ReplyContainer>
-            <InputContainer>
-              {userInfo && (
-                <UpInert>
-                  <Profile style={{ width: "20%" }}>
-                    <ProfileImg>
-                      <img src={imageUrl}></img>
-                    </ProfileImg>
-                    <NickName>{userInfo.nickname}</NickName>
-                  </Profile>
-                  <Input
-                    ref={textareaRef}
-                    placeholder="클린한 댓글을 입력해주세요(500자)"
-                    onInput={handleInput}
-                    rows={1}
-                    maxLength={500}
-                    onChange={(e) => setReplyContent(e.target.value)}
-                    value={replyContent}
-                  ></Input>
-                  <ConfirmReply>
-                    <Button onClick={() => sendReply()}>등록</Button>
-                  </ConfirmReply>
-                </UpInert>
-              )}
-              {/* <UnderInert>
-                <ConfirmReply>
-                  
-                </ConfirmReply>
-              </UnderInert> */}
-            </InputContainer>
-
             <ReplyListComponent
+              Id={projectId}
+              type="project"
+              userInfo={userInfo}
+              boardId={null}
               projectId={projectId}
-              repliesChanged={repliesChanged}
             />
           </ReplyContainer>
         </ContentContainer>

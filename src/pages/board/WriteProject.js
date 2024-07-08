@@ -21,6 +21,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PasswordModal from "./ProjectNameModal";
 import SkillModal from "./SkillModal";
 import ProjectNameModal from "./ProjectNameModal";
+import { getCurrentTime, getFormattedDate } from "../../utils/formatDate";
 
 const WriteProject = () => {
   const inputRef = useRef(null); // 인원 입력용 ref 추가
@@ -108,22 +109,6 @@ const WriteProject = () => {
     setIsProjectNameModalOpen(false);
   };
 
-  // 현재 날짜를 반환하는 함수
-  function getFormattedDate() {
-    const dateObj = new Date();
-    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const day = String(dateObj.getDate()).padStart(2, "0");
-    const year = dateObj.getFullYear();
-    return `${year}-${month}-${day}`;
-  }
-  // 현재 시간을 반환하는 함수
-  function getCurrentTime() {
-    const dateObj = new Date();
-    const hours = String(dateObj.getHours()).padStart(2, "0");
-    const minutes = String(dateObj.getMinutes()).padStart(2, "0");
-    const seconds = String(dateObj.getSeconds()).padStart(2, "0");
-    return `T${hours}:${minutes}:${seconds}`;
-  }
   // 등록 버튼
   const handleSubmit = async () => {
     if (!title) {
@@ -206,87 +191,6 @@ const WriteProject = () => {
       alert("처리 중 오류가 발생했습니다.");
     }
   };
-  //
-  // const handleRegister = async () => {
-  //   if (!title) {
-  //     alert("제목을 입력해주세요");
-  //     return;
-  //   }
-  //   if (!content) {
-  //     alert("내용을 입력해주세요");
-  //     return;
-  //   }
-  //   if (!recruitNum) {
-  //     alert("인원을 입력해주세요");
-  //     return;
-  //   }
-  //   if (selectDate === currentDate) {
-  //     alert("날짜를 오늘 이후로 선택해주세요");
-  //     return;
-  //   }
-  //   if (!currentDate) {
-  //     alert("등록일을 입력해주세요");
-  //     return;
-  //   }
-  //   const email = localStorage.getItem("accessToken");
-  //   const createRoomResponse = await AxiosApi.createRoom(roomName, email);
-
-  //   try {
-  //     if (!createRoomResponse.data) {
-  //       throw new Error("채팅방 생성이 실패했습니다.");
-  //     }
-
-  //     const postData = {
-  //       title,
-  //       content,
-  //       skills: selectedSkills,
-  //       endDate: selectDate + getCurrentTime(),
-  //       recruitNum: recruitNum,
-  //       roomName: roomName,
-  //       regDate: currentDate,
-  //       chatRoom: createRoomResponse.data.roomId,
-  //     };
-
-  //     console.log("postData ", postData.chatRoom);
-
-  //     const response = await AxiosApi.postProject(postData);
-  //     console.log("response ", postData.chatRoom);
-  //     console.log(" response 데이터 확인 :  ", response.data);
-  //     if (response.data) {
-  //       alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
-  //       navigate("/apueda/board");
-  //     } else {
-  //       throw new Error("프로젝트 게시글 등록이 실패했습니다.");
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     alert("등록 중 오류가 발생했습니다.");
-  //   }
-  // };
-  // // 수정
-  // const handleModify = async (projectId, postData) => {
-  //   try {
-  //     const postData = {
-  //       title,
-  //       content,
-  //       skills: selectedSkills,
-  //       endDate: selectDate + getCurrentTime(),
-  //       recruitNum: recruitNum,
-  //       roomName: roomName,
-  //       regDate: currentDate,
-  //     };
-  //     const response = await AxiosApi.modifyProject(projectId, postData);
-  //     if (response.status === 200) {
-  //       alert("프로젝트가 성공적으로 수정되었습니다.");
-  //       navigate("/apueda/board");
-  //     } else {
-  //       throw new Error("프로젝트 수정에 실패했습니다.");
-  //     }
-  //   } catch (e) {
-  //     console.error("Error modifying project:", e);
-  //     alert("수정 중 오류가 발생했습니다.");
-  //   }
-  // };
 
   useEffect(() => {
     if (!projectId) {

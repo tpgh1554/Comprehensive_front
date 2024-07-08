@@ -3,6 +3,10 @@ import styled from "styled-components";
 import AxiosApi from "../../api/AxiosApi";
 import { useNavigate } from "react-router-dom";
 
+import { UserContext } from "../../context/UserStore";
+import useTokenAxios from "../../hooks/useTokenAxios";
+import { formatTimestamp } from "../../utils/formatDate";
+
 const Container = styled.div`
   width: 100%;
   height: 100%;
@@ -69,6 +73,7 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   width: 70%;
+  justify-content: center;
 `;
 
 const Etc = styled.div`
@@ -102,11 +107,9 @@ const ProjectList = () => {
   }, []);
 
   const fetchProjectList = async () => {
-    console.log("보내기전 토큰:", localStorage.getItem("accessToken"));
     try {
       const rsp = await AxiosApi.getProjectList();
       // Sort project list by regDate in descending order (newest first)
-      console.log("보내기후 토큰:", localStorage.getItem("accessToken"));
       const sortedProjects = rsp.data.sort(
         (a, b) => new Date(b.regDate) - new Date(a.regDate)
       );
@@ -126,29 +129,6 @@ const ProjectList = () => {
     });
     setProjectList(sortedProjects);
     setSortBy(!sortBy); // Toggle sort order
-  };
-
-  const formatTimestamp = (timestamp) => {
-    const now = new Date();
-    const date = new Date(timestamp);
-    const diff = Math.abs(now - date);
-    const dayInMs = 1000 * 60 * 60 * 24;
-    const monthInMs = dayInMs * 30.4375;
-    const yearInMs = dayInMs * 365.25;
-
-    if (diff < 1000 * 60) {
-      return "방금 전";
-    } else if (diff < 1000 * 60 * 60) {
-      return `${Math.floor(diff / (1000 * 60))}분 전`;
-    } else if (diff < dayInMs) {
-      return `${Math.floor(diff / (1000 * 60 * 60))}시간 전`;
-    } else if (diff < monthInMs) {
-      return `${Math.floor(diff / dayInMs)}일 전`;
-    } else if (diff < yearInMs) {
-      return `${Math.floor(diff / monthInMs)}달 전`;
-    } else {
-      return `${Math.floor(diff / yearInMs)}년 전`;
-    }
   };
 
   const projectClick = (projectId) => {

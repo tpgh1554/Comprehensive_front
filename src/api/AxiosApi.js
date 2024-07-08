@@ -44,9 +44,9 @@ const AxiosApi = {
       },
     };
     try {
-      const res = await axios.post(`/auth/refresh`, refreshToken, config);
-      console.log(res.data);
-      AxiosApi.setAccessToken(res.data);
+      const rsp = await AxiosInstance.post(`/auth/reissued`, refreshToken);
+      console.log(rsp.data);
+      AxiosApi.setAccessToken(rsp.data);
       return true;
     } catch (err) {
       console.log(err);

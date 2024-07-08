@@ -188,6 +188,7 @@ const Payment = ({ isChecked1, isChecked2 }) => {
 
           const portamount = paymentData.amount;
           console.log("portamount:", portamount);
+
           if (paymentData.amount == amount) {
             console.log("결제 금액 일치");
             const scheduleData = {
@@ -262,6 +263,18 @@ const Payment = ({ isChecked1, isChecked2 }) => {
             // setModalContent("아프다 구독 성공");
           } else {
             console.log("결제 금액 불일치:", portamount, amount);
+            const cancell = await axios.post(
+              "http://localhost:5000//api/iamport/cancelPayment",
+              { imp_uid: response.imp_uid },
+              {
+                headers: {
+                  Authorization: iamportToken,
+                  "Content-Type": "application/json",
+                },
+                withCredentials: true, // credentials 포함
+              }
+            );
+            console.log("결제취소:", cancell.data);
           }
         } catch (error) {
           setError(error);

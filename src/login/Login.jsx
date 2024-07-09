@@ -151,6 +151,7 @@ const LoginPage = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
             <InputBox
+              type="password"
               placeholder="비밀번호"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

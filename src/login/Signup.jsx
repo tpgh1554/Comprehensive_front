@@ -1,108 +1,26 @@
-import styled from "styled-components";
+import {
+  Container,
+  Box,
+  Contents,
+  ProfileBox,
+  InputContainer,
+  EmailBox,
+  ShortInput,
+  CheckBtn,
+  LongInput,
+  SkillCheck,
+  SkillContext,
+  CheckBox,
+  TextBox,
+  Text,
+  SubmitBtn,
+} from "./style/SignFormStyle";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Upload from "../api/firebase/ImageUploader";
 import { storage } from "../api/firebase/Firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import AxiosApi from "../api/AxiosApi";
-const Container = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  & input {
-    border-radius: 8px;
-    color: #ffffff;
-  }
-  & button {
-    border-radius: 8px;
-    cursor: pointer;
-    &:hover {
-      background-color: #c72519; /* hover 시 배경색 변경 */
-    }
-    &:active {
-      background-color: #87160e; /* 클릭 시 배경색 변경 */
-    }
-  }
-`;
-
-const Box = styled.div`
-  width: 60%;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border: 3px solid #ff5353;
-  background: rgba(255, 83, 53, 0.7);
-  border-radius: 10px;
-  padding: 30px;
-  box-sizing: border-box;
-`;
-
-const Contents = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const ProfileBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const InputContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 40%;
-`;
-
-const EmailBox = styled.div`
-  gap: 10px;
-`;
-
-const ShortInput = styled.input`
-  height: 40px;
-  width: 80%;
-  background-color: rgba(0, 0, 0, 0.8);
-`;
-
-const CheckBtn = styled.button``;
-
-const LongInput = styled.input`
-  height: 40px;
-  background-color: rgba(0, 0, 0, 0.8);
-`;
-
-const SkillCheck = styled.div`
-  /* display: flex; */
-`;
-
-const SkillContext = styled.div`
-  display: flex;
-  flex-wrap: wrap; /* 줄바꿈 설정 */
-  flex-direction: row;
-  margin-right: 10px; /* 각 체크박스 사이의 간격 설정 */
-`;
-
-const CheckBox = styled.input``;
-
-const TextBox = styled.div``;
-
-const Text = styled.textarea`
-  width: 100%;
-`;
-
-const SubmitBtn = styled.button`
-  height: 40px;
-  width: 40%;
-  background-color: rgba(255, 83, 83, 0.8);
-`;
 
 const SignUp = () => {
   // 입력하는 값을 저장하기 위한 것들
@@ -125,9 +43,7 @@ const SignUp = () => {
   const [codeValid, setCodeValid] = useState(false); // 인증번호 검사
   const [pwdValid, setPwdValid] = useState(false); // 비밀번호 유효성 검사
   const [pwdConcord, setPwdConcord] = useState(false); // 비밀번호 일치여부 확인
-  // 주민번호 앞자리 6자리와 뒷자리 첫번째 자리 일치 확인
-  const [idNumValid, setIdNumValid] = useState(false);
-  const [error, setError] = useState("");
+  const [identifyNumberValid, setIdentifyNumberValid] = useState(false); // 주민번호 숫자 다 입력했는지 확인
   // Firebase 파일 설정
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
@@ -135,21 +51,7 @@ const SignUp = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [passwordError2, setPasswordError2] = useState("");
-
-  // 스킬 체크
-  const skills = [
-    "Java",
-    "JavaScript",
-    "Python",
-    "C++",
-    "C#",
-    "Ruby",
-    "PHP",
-    "Swift",
-    "Go",
-    "Kotlin",
-  ];
-  const [isChecked, setIsChecked] = useState(Array(skills.length).fill(false));
+  const [identityNumberError, setIdentityNumberError] = useState("");
 
   const uploadImg = async () => {
     try {
@@ -296,17 +198,41 @@ const SignUp = () => {
 
     setIdentityNumber(value); // 숫자만 입력된 값을 설정
     setFormattedIdentityNumber(formattedValue); // 하이픈 포맷이 적용된 값을 설정
+
+    // 유효성 검사
+    setIdentifyNumberValid(value.length >= 7);
+    console.log(identifyNumberValid);
   };
+  useEffect(() => {
+    console.log(identifyNumberValid); // 유효성 상태가 변경될 때마다 콘솔에 출력
+  }, [identifyNumberValid]);
 
   const test = async () => {
     return await uploadImg(); // 업로드 이미지 함수가 완료 될 때 까지 기다리는듯
   };
 
   // 체크박스
+  // 스킬 체크
+  const skills = [
+    "Java",
+    "JavaScript",
+    "Python",
+    "C++",
+    "C#",
+    "React",
+    "React Native",
+    "Django",
+    "Elastic Stack",
+    "Kotlin",
+  ];
+  const [isChecked, setIsChecked] = useState(Array(skills.length).fill(false));
   const handleCheckboxChange = (index) => {
     const updatedChecked = [...isChecked];
     updatedChecked[index] = !updatedChecked[index];
     setIsChecked(updatedChecked);
+
+    const updatedSkills = skills.filter((_, idx) => updatedChecked[idx]);
+    setSkill(updatedSkills);
   };
 
   // 자기소개
@@ -322,7 +248,7 @@ const SignUp = () => {
       nickname,
       identityNumber,
       profileImgPath,
-      skill: skills.filter((_, index) => isChecked[index]),
+      skill,
       myInfo,
     };
     try {
@@ -359,7 +285,9 @@ const SignUp = () => {
                 value={email}
                 onChange={onChangeEmail}
               />
-              <CheckBtn onClick={authorizeMail}>인증</CheckBtn>
+              <CheckBtn onClick={authorizeMail} disabled={!emailValid}>
+                인증
+              </CheckBtn>
               <span id="hint">
                 {email.length > 0 && (
                   <p className={emailValid ? "success" : "error"}>
@@ -374,9 +302,12 @@ const SignUp = () => {
                 value={inputCode}
                 onChange={onChangeEmailCode}
               />
-              <CheckBtn onClick={checkCode}>확인</CheckBtn>
+              <CheckBtn onClick={checkCode} disabled={codeValid}>
+                확인
+              </CheckBtn>
             </EmailBox>
             <LongInput
+              type="password"
               placeholder="비밀번호"
               value={password}
               onChange={onChangePassword}
@@ -389,6 +320,7 @@ const SignUp = () => {
               )}
             </span>
             <LongInput
+              type="password"
               placeholder="비밀번호 확인"
               value={password2}
               onChange={onChangePassword2}
@@ -413,9 +345,16 @@ const SignUp = () => {
             />
             <LongInput
               placeholder="주민번호(앞자리 6자리와 뒷자리 첫번째만)"
-              value={identityNumber}
+              value={formattedIdentityNumber}
               onChange={onChangeIdentityNumber}
             />
+            <span id="hint">
+              {formattedIdentityNumber.length > 0 && (
+                <p className={identifyNumberValid ? "success" : "error"}>
+                  {identityNumberError}
+                </p>
+              )}
+            </span>
 
             <SkillCheck>
               <p>사용스킬</p>

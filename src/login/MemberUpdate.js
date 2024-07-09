@@ -1,101 +1,26 @@
-import styled from "styled-components";
+import {
+  Container,
+  Box,
+  Contents,
+  ProfileBox,
+  InputContainer,
+  EmailBox,
+  ShortInput,
+  CheckBtn,
+  LongInput,
+  SkillCheck,
+  SkillContext,
+  CheckBox,
+  TextBox,
+  Text,
+  SubmitBtn,
+} from "./style/SignFormStyle";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Upload from "../api/firebase/ImageUploader";
 import { storage } from "../api/firebase/Firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import AxiosApi from "../api/AxiosApi";
-const Container = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  & input {
-    border-radius: 8px;
-    color: #ffffff;
-  }
-  & button {
-    border-radius: 8px;
-    cursor: pointer;
-    &:hover {
-      background-color: #c72519; /* hover 시 배경색 변경 */
-    }
-    &:active {
-      background-color: #87160e; /* 클릭 시 배경색 변경 */
-    }
-  }
-`;
-
-const Box = styled.div`
-  width: 60%;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border: 3px solid #ff5353;
-  background: rgba(255, 83, 53, 0.7);
-  border-radius: 10px;
-  padding: 30px;
-  box-sizing: border-box;
-`;
-
-const Contents = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const ProfileBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const FileSelBtn = styled.button``;
-
-const InputContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 40%;
-`;
-
-const EmailBox = styled.div`
-  gap: 10px;
-`;
-
-const ShortInput = styled.input`
-  height: 40px;
-  width: 80%;
-  background-color: rgba(0, 0, 0, 0.8);
-`;
-
-const CheckBtn = styled.button``;
-
-const LongInput = styled.input`
-  height: 40px;
-  background-color: rgba(0, 0, 0, 0.8);
-`;
-
-const SkillCheck = styled.div``;
-
-const CheckBox = styled.input``;
-
-const TextBox = styled.div``;
-
-const Text = styled.textarea`
-  width: 100%;
-`;
-
-const SubmitBtn = styled.button`
-  height: 40px;
-  width: 40%;
-  background-color: rgba(255, 83, 83, 0.8);
-`;
 
 const MemberUpdate = () => {
   // 입력하는 값을 저장하기 위한 것들
@@ -112,34 +37,18 @@ const MemberUpdate = () => {
   const [formattedIdentityNumber, setFormattedIdentityNumber] = useState("");
 
   // 유효성 검사
-  const [emailValid, setEmailValid] = useState(false); // 이메일 형식 검사
   const [pwdValid, setPwdValid] = useState(false); // 비밀번호 유효성 검사
   const [pwdConcord, setPwdConcord] = useState(false); // 비밀번호 일치여부 확인
-  // 주민번호 앞자리 6자리와 뒷자리 첫번째 자리 일치 확인
-  const [idNumValid, setIdNumValid] = useState(false);
-  const [error, setError] = useState("");
+
   // Firebase 파일 설정
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   // 네비게이션
   const navigate = useNavigate();
   // 오류메세지
-  const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [passwordError2, setPasswordError2] = useState("");
 
-  const [isChecked, setIsChecked] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
   useEffect(() => {
     const imgUrl = localStorage.getItem("imgUrl");
     if (imgUrl) {
@@ -196,15 +105,6 @@ const MemberUpdate = () => {
     }
   };
 
-  //
-
-  // 체크박스
-  const handleCheckboxChange = (index) => {
-    const updatedChecked = [...isChecked];
-    updatedChecked[index] = !updatedChecked[index];
-    setIsChecked(updatedChecked);
-  };
-
   // 비밀번호 인풋
   const onChangePassword = (e) => {
     const newPassword = e.target.value;
@@ -237,6 +137,29 @@ const MemberUpdate = () => {
   };
   const onChangeNickname = (e) => {
     setNickname(e.target.value);
+  };
+  // 체크박스
+  // 스킬 체크
+  const skills = [
+    "Java",
+    "JavaScript",
+    "Python",
+    "C++",
+    "C#",
+    "React",
+    "React Native",
+    "Django",
+    "Elastic Stack",
+    "Kotlin",
+  ];
+  const [isChecked, setIsChecked] = useState(Array(skills.length).fill(false));
+  const handleCheckboxChange = (index) => {
+    const updatedChecked = [...isChecked];
+    updatedChecked[index] = !updatedChecked[index];
+    setIsChecked(updatedChecked);
+
+    const updatedSkills = skills.filter((_, idx) => updatedChecked[idx]);
+    setSkill(updatedSkills);
   };
 
   const onChangeMyinfo = (e) => {
@@ -301,8 +224,9 @@ const MemberUpdate = () => {
 
           <InputContainer>
             <span>이메일</span>
-            <LongInput placeholder={userInfo.email} value={email} disabled />
+            <LongInput placeholder={userInfo.email} disabled />
             <LongInput
+              type="password"
               placeholder="비밀번호"
               value={password}
               onChange={onChangePassword}
@@ -315,6 +239,7 @@ const MemberUpdate = () => {
               )}
             </span>
             <LongInput
+              type="password"
               placeholder="비밀번호 확인"
               value={password2}
               onChange={onChangePassword2}
@@ -327,28 +252,26 @@ const MemberUpdate = () => {
               )}
             </span>
             <span>이름</span>
-            <LongInput placeholder={userInfo.name} value={name} disabled />
+            <LongInput placeholder={userInfo.name} disabled />
             <span>닉네임</span>
             <LongInput
               placeholder={userInfo.nickname}
               value={nickname}
               onChange={onChangeNickname}
             />
-            {/* 주민번호
-            <LongInput
-              placeholder="주민번호(앞자리 6자리와 뒷자리 첫번째만)"
-              value={identityNumber}
-              disabled
-            /> */}
+            주민번호
+            <LongInput placeholder={userInfo.identityNumber} disabled />
             <SkillCheck>
               <p>사용스킬</p>
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
-                <CheckBox
-                  key={index}
-                  type="checkbox"
-                  checked={isChecked[index]}
-                  onChange={() => handleCheckboxChange(index)}
-                />
+              {skills.map((skill, index) => (
+                <SkillContext key={index}>
+                  <CheckBox
+                    type="checkbox"
+                    checked={isChecked[index]}
+                    onChange={() => handleCheckboxChange(index)}
+                  />
+                  <label>{skill}</label>
+                </SkillContext>
               ))}
             </SkillCheck>
             <TextBox>

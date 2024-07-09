@@ -112,14 +112,14 @@ const Mywrite = () => {
   useEffect(() => {
     const fetchProjectList = async () => {
       try {
-        const rsp = await AxiosApi.getProjectList();
+        const rsp = await AxiosApi.getMyProjectList();
         console.log(rsp.data);
         console.log(localStorage.getItem("email"));
         // setBoardList(rsp.data);
-        const filteredData = rsp.data.filter(
-          (project) => project.email === localStorage.getItem("email")
-        );
-        setProjectList(filteredData); // 필터링된 데이터를 상태에 저장
+        // const filteredData = rsp.data.filter(
+        //   (project) => project.email === localStorage.getItem("email")
+        // );
+        setProjectList(rsp.data); // 필터링된 데이터를 상태에 저장
       } catch (e) {
         console.log(e);
       }
@@ -131,14 +131,10 @@ const Mywrite = () => {
   useEffect(() => {
     const fetchBoardList = async () => {
       try {
-        const rsp = await AxiosApi.getBoardList();
+        const rsp = await AxiosApi.getMyBoardList();
         console.log(rsp.data);
         console.log(localStorage.getItem("email"));
-        // setBoardList(rsp.data);
-        const filteredData = rsp.data.filter(
-          (board) => board.email === localStorage.getItem("email")
-        );
-        setBoardList(filteredData); // 필터링된 데이터를 상태에 저장
+        setBoardList(rsp.data); // 필터링된 데이터를 상태에 저장
       } catch (e) {
         console.log(e);
       }
@@ -237,7 +233,6 @@ const Mywrite = () => {
                   <div key={index}>
                     <ListWrapper>
                       <h1>{board.title}</h1>
-                      <h1>{board.content}</h1>
 
                       <DelButton onClick={() => boardDelete(board.boardId)}>
                         삭제

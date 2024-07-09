@@ -306,7 +306,6 @@ const Friend = () => {
       // 친구 목록(friends)을 업데이트하여 읽은 상태가 변경된 것을 반영
       const updatedFriends = friends.map((friend) => {
         if (friend.member2.email === friendEmail) {
-          // 읽음으로 표시된 친구를 업데이트
           return {
             ...friend,
             readCheck: true,

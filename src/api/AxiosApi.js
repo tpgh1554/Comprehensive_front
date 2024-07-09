@@ -238,6 +238,10 @@ const AxiosApi = {
   getProjectDetail: async (projectId) => {
     return await AxiosInstance.get(`/project/detail/${projectId}`);
   },
+  // 내가 쓴 플젝 보기
+  getMyProjectList: async () => {
+    return await AxiosInstance.get("/project/mypj");
+  },
   // 플젝 수정
   modifyProject: async (projectId, postData) => {
     console.log("modifyProject postData", postData);
@@ -247,6 +251,11 @@ const AxiosApi = {
   // 자유 게시판 상세 보기
   getBoardDetail: async (boardId) => {
     return await AxiosInstance.get(`/board/detail/${boardId}`);
+  },
+
+  // 내가 쓴 자유게시판 보기
+  getMyBoardList: async () => {
+    return await AxiosInstance.get("/board/myboard");
   },
   // 자유 게시판 글쓰기
   postBoard: async (postData) => {

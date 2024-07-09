@@ -1,106 +1,83 @@
-//ChatRoom.js
-import styled from "styled-components";
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import AxiosApi from "../../api/AxiosApi";
-import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
-import { FaPaperPlane, FaAngleLeft } from "react-icons/fa";
-
-const ChatRoom = ({ roomId }) => {
+// ChatRoom.js
+import styled from 'styled-components';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import AxiosApi from '../../api/AxiosApi';
+import { connectWebSocket, sendMessage } from '../../api/StompClient'; // 수정된 부분
+import { FaPaperPlane, FaAngleLeft } from 'react-icons/fa';
+const ChatRoom = () => {
+  const { roomId } = useParams(); // roomId 정보를 가져옴
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState("");
-  const [isConnected, setIsConnected] = useState(false); // 연결상태를 확인하는 state
+  const [message, setMessage] = useState('');
+  const [isConnected, setIsConnected] = useState(false);
   const messagesEndRef = useRef(null);
   const stompClientRef = useRef(null);
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await AxiosApi.getChatMessages(roomId);
+        console.log('Fetching chat messages for room:', roomId);
+        const response = await AxiosApi.getChatMessages(roomId); // API 호출 함수 이름 확인 필요
         const fetchedMessages = response.data.map((msg) => ({
           ...msg,
-          localDateTime: new Date(msg.localDateTime), // 서버에서 받은 시간으로 설정
+          localDateTime: new Date(msg.localDateTime),
         }));
         setMessages(fetchedMessages);
+        console.log('Messages fetched:', fetchedMessages);
       } catch (error) {
-        console.error("Error fetching messages", error);
+        console.error('Error fetching messages', error);
       }
     };
     fetchMessages();
 
-    const socket = new SockJS("http://localhost:8118/ws");
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      debug: (str) => console.log("Received data", str),
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    });
-
-    stompClient.onConnect = (frame) => {
-      console.log("Connected:", frame);
-      console.log("Connected to server version", frame.headers['version']);
-      stompClient.subscribe(`/topic/room/${roomId}`, (message) => {
-        const messageBody = new TextDecoder().decode(message._binaryBody);
-        const newMessage = JSON.parse(messageBody);
+    console.log('Connecting to WebSocket for room:', roomId);
+    connectWebSocket(
+      roomId,
+      (newMessage) => {
+        console.log('New message received:', newMessage);
         newMessage.localDateTime = new Date(newMessage.localDateTime);
         setMessages((prevMessages) => [...prevMessages, newMessage]);
-      });
-
-      stompClient.publish({
-        destination: `/app/chat.sendMessage`,
-        body: JSON.stringify({
-          sender: localStorage.getItem("email"),
-          content: `${localStorage.getItem("email")}님이 입장하셨습니다.`,
-          roomId: roomId,
-          type: "ENTER",
-        }),
-      });
-
-      stompClientRef.current = stompClient; // 연결된 후에만 참조 설정
-      setIsConnected(true); // 연결 상태 업데이트
-    };
-
-    stompClient.onStompError = (frame) => {
-      console.error("Broker reported error: " + frame.headers["message"]);
-      console.error("Additional details: " + frame.body);
-    };
-
-    stompClient.activate();
+      },
+      (client) => {
+        stompClientRef.current = client;
+        setIsConnected(true);
+        console.log('WebSocket connected');
+      },
+      (error) => console.error('STOMP error', error)
+    );
 
     return () => {
       if (stompClientRef.current) {
+        console.log('Deactivating WebSocket connection');
         stompClientRef.current.deactivate();
       }
     };
   }, [roomId]);
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (isConnected && message.trim()) {
-      stompClientRef.current.publish({
-        destination: `/app/chat.sendMessage`,
-        body: JSON.stringify({
-          sender: localStorage.getItem("email"),
-          content: message,
-          roomId: roomId,
-          type: "TALK",
-          localDateTime: new Date().toISOString(),
-        }),
-      });
-      setMessage("");
+      const accessToken = localStorage.getItem('accessToken');
+      const profileImgPath = localStorage.getItem('profileImgPath');
+      sendMessage({
+        senderId: localStorage.getItem('email'),
+        content: message,
+        roomId: roomId,
+        type: 'TALK',
+        localDateTime: new Date().toISOString(),
+        profileImgPath: profileImgPath
+      }, accessToken);
+      setMessage('');
     } else {
-      console.log("Cannot send message, STOMP client is not connected or message is empty");
+      console.log('Cannot send message, STOMP client is not connected or message is empty');
     }
   };
 
@@ -121,12 +98,12 @@ const ChatRoom = ({ roomId }) => {
         </Title>
         <ChatBox>
           {messages.map((msg, index) => (
-            <MessageItem key={index} isSender={msg.sender === localStorage.getItem("email")}>
-              <Message isSender={msg.sender === localStorage.getItem("email")}>
-                <MessageContent isSender={msg.sender === localStorage.getItem("email")}>
+            <MessageItem key={index} isSender={msg.senderId === localStorage.getItem('email')}>
+              <Message isSender={msg.senderId === localStorage.getItem('email')}>
+                <MessageContent isSender={msg.senderId === localStorage.getItem('email')}>
                   <p>{msg.content}</p>
                 </MessageContent>
-                <ProfileImage src="https://via.placeholder.com/40" alt="Profile" />
+                <ProfileImage src={msg.profileImgPath || 'https://via.placeholder.com/40'} alt="Profile" />
               </Message>
               <TimeInfo>{new Date(msg.localDateTime).toLocaleString()}</TimeInfo>
             </MessageItem>
@@ -142,8 +119,8 @@ const ChatRoom = ({ roomId }) => {
               onChange={(e) => setMessage(e.target.value)}
             />
           </TypingBox>
-          <SendButton>
-            <FaPaperPlane type="submit" />
+          <SendButton type="submit">
+            <FaPaperPlane />
           </SendButton>
         </Form>
       </Container>
@@ -187,7 +164,7 @@ const Title = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0 1rem;
-  box-sizing: border-box; // 외곽선 밖으로 안넘어가게
+  box-sizing: border-box;
 `;
 const BackButton = styled.button`
   border: none;
@@ -218,7 +195,7 @@ const ChatBox = styled.div`
 const MessageItem = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: ${(props) => (props.isSender ? "flex-end" : "flex-start")};
+  align-items: ${(props) => (props.isSender ? 'flex-end' : 'flex-start')};
   margin-bottom: 1rem;
   padding: 0.5rem;
 `;
@@ -226,7 +203,7 @@ const Message = styled.div`
   display: flex;
   align-items: flex-start;
   max-width: 70%;
-  flex-direction: ${(props) => (props.isSender ? "row" : "row-reverse")};
+  flex-direction: ${(props) => (props.isSender ? 'row' : 'row-reverse')};
 `;
 const TimeInfo = styled.div`
   white-space: nowrap;
@@ -241,12 +218,12 @@ const ProfileImage = styled.img`
 const MessageContent = styled.div`
   display: flex;
   flex-direction: column;
-  color: ${(props) => (props.isSender ? "white" : "black")};
+  color: ${(props) => (props.isSender ? 'white' : 'black')};
   background: ${(props) =>
     props.isSender
-      ? "linear-gradient(to right, rgba(128, 0, 255, 0.9) 0%, rgba(64, 36, 255, 0.9) 60%, rgba(0, 80, 255, 0.8) 100%)"
-      : "#E2E2E2"};
-  border-radius: ${(props) => (props.isSender ? "2vw 2vw 0 2vw" : "2vw 2vw 2vw 0 ")};
+      ? 'linear-gradient(to right, rgba(128, 0, 255, 0.9) 0%, rgba(64, 36, 255, 0.9) 60%, rgba(0, 80, 255, 0.8) 100%)'
+      : '#E2E2E2'};
+  border-radius: ${(props) => (props.isSender ? '2vw 2vw 0 2vw' : '2vw 2vw 2vw 0 ')};
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
   padding: 0.5vw 1vh;
 `;

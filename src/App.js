@@ -32,7 +32,7 @@ import Mysub from "./subscribe/mysub";
 import Footer from "./components/Footer";
 import BoardDetail from "./pages/board/BoardDetail";
 import WriteBoard from "./pages/board/WirteBoard";
-
+import ChatRoom from "./pages/chat/ChatRoom";
 function App() {
   return (
     <>
@@ -47,6 +47,7 @@ function App() {
           <Route path="/apueda/mypage" element={<MypageMain />} />
           <Route path="/apueda/chatmainpage" element={<ChatMain />} />
           <Route path="/apueda/chatmanage" element={<ChatManage />} />
+          <Route path="/chat/:roomId" element={<ChatRoom />} />
           <Route path="/apueda/datingapp" element={<DatingApp />} />
           <Route path="/apueda/board" element={<BoardMain />} />
           <Route

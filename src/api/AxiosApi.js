@@ -291,25 +291,41 @@ const AxiosApi = {
 
   // ----------------------- 게시판 끝 -----------------------
   // -----------------------채   팅-----------------------
-  createRoom: async (roomName, userEmail) => {
-    // 방이름, 작성자이메일 받아서 방생성
-    console.log("createRoom 방이름 , ", roomName, "아이디 : ", userEmail);
-    return await AxiosInstance.post(`/chat/room`, {
-      roomName,
-      creatorEmail: userEmail,
-    });
+  // 방 생성
+  createRoom: async (roomName) => {
+    const roomData = { roomName: roomName };
+    return await AxiosInstance.post("/chat/create", roomData);
   },
-  //채팅메세지 갱신하여 가져오기
-  getChatMessages: async (roomId) => {
+  // 방 입장
+  joinRoom: async (roomId) => {
+    return await AxiosInstance.post(`/chat/join-to-room/${roomId}`);
+  },
+  // 방 퇴장
+  exitRoom: async (roomId) => {
+    return await AxiosInstance.post(`/chat/exit/${roomId}`);
+  },
+
+  // 입장 중인 방 리스트 찾기
+  getJoinedRooms: async (memberId) => {
     try {
-      const response = await axios.get(
-        `${Apueda_Domain}/chat/room/${roomId}/messages`
-      );
+      const response = await AxiosInstance.get('/chat/find-my-room', {
+        params: { memberId: memberId },
+      });
       return response;
     } catch (error) {
-      console.error("Error fetching chat messages:", error);
-      throw error;
+      throw new Error('Error fetching joined rooms: ' + error.message);
     }
+    
+  },
+
+  // 방 이름으로 방 찾기
+  findRoomByRoomName: async (roomName) => {
+    return await AxiosInstance.get(`/chat/find-room/${roomName}`);
+  },
+
+  // 방의 메시지 가져오기
+  getChatMessages: async (roomId) => {
+    return await AxiosInstance.get(`/chat/${roomId}/messages`);
   },
   // -----------------------채   팅-----------------------
   // -----------------------데이트 어플-----------------------

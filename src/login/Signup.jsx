@@ -55,8 +55,6 @@ const ProfileBox = styled.div`
   gap: 10px;
 `;
 
-const FileSelBtn = styled.button``;
-
 const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -81,7 +79,16 @@ const LongInput = styled.input`
   background-color: rgba(0, 0, 0, 0.8);
 `;
 
-const SkillCheck = styled.div``;
+const SkillCheck = styled.div`
+  /* display: flex; */
+`;
+
+const SkillContext = styled.div`
+  display: flex;
+  flex-wrap: wrap; /* 줄바꿈 설정 */
+  flex-direction: row;
+  margin-right: 10px; /* 각 체크박스 사이의 간격 설정 */
+`;
 
 const CheckBox = styled.input``;
 
@@ -129,18 +136,20 @@ const SignUp = () => {
   const [passwordError, setPasswordError] = useState("");
   const [passwordError2, setPasswordError2] = useState("");
 
-  const [isChecked, setIsChecked] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
+  // 스킬 체크
+  const skills = [
+    "Java",
+    "JavaScript",
+    "Python",
+    "C++",
+    "C#",
+    "Ruby",
+    "PHP",
+    "Swift",
+    "Go",
+    "Kotlin",
+  ];
+  const [isChecked, setIsChecked] = useState(Array(skills.length).fill(false));
 
   const uploadImg = async () => {
     try {
@@ -299,6 +308,7 @@ const SignUp = () => {
     updatedChecked[index] = !updatedChecked[index];
     setIsChecked(updatedChecked);
   };
+
   // 자기소개
   const onChangeMyinfo = (e) => {
     setMyInfo(e.target.value);
@@ -312,7 +322,7 @@ const SignUp = () => {
       nickname,
       identityNumber,
       profileImgPath,
-      skill,
+      skill: skills.filter((_, index) => isChecked[index]),
       myInfo,
     };
     try {
@@ -409,13 +419,15 @@ const SignUp = () => {
 
             <SkillCheck>
               <p>사용스킬</p>
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
-                <CheckBox
-                  key={index}
-                  type="checkbox"
-                  checked={isChecked[index]}
-                  onChange={() => handleCheckboxChange(index)}
-                />
+              {skills.map((skill, index) => (
+                <SkillContext key={index}>
+                  <CheckBox
+                    type="checkbox"
+                    checked={isChecked[index]}
+                    onChange={() => handleCheckboxChange(index)}
+                  />
+                  <label>{skill}</label>
+                </SkillContext>
               ))}
             </SkillCheck>
             <TextBox>

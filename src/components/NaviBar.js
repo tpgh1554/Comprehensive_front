@@ -21,21 +21,60 @@ export default function NaviBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  // useEffect(() => {
+  //   const fetchUserInfo = async () => {
+  //     try {
+  //       const rsp = await AxiosApi.getUserInfo2();
+  //       setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
+  //       console.log(rsp.data);
+  //       if (rsp.data && rsp.data.profileImgPath) {
+  //         setImageUrl(rsp.data.profileImgPath);
+  //         localStorage.setItem("imgUrl", imageUrl);
+  //       } else {
+  //         setImageUrl(defaultImage);
+  //       }
+  //     } catch (e) {
+  //       console.log(e);
+  //       setImageUrl(defaultImage);
+  //     }
+  //   };
+  //   fetchUserInfo();
+  // }, [email]);
+
+  // useEffect 수정
   useEffect(() => {
+    const accessToken = AxiosApi.getAccessToken();
     const fetchUserInfo = async () => {
       try {
         const rsp = await AxiosApi.getUserInfo2();
-        setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
-        console.log(rsp.data);
-        if (rsp.data && rsp.data.profileImgPath) {
-          setImageUrl(rsp.data.profileImgPath);
-          localStorage.setItem("imgUrl", imageUrl);
-        } else {
-          setImageUrl(defaultImage);
+        if (rsp && rsp.status === 200) {
+          setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
+          console.log(rsp.data);
+          if (rsp.data && rsp.data.profileImgPath) {
+            setImageUrl(rsp.data.profileImgPath);
+            localStorage.setItem("imgUrl", rsp.data.profileImgPath); // imageUrl 대신 rsp.data.profileImgPath 저장
+          } else {
+            setImageUrl(defaultImage);
+          }
         }
       } catch (e) {
-        console.log(e);
-        setImageUrl(defaultImage);
+        if (e.response && e.response.status === 401) {
+          await AxiosApi.handleUnauthorized();
+          const newToken = AxiosApi.getAccessToken();
+          if (newToken !== accessToken) {
+            try {
+              const rsp = await AxiosApi.getUserInfo2();
+              if (rsp && rsp.status === 200) {
+                setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
+              }
+            } catch (e) {
+              console.log(e);
+            }
+          }
+        } else {
+          console.log(e);
+          setImageUrl(defaultImage);
+        }
       }
     };
     fetchUserInfo();

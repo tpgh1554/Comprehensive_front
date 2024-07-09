@@ -21,17 +21,6 @@ const AxiosApi = {
     return localStorage.getItem("refreshToken");
   },
 
-  // 토큰 권한 부여하기
-  tokenHeader: () => {
-    const accessToken = AxiosApi.getAccessToken();
-    return {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + accessToken,
-      },
-    };
-  },
-
   // 토큰 만료시 재발행하기
   // 401 에러 처리 함수
   handleUnauthorized: async () => {
@@ -308,14 +297,13 @@ const AxiosApi = {
   // 입장 중인 방 리스트 찾기
   getJoinedRooms: async (memberId) => {
     try {
-      const response = await AxiosInstance.get('/chat/find-my-room', {
+      const response = await AxiosInstance.get("/chat/find-my-room", {
         params: { memberId: memberId },
       });
       return response;
     } catch (error) {
-      throw new Error('Error fetching joined rooms: ' + error.message);
+      throw new Error("Error fetching joined rooms: " + error.message);
     }
-    
   },
 
   // 방 이름으로 방 찾기

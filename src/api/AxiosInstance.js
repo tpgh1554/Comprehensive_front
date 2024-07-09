@@ -32,11 +32,10 @@ AxiosInstance.interceptors.response.use(
           break;
         case 401:
           // 401 에러 발생시
-          const newToken = await AxiosApi.handleUnauthorized();
-          AxiosApi.setAccessToken(newToken.rsp.accessToken);
-          if (newToken) {
+          const rsp = await AxiosApi.handleUnauthorized();
+          if (rsp) {
             // 재시도
-            error.config.headers.Authorization = `Bearer ${AxiosApi.getAccessToken()}`;
+            error.config.headers.Authorization = `Bearer ${AxiosApi.getRefreshToken()}`;
             return AxiosInstance.request(error.config);
           } else {
           }

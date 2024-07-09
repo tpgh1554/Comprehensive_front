@@ -39,14 +39,15 @@ const AxiosApi = {
     const refreshToken = AxiosApi.getRefreshToken();
     const config = {
       headers: {
+        "Content-Type": "text/plain",
         Authorization: `Bearer ${refreshToken}`,
       },
     };
     try {
       const rsp = await axios.post(
         `${Apueda_Domain}/auth/reissued`,
-        refreshToken
-        // config
+        refreshToken,
+        config
       );
       console.log(rsp.data.accessToken);
       AxiosApi.setAccessToken(rsp.data.accessToken);

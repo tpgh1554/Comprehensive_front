@@ -75,7 +75,6 @@ const Profile = styled.div`
 const Content = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   width: 70%;
 `;
 
@@ -100,7 +99,15 @@ export const Button = styled.button`
   width: auto;
   overflow: hidden;
 `;
-
+const StyledLink = styled.a`
+  text-decoration: none;
+  color: inherit;
+  width: fit-content;
+  cursor: pointer;
+  :hover {
+    color: red;
+  }
+`;
 const ProjectList = () => {
   const [boardList, setBoardList] = useState(null);
   const [sortBy, setSortBy] = useState(true); // Default sort by newest
@@ -158,9 +165,9 @@ const ProjectList = () => {
                   <span> {board.nickName}</span>
                 </Profile>
                 <Content>
-                  <span onClick={() => boardClick(board.boardId)}>
+                  <StyledLink onClick={() => boardClick(board.boardId)}>
                     {board.title}
-                  </span>
+                  </StyledLink>
                 </Content>
                 <Etc>{formatTimestamp(board.regDate)}</Etc>
               </ListResult>

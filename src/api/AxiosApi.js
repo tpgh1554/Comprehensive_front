@@ -315,6 +315,17 @@ const AxiosApi = {
   getChatMessages: async (roomId) => {
     return await AxiosInstance.get(`/chat/${roomId}/messages`);
   },
+  // 프로젝트 요청 조회
+  searchRequest: async (projectId) => {
+    console.log("projectId", projectId);
+    return await AxiosInstance.get(`/apply/list/${projectId}`);
+  },
+
+  // 프로젝트 요청
+  requestProject: async (postData) => {
+    console.log("postData", postData);
+    return await AxiosInstance.post(`/apply/insert`, postData);
+  },
   // -----------------------채   팅-----------------------
   // -----------------------데이트 어플-----------------------
   // 좋아요 이후 친구 신청

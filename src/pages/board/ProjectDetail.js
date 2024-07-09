@@ -242,6 +242,33 @@ const ProjectDetail = () => {
       }
     }
   };
+  const request = () => {
+    console.log("실행");
+    const postData = {
+      memberId: email,
+      projectId: projectId,
+      applyStatus: true,
+    };
+    requestProject(postData);
+  };
+
+  const requestProject = async (postData) => {
+    const isRequest = await AxiosApi.searchRequest(projectId);
+    // console.log("isRequest.data.memberId", isRequest.data[0].memberId);
+    if (isRequest.data[0]) {
+      alert("이미 신청한 프로젝트 입니다.");
+      return;
+    } else {
+      try {
+        const rsp = await AxiosApi.requestProject(postData);
+        if (rsp.status === 200) {
+          alert("신청 성공");
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
   return (
     <BoardLayout>
       <Container>
@@ -321,6 +348,7 @@ const ProjectDetail = () => {
                   ))}
               </Skills>
               <ListBtt>
+                <Button onClick={() => request()}>신청</Button>
                 <Button onClick={() => navigate("/apueda/board")}>목록</Button>
               </ListBtt>
             </Footer>

@@ -1,11 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import AxiosApi from "../../api/AxiosApi";
 import { useNavigate } from "react-router-dom";
-
-// import { UserContext } from "../../context/UserStore";
-// import useTokenAxios from "../../hooks/useTokenAxios";
 import { formatTimestamp } from "../../utils/formatDate";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const Container = styled.div`
   width: 100%;
@@ -13,7 +11,7 @@ const Container = styled.div`
   list-style-type: none;
   background-color: #ffffff;
   border-radius: 30px;
-  overflow: scroll;
+  // overflow-y: scroll;
 `;
 
 const ListContainer = styled.div`
@@ -99,25 +97,27 @@ export const Button = styled.button`
 `;
 
 const ProjectList = () => {
-  const [projectList, setProjectList] = useState(null);
-  const [sortBy, setSortBy] = useState(true); // Default sort by newest
+  const [projectList, setProjectList] = useState([]);
+  const [sortBy, setSortBy] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   useEffect(() => {
+    const fetchProjectList = async () => {
+      console.log("실행");
+      try {
+        const rsp = await AxiosApi.getProjectList();
+        // Sort project list by regDate in descending order (newest first)
+        const sortedProjects = rsp.data.sort(
+          (a, b) => new Date(b.regDate) - new Date(a.regDate)
+        );
+        setProjectList(sortedProjects); // Set sorted project list
+        console.log(sortedProjects, "sortedProjects");
+      } catch (e) {
+        console.error("Error fetching project list:", e);
+      }
+    };
     fetchProjectList();
-  }, []);
-
-  const fetchProjectList = async () => {
-    try {
-      const rsp = await AxiosApi.getProjectList();
-      // Sort project list by regDate in descending order (newest first)
-      const sortedProjects = rsp.data.sort(
-        (a, b) => new Date(b.regDate) - new Date(a.regDate)
-      );
-      setProjectList(sortedProjects); // Set sorted project list
-    } catch (e) {
-      console.error("Error fetching project list:", e);
-    }
-  };
+  }, [currentPage]);
 
   const sortByCreatedAt = () => {
     const sortedProjects = [...projectList].sort((a, b) => {
@@ -135,6 +135,17 @@ const ProjectList = () => {
     console.log(projectId, "플젝id값");
     navigate(`/apueda/board/projectDetail/${projectId}`);
   };
+  const [hasMore, setHasMore] = useState(true);
+  const perPage = 5;
+
+  const fetchMoreData = () => {
+    console.log("fetch x");
+    console.log("fetch x", currentPage);
+    setCurrentPage((prevPage) => prevPage + 1);
+    console.log("fetch x", currentPage);
+  };
+  console.log("fetch2 x", currentPage);
+  console.log("?", projectList.length);
 
   return (
     <Container>
@@ -147,27 +158,37 @@ const ProjectList = () => {
           </Column>
         </ContentNameList>
         <List>
-          {projectList &&
-            projectList.map((project, index) => (
-              <ListResult key={index}>
-                <Profile>
-                  <img src={project.profileImg} alt="profile" />
-                  <span>닉네임: {project.nickName}</span>
-                </Profile>
-                <Content>
-                  <span onClick={() => projectClick(project.projectId)}>
-                    {project.projectTitle}
-                  </span>
-                  <span>
-                    {project.skillName &&
-                      project.skillName.map((skills, index) => (
-                        <Button key={index}>{skills.skillName}</Button>
-                      ))}
-                  </span>
-                </Content>
-                <Etc>{formatTimestamp(project.regDate)}</Etc>
-              </ListResult>
-            ))}
+          <InfiniteScroll
+            dataLength={projectList.length}
+            next={fetchMoreData}
+            hasMore={currentPage * perPage < projectList.length}
+            //hasMore={true}
+            loader={<h4>Loading...</h4>}
+            endMessage={<p>All Pokémon have been loaded</p>}
+            className="container"
+          >
+            {projectList &&
+              projectList.map((project, index) => (
+                <ListResult key={index}>
+                  <Profile>
+                    <img src={project.profileImg} alt="profile" />
+                    <span>닉네임: {project.nickName}</span>
+                  </Profile>
+                  <Content>
+                    <span onClick={() => projectClick(project.projectId)}>
+                      {project.projectTitle}
+                    </span>
+                    <span>
+                      {project.skillName &&
+                        project.skillName.map((skills, index) => (
+                          <Button key={index}>{skills.skillName}</Button>
+                        ))}
+                    </span>
+                  </Content>
+                  <Etc>{formatTimestamp(project.regDate)}</Etc>
+                </ListResult>
+              ))}
+          </InfiniteScroll>
         </List>
       </ListContainer>
     </Container>

@@ -12,7 +12,7 @@ import AxiosApi from "../../api/AxiosApi";
 import { formatDate, formatTimestamp } from "../../utils/formatDate";
 import { Button } from "../../style/WriteStyle";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../context/UserStore";
+// import { UserContext } from "../../context/UserStore";
 
 const NickName = styled.div`
   padding: 8px;

@@ -45,8 +45,8 @@ const AxiosApi = {
     try {
       const rsp = await axios.post(
         `${Apueda_Domain}/auth/reissued`,
-        refreshToken,
-        config
+        refreshToken
+        // config
       );
       console.log(rsp.data.accessToken);
       AxiosApi.setAccessToken(rsp.data.accessToken);

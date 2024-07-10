@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useState, useEffect } from "react";
+import { storage } from "./Firebase";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -17,26 +19,17 @@ const ProfileImg = styled.div`
   align-items: center;
   overflow: hidden;
   background-color: #f0f0f0; /* 이미지 없을 때 배경색 */
-
 `;
 
 const FileSelBtn = styled.button`
   margin-top: 10px; /* 버튼과 이미지 사이에 여백 추가 */
 `;
 
-const Upload = ({ setFile, previewUrl }) => {
-  const [localPreviewUrl, setLocalPreviewUrl] = useState(null);
+const Upload = ({ setFile }) => {
+  const [previewUrl, setPreviewUrl] = useState(null);
 
-  const handleFileInputChange1 = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setFile(file); // 부모 컴포넌트의 handleFileChange를 호출
-      setLocalPreviewUrl(null); // 새 파일 선택 시 localPreviewUrl 초기화
-    }
-  };
-
-  const handleFileInputChange2 = (event) => {
-    const selectedFile = event.target.files[0];
+  const handleFileInputChange = (e) => {
+    const selectedFile = e.target.files[0];
     if (selectedFile) {
       const img = new Image();
       img.src = URL.createObjectURL(selectedFile);
@@ -54,7 +47,7 @@ const Upload = ({ setFile, previewUrl }) => {
                 type: "image/png",
               });
               setFile(resizedFile);
-              setLocalPreviewUrl(URL.createObjectURL(resizedFile)); // 새 파일의 localPreviewUrl 설정
+              setPreviewUrl(URL.createObjectURL(resizedFile));
             } else {
               console.log("이미지 변환중 오류발생");
             }
@@ -70,19 +63,14 @@ const Upload = ({ setFile, previewUrl }) => {
     }
   };
 
-  const handleFileInputChange = (event) => {
-    handleFileInputChange1(event);
-    handleFileInputChange2(event);
-  };
-
   return (
     <Container>
       <ProfileImg>
-        {(previewUrl || localPreviewUrl) && (
+        {previewUrl && (
           <img
-            src={previewUrl || localPreviewUrl}
+            src={previewUrl}
             alt="Profile Preview"
-            style={{ width: "100%", height: "100%" , objectFit: "contain"}}
+            style={{ width: "100%", height: "100%", objectFit: "contain" }}
           />
         )}
       </ProfileImg>

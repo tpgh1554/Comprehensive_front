@@ -26,12 +26,13 @@ import AxiosApi from "../api/AxiosApi";
 import Privacy from "../components/Privacy";
 import Privacy2 from "../components/Privacy2";
 import styled from "styled-components";
+import basicProfile from "../image/person-icon2.png";
 
 // SubmitBtn = styled.div`
 
 // `;
 
-const SignUp = () => {
+const SignUp = ({ profile }) => {
   // 입력하는 값을 저장하기 위한 것들
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -55,7 +56,11 @@ const SignUp = () => {
   const [pwdConcord, setPwdConcord] = useState(false); // 비밀번호 일치여부 확인
   const [identifyNumberValid, setIdentifyNumberValid] = useState(false); // 주민번호 숫자 다 입력했는지 확인
   // Firebase 파일 설정
-  const [file, setFile] = useState(null);
+  const [imgSrc, setImgSrc] = useState(
+    profile && profile ? profile : basicProfile
+  );
+  const [file, setFile] = useState("");
+  const [url, setUrl] = useState("");
   const navigate = useNavigate();
   // 오류메세지
   const [emailError, setEmailError] = useState("");
@@ -65,8 +70,11 @@ const SignUp = () => {
 
   // 이용약관
   const [terOpen, setTerOpen] = useState(false);
-
   const [terOpen2, setTerOpen2] = useState(false);
+  const [allChecked, setAllChecked] = useState(false);
+  const [privacyIsChecked, setPrivacyIsChecked] = useState(false);
+  const [privacyIsChecked2, setPrivacyIsChecked2] = useState(false);
+  // 약관 띄워주기
   const onClickSub = (e) => {
     setTerOpen(true);
   };
@@ -79,44 +87,80 @@ const SignUp = () => {
   const closeTer2 = () => {
     setTerOpen2(false);
   };
-  const [allChecked, setAllChecked] = useState(false);
-  const [privacyIsChecked, setPrivacyIsChecked] = useState(false);
-  const [privacyIsChecked2, setPrivacyIsChecked2] = useState(false);
-
+  // 약관 체크
   const handlePrivacyAllCheckboxChange = (e) => {
     const { checked } = e.target;
     setAllChecked(checked);
     setPrivacyIsChecked(checked);
     setPrivacyIsChecked2(checked);
   };
-
   const handlePrivacyCheckboxChange = (e) => {
     setPrivacyIsChecked(e.target.checked);
   };
-
   const handlePrivacyCheckboxChange2 = (e) => {
     setPrivacyIsChecked2(e.target.checked);
   };
 
-  const uploadImg = async () => {
-    try {
-      if (!file) {
-        throw new Error("파일이 선택되지 않았습니다.");
-      }
-      const fileRef = ref(storage, `images/${email}`);
-      const snapshot = await uploadBytes(fileRef, file, {
-        contentType: file.type,
-      });
-      console.log("이미지 파이어베이스 업로드 성공");
-      const url = await getDownloadURL(snapshot.ref);
-      console.log("경로 : " + url);
-      setProfileImgPath(url);
-      return url; // 업로드가 성공하면 URL 반환
-    } catch (e) {
-      console.log("파일 업로드 에러 : " + e);
-      throw e; // 에러 발생 시 예외 던짐
+  // 보류
+  // const uploadImg = async () => {
+  //   try {
+  //     if (!file) {
+  //       throw new Error("파일이 선택되지 않았습니다.");
+  //     }
+  //     const fileRef = ref(storage, `images/${email}`);
+  //     const snapshot = await uploadBytes(fileRef, file, {
+  //       contentType: file.type,
+  //     });
+  //     console.log("이미지 파이어베이스 업로드 성공");
+  //     const url = await getDownloadURL(snapshot.ref);
+  //     console.log("경로 : " + url);
+  //     setProfileImgPath(url);
+  //     return url; // 업로드가 성공하면 URL 반환
+  //   } catch (e) {
+  //     console.log("파일 업로드 에러 : " + e);
+  //     throw e; // 에러 발생 시 예외 던짐
+  //   }
+  // };
+
+  // 파이어베이스 수정
+  // 입력받은 이미지 파일 주소
+  const handleFileInputChange = (e) => {
+    const selectedFile = e.target.files?.[0];
+
+    // 선택된 파일이 있다면
+    if (selectedFile) {
+      const objectUrl = URL.createObjectURL(selectedFile);
+      setImgSrc(objectUrl);
+      // 파이어베이스에 보내기위해 변수에 저장
+      setFile(selectedFile);
     }
   };
+  const onSubmit = () => {
+    if (imgSrc !== basicProfile && imgSrc !== profile) {
+      const storageRef = storage.ref();
+      const fileRef = storageRef.child(file.name);
+      fileRef.put(file).then(() => {
+        console.log("저장성공!");
+        fileRef.getDownloadURL().then((url) => {
+          console.log("저장경로 확인 : " + url);
+          setUrl(url);
+          regist(url);
+        });
+      });
+    } else {
+      if (imgSrc === profile) {
+        regist(profile);
+      } else {
+        regist();
+      }
+    }
+  };
+
+  // 이미지 변경 확인 용
+  // useEffect(() => {
+  //   console.log("imgSrc : " + imgSrc);
+  //   console.log("file : " + file.name);
+  // }, [file]);
 
   // 입력 인증 번호 확인
   const onChangeEmailCode = (e) => {
@@ -256,10 +300,6 @@ const SignUp = () => {
     console.log(identifyNumberValid); // 유효성 상태가 변경될 때마다 콘솔에 출력
   }, [identifyNumberValid]);
 
-  const test = async () => {
-    return await uploadImg(); // 업로드 이미지 함수가 완료 될 때 까지 기다리는듯
-  };
-
   // 체크박스
   // 스킬 체크
   const skills = [
@@ -289,7 +329,7 @@ const SignUp = () => {
     setMyInfo(e.target.value);
   };
 
-  const regist = async () => {
+  const regist = async (url) => {
     const user = {
       email,
       password,
@@ -301,9 +341,6 @@ const SignUp = () => {
       myInfo,
     };
     try {
-      const imgPath = await test();
-      user.profileImgPath = imgPath;
-
       const response = await AxiosApi.signup(user);
       if (response.data) {
         alert("회원가입에 성공했습니다.");
@@ -335,7 +372,14 @@ const SignUp = () => {
         <Contents>
           <h1>회원가입</h1>
           <ProfileBox>
-            <Upload setFile={setFile} />
+            {" "}
+            <div className="imgBox">
+              <img src={imgSrc} alt="프로필이미지" />
+            </div>
+            <label>
+              <input type="file" onChange={(e) => handleFileInputChange(e)} />
+              파일 선택
+            </label>
           </ProfileBox>
 
           <InputContainer>

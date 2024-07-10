@@ -41,7 +41,7 @@ const MemberUpdate = () => {
   const [pwdConcord, setPwdConcord] = useState(false); // 비밀번호 일치여부 확인
 
   // Firebase 파일 설정
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
   // 네비게이션
   const navigate = useNavigate();
@@ -53,7 +53,8 @@ const MemberUpdate = () => {
     const imgUrl = localStorage.getItem("imgUrl");
     if (imgUrl) {
       setPreviewUrl(imgUrl);
-      setProfileImgPath(imgUrl);
+
+      setFile(imgUrl);
     }
   }, []); // 빈 배열을 의존성 배열로 사용
 
@@ -62,7 +63,7 @@ const MemberUpdate = () => {
       try {
         const rsp = await AxiosApi.getUserInfo2();
         setUserInfo(rsp.data);
-        // setFile(imgUrl);
+        setFile(previewUrl);
         setEmail(userInfo.email);
         setName(userInfo.name);
         setIdentityNumber(userInfo.identityNumber);
@@ -97,6 +98,7 @@ const MemberUpdate = () => {
       console.log("이미지 파이어베이스 업로드 성공");
       const url = await getDownloadURL(snapshot.ref);
       console.log("경로 : " + url);
+      localStorage.setItem("imgUrl", url);
       setProfileImgPath(url);
       return url; // 업로드가 성공하면 URL 반환
     } catch (e) {
@@ -181,7 +183,7 @@ const MemberUpdate = () => {
     };
     try {
       const imgPath = await test();
-      user.profileImgPath = imgPath;
+      setProfileImgPath(imgPath);
 
       const response = await AxiosApi.memberUpdate(user);
       if (response.data) {

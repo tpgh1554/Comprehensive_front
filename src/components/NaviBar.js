@@ -29,7 +29,7 @@ export default function NaviBar() {
         console.log(rsp.data);
         if (rsp.data && rsp.data.profileImgPath) {
           setImageUrl(rsp.data.profileImgPath);
-          localStorage.setItem("imgUrl", imageUrl);
+          localStorage.setItem("imgUrl", rsp.data.profileImgPath);
         } else {
           setImageUrl(defaultImage);
         }

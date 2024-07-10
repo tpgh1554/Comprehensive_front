@@ -47,15 +47,14 @@ const List = styled.div`
 
 const ListResult = styled.div`
   display: flex;
-  width: 45%;
+  width: 46%;
   border-bottom: 4.5px solid #c1c1c1;
   border-right: 3px solid #c1c1c1;
   color: #fff;
   height: 230px;
-  padding: 24px;
+  padding: 36px;
   background-color: #ff5353;
   justify-content: space-between;
-  /* box-shadow: 1px 1px; */
   border-radius: 36px;
   margin: 18px;
   flex-direction: column;
@@ -72,8 +71,8 @@ const ProfileInList = styled.div`
   z-index: ${(props) => props.zIndex};
   & img {
     background-color: #fff;
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 30px;
     object-fit: cover;
     border: 4px solid;
@@ -98,6 +97,9 @@ const Content = styled.div`
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
+  & span {
+    font-size: 2rem;
+  }
 `;
 
 const Etc = styled.div`

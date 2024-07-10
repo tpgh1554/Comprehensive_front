@@ -12,7 +12,6 @@ import AxiosApi from "../../api/AxiosApi";
 import { formatDate, formatTimestamp } from "../../utils/formatDate";
 import { Button } from "../../style/WriteStyle";
 import { useNavigate } from "react-router-dom";
-import InfiniteScroll from "react-infinite-scroll-component";
 // import { UserContext } from "../../context/UserStore";
 
 const NickName = styled.div`
@@ -129,88 +128,47 @@ const ReplyListComponent = ({ projectId, boardId, type, userInfo }) => {
   const textareaRef = useRef(null);
   // const imageUrl = userInfo?.profileImg || "";
 
-  // useEffect(() => {
-  //   getReplyList(projectId, currentPage);
-  // }, [projectId, repliesChanged, currentPage]);
   useEffect(() => {
-    const getReplyList = async (id, page) => {
-      try {
-        if (type === "project") {
-          const response = await AxiosApi.getProjectReplyList(id, page);
-
-          console.log(" 플젝 댓글 리스트 : ", response.data.replies);
-          // console.log("프로필 url : ", response.data.ProfileImg);
-
-          if (Array.isArray(response.data.replies)) {
-            const formattedData = response.data.replies.map((reply) => ({
-              ...reply,
-              regDate: formatDate(reply.regDate),
-            }));
-            setReplies((prevReplies) => [...prevReplies, ...formattedData]);
-            setTotalPageSize(response.data.totalPages);
-          } else {
-            console.error("Unexpected response format:", response.data);
-          }
-        } else {
-          const response = await AxiosApi.getBoardReplyList(boardId, page);
-          console.log(" 게시판 댓글 리스트 : ", response.data);
-          // console.log("프로필 url : ", response.data.ProfileImg);
-
-          if (Array.isArray(response.data.replies)) {
-            const formattedData = response.data.replies.map((reply) => ({
-              ...reply,
-              regDate: formatDate(reply.regDate),
-            }));
-            setReplies((prevReplies) => [...prevReplies, ...formattedData]);
-            setTotalPageSize(response.data.totalPages);
-          } else {
-            console.error("Unexpected response format:", response.data);
-          }
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    console.log("asnyc currentPage", currentPage);
     getReplyList(projectId, currentPage);
   }, [projectId, repliesChanged, currentPage]);
-  // const getReplyList = async (id, page) => {
-  //   try {
-  //     if (type === "project") {
-  //       const response = await AxiosApi.getProjectReplyList(projectId, page);
-  //       console.log(" 플젝 댓글 리스트 : ", response.data.replies);
-  //       // console.log("프로필 url : ", response.data.ProfileImg);
 
-  //       if (Array.isArray(response.data.replies)) {
-  //         const formattedData = response.data.replies.map((reply) => ({
-  //           ...reply,
-  //           regDate: formatDate(reply.regDate),
-  //         }));
-  //         setReplies(formattedData);
-  //         setTotalPageSize(response.data.totalPages);
-  //       } else {
-  //         console.error("Unexpected response format:", response.data);
-  //       }
-  //     } else {
-  //       const response = await AxiosApi.getBoardReplyList(boardId, page);
-  //       console.log(" 게시판 댓글 리스트 : ", response.data);
-  //       // console.log("프로필 url : ", response.data.ProfileImg);
+  const getReplyList = async (id, page) => {
+    try {
+      if (type === "project") {
+        const response = await AxiosApi.getProjectReplyList(projectId, page);
+        console.log(" 플젝 댓글 리스트 : ", response.data.replies);
+        // console.log("프로필 url : ", response.data.ProfileImg);
 
-  //       if (Array.isArray(response.data.replies)) {
-  //         const formattedData = response.data.replies.map((reply) => ({
-  //           ...reply,
-  //           regDate: formatDate(reply.regDate),
-  //         }));
-  //         setReplies(formattedData);
-  //         setTotalPageSize(response.data.totalPages);
-  //       } else {
-  //         console.error("Unexpected response format:", response.data);
-  //       }
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
+        if (Array.isArray(response.data.replies)) {
+          const formattedData = response.data.replies.map((reply) => ({
+            ...reply,
+            regDate: formatDate(reply.regDate),
+          }));
+          setReplies(formattedData);
+          setTotalPageSize(response.data.totalPages);
+        } else {
+          console.error("Unexpected response format:", response.data);
+        }
+      } else {
+        const response = await AxiosApi.getBoardReplyList(boardId, page);
+        console.log(" 게시판 댓글 리스트 : ", response.data);
+        // console.log("프로필 url : ", response.data.ProfileImg);
+
+        if (Array.isArray(response.data.replies)) {
+          const formattedData = response.data.replies.map((reply) => ({
+            ...reply,
+            regDate: formatDate(reply.regDate),
+          }));
+          setReplies(formattedData);
+          setTotalPageSize(response.data.totalPages);
+        } else {
+          console.error("Unexpected response format:", response.data);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const handleInput = () => {
     const textarea = textareaRef.current;
@@ -248,12 +206,13 @@ const ReplyListComponent = ({ projectId, boardId, type, userInfo }) => {
     console.log("클릭 버튼 ", number);
     setCurrentPage(number);
   };
-  const prev = (pageNum) => {
-    if (pageNum === 0) {
+  const prev = () => {
+    console.log("pageNum", currentPage);
+    if (currentPage === 0) {
       alert("첫번째 페이지다");
     } else {
-      setCurrentPage(pageNum - 1);
-      console.log(pageNum);
+      setCurrentPage(currentPage - 1);
+      console.log(currentPage);
     }
   };
 
@@ -265,12 +224,6 @@ const ReplyListComponent = ({ projectId, boardId, type, userInfo }) => {
       alert("마지막 페이지입니다.");
     }
   };
-  const fetchMoreData = () => {
-    console.log("fetchMoreData 실행", replies.length);
-    console.log("currentPage * perPage ", currentPage * perPage);
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-  const perPage = 5;
   return (
     <ReplyContainer>
       <InputContainer>
@@ -299,29 +252,20 @@ const ReplyListComponent = ({ projectId, boardId, type, userInfo }) => {
       </InputContainer>
 
       <ReplyListContainer>
-        <InfiniteScroll
-          dataLength={replies.length}
-          next={fetchMoreData}
-          hasMore={currentPage < totalPageSize}
-          //hasMore={true}
-          loader={<h4>Loading...</h4>}
-          endMessage={<p>All Pokémon have been loaded</p>}
-          className="container"
-        >
-          {replies.length !== 0 ? (
-            replies.map((reply, index) => (
-              <ReplyList>
-                <div className="replies" key={index}>
-                  <ProfileImg>
-                    <img src={reply.profileImg} alt="profile" />
-                  </ProfileImg>
-                  <NickName>{reply.nickName}</NickName>
-                  <ReplyContent>{reply.content}</ReplyContent>
-                  <RegDate style={{ fontSize: "0.8rem", whiteSpace: "nowrap" }}>
-                    {" "}
-                    {reply.regDate}
-                  </RegDate>
-                  {/* <Setting>
+        {replies.length !== 0 ? (
+          replies.map((reply, index) => (
+            <ReplyList>
+              <div className="replies" key={index}>
+                <ProfileImg>
+                  <img src={reply.profileImg} alt="profile" />
+                </ProfileImg>
+                <NickName>{reply.nickName}</NickName>
+                <ReplyContent>{reply.content}</ReplyContent>
+                <RegDate style={{ fontSize: "0.8rem", whiteSpace: "nowrap" }}>
+                  {" "}
+                  {reply.regDate}
+                </RegDate>
+                {/* <Setting>
                   {email === replies.memberId.email ? (
                     <div style={{ position: "relative" }}>
                       <div onClick={toggleDropdown}>...</div>
@@ -347,18 +291,17 @@ const ReplyListComponent = ({ projectId, boardId, type, userInfo }) => {
                     <></>
                   )}
                 </Setting> */}
-                </div>
-              </ReplyList>
-            ))
-          ) : (
-            <ReplyList>
-              <NoReply>
-                댓글이 아직 등록 되지 않았습니다. 먼저 댓글을 등록해보세요!
-              </NoReply>
+              </div>
             </ReplyList>
-          )}
-        </InfiniteScroll>
-        {/* <PageNum>
+          ))
+        ) : (
+          <ReplyList>
+            <NoReply>
+              댓글이 아직 등록 되지 않았습니다. 먼저 댓글을 등록해보세요!
+            </NoReply>
+          </ReplyList>
+        )}
+        <PageNum>
           <Button onClick={prev} style={{ width: "40px", marginRight: "0px" }}>
             &lt;
           </Button>
@@ -387,7 +330,7 @@ const ReplyListComponent = ({ projectId, boardId, type, userInfo }) => {
           <Button onClick={next} style={{ width: "40px" }}>
             &gt;
           </Button>
-        </PageNum> */}
+        </PageNum>
       </ReplyListContainer>
     </ReplyContainer>
   );

@@ -100,17 +100,19 @@ const ProjectList = () => {
   const [projectList, setProjectList] = useState([]);
   const [sortBy, setSortBy] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPageSize, setTotalPageSize] = useState(0); // 총 페이지 수
   const navigate = useNavigate();
   useEffect(() => {
     const fetchProjectList = async () => {
-      console.log("실행");
       try {
         const rsp = await AxiosApi.getProjectList();
         // Sort project list by regDate in descending order (newest first)
-        const sortedProjects = rsp.data.sort(
+
+        const sortedProjects = rsp.data.projects.sort(
           (a, b) => new Date(b.regDate) - new Date(a.regDate)
         );
-        setProjectList(sortedProjects); // Set sorted project list
+        setTotalPageSize(rsp.data.totalPages);
+        setProjectList((prevProjects) => [...prevProjects, ...sortedProjects]);
         console.log(sortedProjects, "sortedProjects");
       } catch (e) {
         console.error("Error fetching project list:", e);
@@ -135,17 +137,10 @@ const ProjectList = () => {
     console.log(projectId, "플젝id값");
     navigate(`/apueda/board/projectDetail/${projectId}`);
   };
-  const [hasMore, setHasMore] = useState(true);
-  const perPage = 5;
 
   const fetchMoreData = () => {
-    console.log("fetch x");
-    console.log("fetch x", currentPage);
     setCurrentPage((prevPage) => prevPage + 1);
-    console.log("fetch x", currentPage);
   };
-  console.log("fetch2 x", currentPage);
-  console.log("?", projectList.length);
 
   return (
     <Container>
@@ -161,10 +156,9 @@ const ProjectList = () => {
           <InfiniteScroll
             dataLength={projectList.length}
             next={fetchMoreData}
-            hasMore={currentPage * perPage < projectList.length}
-            //hasMore={true}
+            hasMore={currentPage < totalPageSize}
             loader={<h4>Loading...</h4>}
-            endMessage={<p>All Pokémon have been loaded</p>}
+            endMessage={<p>프로젝트 구인글이 더 이상 없습니다.</p>}
             className="container"
           >
             {projectList &&

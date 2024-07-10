@@ -5,13 +5,13 @@ import { useNavigate } from "react-router-dom";
 // import { UserContext } from "../../context/UserStore";
 // import useTokenAxios from "../../hooks/useTokenAxios";
 import { formatDate, formatTimestamp } from "../../utils/formatDate";
+import InfiniteScroll from "react-infinite-scroll-component";
 const Container = styled.div`
   width: 100%;
   height: 100%;
   list-style-type: none;
   background-color: #ffffff;
   border-radius: 30px;
-  overflow: scroll;
 `;
 
 const ListContainer = styled.div`
@@ -108,26 +108,29 @@ const StyledLink = styled.a`
     color: red;
   }
 `;
-const ProjectList = () => {
-  const [boardList, setBoardList] = useState(null);
+const BoardList = () => {
+  const [boardList, setBoardList] = useState([]);
   const [sortBy, setSortBy] = useState(true); // Default sort by newest
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPageSize, setTotalPageSize] = useState(0); // 총 페이지 수
   const navigate = useNavigate();
-  useEffect(() => {
-    fetchProjectList();
-  }, []);
 
-  const fetchProjectList = async () => {
-    try {
-      const rsp = await AxiosApi.getBoardList();
-      // Sort project list by regDate in descending order (newest first)
-      const sortedBoards = rsp.data.sort(
-        (a, b) => new Date(b.regDate) - new Date(a.regDate)
-      );
-      setBoardList(sortedBoards); // Set sorted project list
-    } catch (e) {
-      console.error("Error fetching project list:", e);
-    }
-  };
+  useEffect(() => {
+    const fetchProjectList = async () => {
+      try {
+        const rsp = await AxiosApi.getBoardList();
+        console.log(" getBoardList실행", rsp.data);
+        const sortedBoards = rsp.data.boards.sort(
+          (a, b) => new Date(b.regDate) - new Date(a.regDate)
+        );
+        setTotalPageSize(rsp.data.totalPages);
+        setBoardList((prevBoards) => [...prevBoards, ...sortedBoards]);
+      } catch (e) {
+        console.error("Error fetching project list:", e);
+      }
+    };
+    fetchProjectList();
+  }, [currentPage]);
 
   const sortByCreatedAt = () => {
     const sortedBoards = [...boardList].sort((a, b) => {
@@ -146,6 +149,10 @@ const ProjectList = () => {
     navigate(`/apueda/board/boardDetail/${boardId}`);
   };
 
+  const fetchMoreData = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
   return (
     <Container>
       <ListContainer>
@@ -157,25 +164,34 @@ const ProjectList = () => {
           </Column>
         </ContentNameList>
         <List>
-          {boardList &&
-            boardList.map((board, index) => (
-              <ListResult key={index}>
-                <Profile style={{ flexDirection: "row" }}>
-                  <img src={board.profileImg} alt="board" />
-                  <span> {board.nickName}</span>
-                </Profile>
-                <Content>
-                  <StyledLink onClick={() => boardClick(board.boardId)}>
-                    {board.title}
-                  </StyledLink>
-                </Content>
-                <Etc>{formatTimestamp(board.regDate)}</Etc>
-              </ListResult>
-            ))}
+          <InfiniteScroll
+            dataLength={boardList.length}
+            next={fetchMoreData}
+            hasMore={currentPage < totalPageSize}
+            loader={<h4>Loading...</h4>}
+            endMessage={<p>자유 게시글이 더 이상 없습니다.</p>}
+            className="container"
+          >
+            {boardList &&
+              boardList.map((board, index) => (
+                <ListResult key={index}>
+                  <Profile style={{ flexDirection: "row" }}>
+                    <img src={board.profileImg} alt="board" />
+                    <span> {board.nickName}</span>
+                  </Profile>
+                  <Content>
+                    <StyledLink onClick={() => boardClick(board.boardId)}>
+                      {board.title}
+                    </StyledLink>
+                  </Content>
+                  <Etc>{formatTimestamp(board.regDate)}</Etc>
+                </ListResult>
+              ))}
+          </InfiniteScroll>
         </List>
       </ListContainer>
     </Container>
   );
 };
 
-export default ProjectList;
+export default BoardList;

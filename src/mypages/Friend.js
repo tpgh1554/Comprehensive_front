@@ -155,7 +155,7 @@ const FriendItem = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border: 3px solid #ff5353;
+  border: 5px solid #ff5353;
   border-radius: 30px;
   margin-top: 25px;
 

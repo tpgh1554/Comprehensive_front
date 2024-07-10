@@ -18,15 +18,19 @@ const Footer = () => {
 
   const onClickSub = (e) => {
     setTerOpen(true);
+    document.body.style.overflow = "hidden"; //모달창 열렸을 때 스크롤 금지
   };
   const closeTer = () => {
     setTerOpen(false);
+    document.body.style.overflow = "unset";
   };
   const onClickSub1 = (e) => {
     setPriOpen(true);
+    document.body.style.overflow = "hidden"; //모달창 열렸을 때 스크롤 금지
   };
   const closeTer1 = () => {
     setPriOpen(false);
+    document.body.style.overflow = "unset";
   };
 
   const githubfrontUrl = "https://github.com/tpgh1554/Comprehensive_front";

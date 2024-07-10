@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import exit from "../image/exit.png";
 import { useEffect, useState } from "react";
+import AxiosApi from "../api/AxiosApi";
 
 const Container = styled.div`
   height: 100vh;
@@ -63,8 +64,9 @@ const Button = styled.button`
   }
 `;
 
-const TableWrapper = styled.div`
-  overflow: hidden;
+const ReqContainer = styled.div`
+  display: flex;
+  text-align: left;
   width: 60vw;
   border: 3px solid #ff5353;
   border-radius: 20px;
@@ -124,19 +126,52 @@ const Endbutton = styled.button`
   }
 `;
 
+const ProfileImage = styled.div`
+  img {
+    width: 65px;
+    height: 60px;
+    border-radius: 100px;
+  }
+
+  @media (max-width: 500px) {
+    img {
+      width: 50px;
+      height: 50px;
+    }
+  }
+`;
+
+const ImgNickNameBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
 const Mypj = () => {
   const [showProject, setShowProject] = useState(true);
   const [showApp, setShowApp] = useState(false);
+  const [projectReq, setProjectReq] = useState([]);
+
+  useEffect(() => {
+    const fechProjectApply = async () => {
+      try {
+        const rsp = await AxiosApi.myProjectApplyList();
+        console.log(rsp.data);
+        setProjectReq(rsp.data);
+
+        //친구 이미지 저장
+      } catch (error) {
+        console.error("에러", error);
+      }
+    };
+    fechProjectApply();
+  }, []);
 
   return (
     <>
       <Container>
         <Title>나의 프로젝트</Title>
-        <ExitWrap>
-          <Link to="/apueda/mypage">
-            <Exit src={exit} />
-          </Link>
-        </ExitWrap>
+
         <ButtonContainer>
           <Button
             primary={showProject ? true : false}
@@ -160,7 +195,7 @@ const Mypj = () => {
         </ButtonContainer>
 
         {showProject && (
-          <TableWrapper>
+          <div>
             <StyledTable>
               <thead>
                 <tr>
@@ -199,8 +234,30 @@ const Mypj = () => {
             </StyledTable>
             <Gobutton>이동하기</Gobutton>
             <Endbutton>프로젝트 종료</Endbutton>
-          </TableWrapper>
+          </div>
         )}
+
+        {showApp && (
+          <ReqContainer>
+            {projectReq.map((apply, index) => (
+              <div key={index}>
+                <h1>{apply.projectName}</h1>
+                <ImgNickNameBox>
+                  <ProfileImage>
+                    <img src={apply.applicant.profileImgPath} alt="이미지x" />
+                  </ProfileImage>
+                  <div>{apply.applicant.nickname}</div>
+                </ImgNickNameBox>
+              </div>
+            ))}
+          </ReqContainer>
+        )}
+
+        <ExitWrap>
+          <Link to="/apueda/mypage">
+            <Exit src={exit} />
+          </Link>
+        </ExitWrap>
       </Container>
     </>
   );

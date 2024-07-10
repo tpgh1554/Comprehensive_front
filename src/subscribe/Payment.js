@@ -28,7 +28,7 @@ const Payment = ({ isChecked1, isChecked2 }) => {
   const [modalHeader, setModalHeader] = useState("");
   const [modalContent, setModalContent] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [paymentData, setPaymentData] = useState(null);
+  const [paymentData1, setPaymentData1] = useState(null);
   const [error, setError] = useState(null);
 
   const onClickSub = (e) => {
@@ -144,16 +144,16 @@ const Payment = ({ isChecked1, isChecked2 }) => {
 
     IMP.request_pay(paymentData, async (response) => {
       if (response.success) {
-        const name = "아프다 1달 구독";
+        // const name = "아프다 1달 구독";
         const transactionId = response.imp_uid; // 고유 결제 ID
-        const paymentStatus = "결재 성공"; // 결제 성공 시 상태
+        // const paymentStatus = "결재 성공"; // 결제 성공 시 상태
         const paymentDate = new Date(); // 날짜
-        const cancellationDate = null;
-        const amount = 10;
-        const isPaymentAvailable = true;
-        const isDeleted = false;
-        const paymentMethodCode = "kakaopay";
-        const paymentDetails = response.imp_uid + amount + paymentDate;
+        // const cancellationDate = null;
+        // const amount = 10;
+        // const isPaymentAvailable = true;
+        // const isDeleted = false;
+        // const paymentMethodCode = "kakaopay";
+        // const paymentDetails = response.imp_uid + amount + paymentDate;
         const customerUid = response.customer_uid;
         const status = "구독";
         const createdAt = new Date();
@@ -162,128 +162,120 @@ const Payment = ({ isChecked1, isChecked2 }) => {
         const validUntilTimestamp = Math.floor(validUntil.getTime() / 1000); // 1달뒤
 
         // const validUntil = new Date(paymentDate);
-        // validUntil.setMinutes(validUntil.getMinutes() + 1);
-        // const validUntilTimestamp = Math.floor(validUntil.getTime() / 1000); // 테스트용 날짜 1분뒤
+        // validUntil.setMinutes(validUntil.getMinutes() + 1); // 1분 뒤
+
+        // const validUntilTimestamp = Math.floor(validUntil.getTime() / 1000);
         const merchant_uid = `order_${new Date().getTime()}`;
 
         // 결제 사후검증
         // 결제 결과 단건 조회
         try {
-          const verifyResponse = await axios.post(
-            "http://localhost:5000/api/iamport/verifyPayment",
-            { imp_uid: response.imp_uid },
-            {
-              headers: {
-                Authorization: iamportToken,
-                "Content-Type": "application/json",
-              },
-              withCredentials: true,
-            }
-          );
-          setPaymentData(verifyResponse.data);
-          console.log("결제 검증 성공", verifyResponse.data);
-
-          console.log("paymentData:", paymentData);
-          console.log("등록된", paymentData.amount);
-
-          const portamount = paymentData.amount;
-          console.log("portamount:", portamount);
-
-          if (paymentData.amount == amount) {
-            console.log("결제 금액 일치");
-            const scheduleData = {
-              customer_uid: buyer_email,
-              schedules: [
-                {
-                  schedule_at: validUntilTimestamp,
-                  amount: 10,
-                  merchant_uid: merchant_uid,
-                  name: "아프다 1달 구독",
-                },
-              ],
-            };
-
-            // 4. 결제 스케줄링 요청
-            const scheduleResponse = await axios.post(
-              "http://localhost:5000/api/iamport/schedulePayment",
-              scheduleData,
-              {
-                headers: {
-                  Authorization: iamportToken,
-                  "Content-Type": "application/json",
-                },
-                withCredentials: true, // credentials 포함
-              }
-            );
-            console.log("Scheduled payment response:", scheduleResponse.data);
-            try {
-              const sp = await PaymentApi.savePaymentinfo(
-                buyer_email,
-                paymentMethodCode,
-                paymentDetails,
-                isPaymentAvailable,
-                isDeleted
-              );
-              console.log("결제 정보 저장 성공", sp);
-
-              const subscriptionResponse = await PaymentApi.requestBillingKey(
-                buyer_email,
-                transactionId,
-                paymentDate,
-                createdAt,
-                validUntil,
-                merchant_uid,
-                customerUid,
-                status
-              );
-
-              console.log("빌링키 발급 성공", subscriptionResponse);
-            } catch (error) {
-              console.error("결제 정보 저장 실패", error);
-              alert("결제 정보 저장 실패");
-            }
-
-            try {
-              const rsp = await PaymentApi.savePaymentHistory(
-                buyer_email, // 사용자 ID로 수정
-                amount,
-                paymentStatus,
-                transactionId,
-                paymentDate,
-                name,
-                cancellationDate
-              );
-              console.log("결제 내역 저장 성공", rsp);
-            } catch (error) {
-              console.error("결제 내역 저장 실패", error);
-              alert("결제 내역 저장 실패");
-            }
-            // setSubOpen(true);
-            // setModalHeader("성공");
-            // setModalContent("아프다 구독 성공");
-          } else {
-            console.log("결제 금액 불일치:", portamount, amount);
-            const cancell = await axios.post(
-              "http://localhost:5000//api/iamport/cancelPayment",
-              { imp_uid: response.imp_uid },
-              {
-                headers: {
-                  Authorization: iamportToken,
-                  "Content-Type": "application/json",
-                },
-                withCredentials: true, // credentials 포함
-              }
-            );
-            console.log("결제취소:", cancell.data);
-          }
+          //   const verifyResponse = await axios.post(
+          //     "http://localhost:5000/api/iamport/verifyPayment",
+          //     { imp_uid: response.imp_uid },
+          //     {
+          //       headers: {
+          //         Authorization: iamportToken,
+          //         "Content-Type": "application/json",
+          //       },
+          //       withCredentials: true,
+          //     }
+          //   );
+          //   setPaymentData1(verifyResponse.data);
+          //   console.log("결제 검증 성공", verifyResponse.data);
+          //   const portamount = verifyResponse.data.response.amount;
+          //   // cosnt portamount=paymentData1.response.amount; // 위에 꺼랑 둘 중 아무거나 상관없음
+          //   if (portamount == amount) {
+          //     console.log("결제 금액 일치");
+          //     const scheduleData = {
+          //       customer_uid: buyer_email,
+          //       schedules: [
+          //         {
+          //           schedule_at: validUntilTimestamp,
+          //           amount: 10,
+          //           merchant_uid: merchant_uid,
+          //           name: "아프다 1달 구독",
+          //         },
+          //       ],
+          //     };
+          //     // 4. 결제 스케줄링 요청
+          //     const scheduleResponse = await axios.post(
+          //       "http://localhost:5000/api/iamport/schedulePayment",
+          //       scheduleData,
+          //       {
+          //         headers: {
+          //           Authorization: iamportToken,
+          //           "Content-Type": "application/json",
+          //         },
+          //         withCredentials: true, // credentials 포함
+          //       }
+          //     );
+          //     console.log("다음달 자동 예약:", scheduleResponse.data);
+          //     try {
+          //       const sp = await PaymentApi.savePaymentinfo(
+          //         buyer_email,
+          //         paymentMethodCode,
+          //         paymentDetails,
+          //         isPaymentAvailable,
+          //         isDeleted
+          //       );
+          //       console.log("결제 정보 저장 성공", sp);
+          // const subscriptionResponse = await PaymentApi.requestBillingKey(
+          //   buyer_email,
+          //   transactionId,
+          //   paymentDate,
+          //   createdAt,
+          //   validUntil,
+          //   merchant_uid,
+          //   customerUid,
+          //   status
+          // );
+          // console.log("구독 상태 업데이트", subscriptionResponse);
+          //     } catch (error) {
+          //       console.error("결제 정보 저장 실패", error);
+          //       alert("결제 정보 저장 실패");
+          //     }
+          //     try {
+          //       const rsp = await PaymentApi.savePaymentHistory(
+          //         buyer_email, // 사용자 ID로 수정
+          //         amount,
+          //         paymentStatus,
+          //         transactionId,
+          //         paymentDate,
+          //         name,
+          //         cancellationDate
+          //       );
+          //       console.log("결제 내역 저장 성공", rsp);
+          //     } catch (error) {
+          //       console.error("결제 내역 저장 실패", error);
+          //       alert("결제 내역 저장 실패");
+          //     }
+          // setSubOpen(true);
+          // setModalHeader("성공");
+          // setModalContent("아프다 구독 성공");
+          // } else {
+          //   console.log("결제 금액 불일치:", portamount, amount);
+          //   const cancell = await axios.post(
+          //     "http://localhost:5000//api/iamport/cancelPayment",
+          //     { imp_uid: response.imp_uid },
+          //     {
+          //       headers: {
+          //         Authorization: iamportToken,
+          //         "Content-Type": "application/json",
+          //       },
+          //       withCredentials: true, // credentials 포함
+          //     }
+          //   );
+          //   console.log("결제취소:", cancell.data);
+          // }
         } catch (error) {
           setError(error);
           console.error("결제 검증 실패", error);
         }
       } else {
-        // setSubOpen(true);
-        // setModalHeader("실패");
-        // setModalContent("결재실패");
+        setSubOpen(true);
+        setModalHeader("실패");
+        setModalContent("결재실패");
       }
     });
   };

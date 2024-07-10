@@ -12,8 +12,7 @@ const PaymentApi = {
     paymentStatus,
     transactionId,
     paymentDate,
-    name,
-    cancellationDate
+    name
   ) => {
     const savePaymentHistory = {
       user: buyer_email,
@@ -22,7 +21,6 @@ const PaymentApi = {
       paymentStatus: paymentStatus,
       transactionId: transactionId,
       amount: amount,
-      cancellationDate: cancellationDate,
     };
     return await AxiosInstance.post("/payments/save", savePaymentHistory);
   },

@@ -15,6 +15,7 @@ export const Container = styled.div`
     &:hover {
       background-color: #c72519; /* hover 시 배경색 변경 */
     }
+
     &:active {
       background-color: #87160e; /* 클릭 시 배경색 변경 */
     }
@@ -97,4 +98,19 @@ export const SubmitBtn = styled.button`
   height: 40px;
   width: 40%;
   background-color: rgba(255, 83, 83, 0.8);
+  &:disabled {
+    cursor: not-allowed;
+    &:hover {
+      background-color: rgba(255, 83, 83, 0.8);
+    }
+  }
+`;
+export const PrivacyBox = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+export const PrivacyBtn = styled.button`
+  border: 0;
+  background: none;
 `;

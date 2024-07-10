@@ -14,6 +14,8 @@ import {
   TextBox,
   Text,
   SubmitBtn,
+  PrivacyBox,
+  PrivacyBtn,
 } from "./style/SignFormStyle";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +23,13 @@ import Upload from "../api/firebase/ImageUploader";
 import { storage } from "../api/firebase/Firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import AxiosApi from "../api/AxiosApi";
+import Privacy from "../components/Privacy";
+import Privacy2 from "../components/Privacy2";
+import styled from "styled-components";
+
+// SubmitBtn = styled.div`
+
+// `;
 
 const SignUp = () => {
   // 입력하는 값을 저장하기 위한 것들
@@ -40,6 +49,7 @@ const SignUp = () => {
   const [sentCode, setSentCode] = useState(null);
   // 유효성 검사
   const [emailValid, setEmailValid] = useState(false); // 이메일 형식 검사
+  const [emailExist, setEmailExist] = useState(false);
   const [codeValid, setCodeValid] = useState(false); // 인증번호 검사
   const [pwdValid, setPwdValid] = useState(false); // 비밀번호 유효성 검사
   const [pwdConcord, setPwdConcord] = useState(false); // 비밀번호 일치여부 확인
@@ -52,6 +62,41 @@ const SignUp = () => {
   const [passwordError, setPasswordError] = useState("");
   const [passwordError2, setPasswordError2] = useState("");
   const [identityNumberError, setIdentityNumberError] = useState("");
+
+  // 이용약관
+  const [terOpen, setTerOpen] = useState(false);
+
+  const [terOpen2, setTerOpen2] = useState(false);
+  const onClickSub = (e) => {
+    setTerOpen(true);
+  };
+  const closeTer = () => {
+    setTerOpen(false);
+  };
+  const onClickSub2 = (e) => {
+    setTerOpen2(true);
+  };
+  const closeTer2 = () => {
+    setTerOpen2(false);
+  };
+  const [allChecked, setAllChecked] = useState(false);
+  const [privacyIsChecked, setPrivacyIsChecked] = useState(false);
+  const [privacyIsChecked2, setPrivacyIsChecked2] = useState(false);
+
+  const handlePrivacyAllCheckboxChange = (e) => {
+    const { checked } = e.target;
+    setAllChecked(checked);
+    setPrivacyIsChecked(checked);
+    setPrivacyIsChecked2(checked);
+  };
+
+  const handlePrivacyCheckboxChange = (e) => {
+    setPrivacyIsChecked(e.target.checked);
+  };
+
+  const handlePrivacyCheckboxChange2 = (e) => {
+    setPrivacyIsChecked2(e.target.checked);
+  };
 
   const uploadImg = async () => {
     try {
@@ -98,6 +143,10 @@ const SignUp = () => {
 
   // 이메일 인증번호 입력
   const checkCode = () => {
+    if (inputCode === null) {
+      console.log("코드를 입력해 주세요");
+      return; // inputCode가 null일 경우 함수 실행 중지
+    }
     if (inputCode === sentCode) {
       setCodeValid(true);
       console.log("인증되었습니다");
@@ -114,10 +163,10 @@ const SignUp = () => {
       console.log("회원 존재 여부 : ", response.data);
       if (response.data === false) {
         setEmailError("가입 가능한 아이디입니다.");
-        setEmailValid(true);
+        setEmailExist(true);
       } else {
         setEmailError("중복된 이메일 입니다.");
-        setEmailValid(false);
+        setEmailExist(false);
       }
     } catch (e) {
       console.log(e);
@@ -185,13 +234,13 @@ const SignUp = () => {
   };
 
   const onChangeIdentityNumber = (e) => {
-    const value = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 입력받기
+    let value = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 입력받기
     if (value.length > 7) {
       value = value.slice(0, 7); // 최대 7자리까지만 입력받기
     }
 
     // 하이픈 포맷팅 적용
-    const formattedValue = value;
+    let formattedValue = value;
     if (value.length > 6) {
       formattedValue = value.slice(0, 6) + "-" + value.slice(6);
     }
@@ -268,6 +317,17 @@ const SignUp = () => {
       alert("회원가입 중 오류가 발생했습니다.");
     }
   };
+
+  const isFormValid =
+    emailExist &&
+    !emailValid &&
+    codeValid &&
+    pwdValid &&
+    pwdConcord &&
+    identifyNumberValid &&
+    file &&
+    privacyIsChecked &&
+    privacyIsChecked2;
 
   return (
     <Container>
@@ -373,10 +433,52 @@ const SignUp = () => {
               <p>자기소개</p>
               <Text value={myInfo} onChange={onChangeMyinfo} />
             </TextBox>
+            <PrivacyBox>
+              <label>
+                <CheckBox
+                  type="checkbox"
+                  onChange={handlePrivacyAllCheckboxChange}
+                  checked={allChecked}
+                />
+                전체 동의
+              </label>
+              <label>
+                <CheckBox
+                  type="checkbox"
+                  onChange={handlePrivacyCheckboxChange}
+                  checked={privacyIsChecked}
+                />
+                [필수] 서비스 이용약관 동의
+                <PrivacyBtn onClick={onClickSub}> > </PrivacyBtn>
+              </label>
+              <label>
+                <CheckBox
+                  type="checkbox"
+                  onChange={handlePrivacyCheckboxChange2}
+                  checked={privacyIsChecked2}
+                />
+                [필수] 개인정보 수집 및 이용 동의
+                <PrivacyBtn onClick={onClickSub2}> > </PrivacyBtn>
+              </label>
+            </PrivacyBox>
           </InputContainer>
-          <SubmitBtn onClick={regist}>가입</SubmitBtn>
+          <SubmitBtn onClick={regist} disabled={isFormValid ? false : true}>
+            가입
+          </SubmitBtn>
         </Contents>
       </Box>
+      <Privacy
+        open={terOpen}
+        close={closeTer}
+        category="약관창"
+        header="이용약관"
+      />
+      <Privacy2
+        open={terOpen2}
+        close={closeTer2}
+        category="약관창"
+        header="개인정보취급방침"
+      />
     </Container>
   );
 };

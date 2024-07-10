@@ -10,7 +10,7 @@ const Container = styled.div`
   height: 100%;
   list-style-type: none;
   background-color: #ffffff;
-  border-radius: 30px;
+  border-radius: 0 0 30px 30px;
   // overflow-y: scroll;
 `;
 
@@ -23,7 +23,6 @@ const ListContainer = styled.div`
 
 const ContentNameList = styled.div`
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -48,30 +47,57 @@ const List = styled.div`
 
 const ListResult = styled.div`
   display: flex;
-  flex-direction: row;
-  border-bottom: 0.5px solid #c1c1c1;
-  height: auto;
-  padding: 8px 0;
+  width: 45%;
+  border-bottom: 4.5px solid #c1c1c1;
+  border-right: 3px solid #c1c1c1;
+  color: #fff;
+  height: 230px;
+  padding: 24px;
+  background-color: #ff5353;
+  justify-content: space-between;
+  /* box-shadow: 1px 1px; */
+  border-radius: 36px;
+  margin: 18px;
+  flex-direction: column;
 `;
-
-const Profile = styled.div`
+const ProfileContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+`;
+const ProfileInList = styled.div`
   display: flex;
   flex-direction: column;
-  width: 20%;
-
+  margin-left: -10px;
+  z-index: ${(props) => props.zIndex};
   & img {
+    background-color: #fff;
     width: 60px;
     height: 60px;
     border-radius: 30px;
     object-fit: cover;
+    border: 4px solid;
   }
 `;
+// const Profile = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   width: 20%;
+
+//   & img {
+//     width: 60px;
+//     height: 60px;
+//     border-radius: 30px;
+//     object-fit: cover;
+//     border: 4px solid;
+//   }
+// `;
 
 const Content = styled.div`
   display: flex;
-  flex-direction: column;
-  width: 70%;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
 `;
 
 const Etc = styled.div`
@@ -99,15 +125,16 @@ export const Button = styled.button`
 const ProjectList = () => {
   const [projectList, setProjectList] = useState([]);
   const [sortBy, setSortBy] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [totalPageSize, setTotalPageSize] = useState(0); // 총 페이지 수
   const navigate = useNavigate();
   useEffect(() => {
     const fetchProjectList = async () => {
       try {
-        const rsp = await AxiosApi.getProjectList();
+        const rsp = await AxiosApi.getProjectList(currentPage);
         // Sort project list by regDate in descending order (newest first)
 
+        //const chatMemRsp = await AxiosApi.findRoomByRoomName(rsp.data.);
         const sortedProjects = rsp.data.projects.sort(
           (a, b) => new Date(b.regDate) - new Date(a.regDate)
         );
@@ -160,26 +187,61 @@ const ProjectList = () => {
             loader={<h4>Loading...</h4>}
             endMessage={<p>프로젝트 구인글이 더 이상 없습니다.</p>}
             className="container"
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+            }}
           >
             {projectList &&
               projectList.map((project, index) => (
                 <ListResult key={index}>
-                  <Profile>
-                    <img src={project.profileImg} alt="profile" />
-                    <span>닉네임: {project.nickName}</span>
-                  </Profile>
                   <Content>
                     <span onClick={() => projectClick(project.projectId)}>
                       {project.projectTitle}
                     </span>
-                    <span>
-                      {project.skillName &&
-                        project.skillName.map((skills, index) => (
-                          <Button key={index}>{skills.skillName}</Button>
-                        ))}
-                    </span>
+                    {formatTimestamp(project.regDate)}
                   </Content>
-                  <Etc>{formatTimestamp(project.regDate)}</Etc>
+                  <span>
+                    {project.skillName &&
+                      project.skillName.map((skills, index) => (
+                        <Button
+                          key={index}
+                          style={{
+                            color: "#ff5353",
+                            backgroundColor: "#ffffff",
+                            borderRight: "1px solid #c1c1c1",
+                            borderBottom: "2px solid #c1c1c1",
+                          }}
+                        >
+                          {skills.skillName}
+                        </Button>
+                      ))}
+                  </span>
+                  <ProfileContainer>
+                    <ProfileInList zIndex={1}>
+                      <img src={project.profileImg} alt="profile" />
+                      {/* <Profile> <img src={} alt="profile" /></Profile> */}
+                      {/* {project.chatMemProfile.map((img, index) => (
+                            <div key={index}>{img}</div>
+                          ))} */}
+                    </ProfileInList>
+                    <ProfileInList zIndex={2}>
+                      <img src={project.profileImg} alt="profile" />
+                      {/* <Profile> <img src={} alt="profile" /></Profile> */}
+                      {/* {project.chatMemProfile.map((img, index) => (
+                            <div key={index}>{img}</div>
+                          ))} */}
+                    </ProfileInList>
+                    <ProfileInList zIndex={3}>
+                      <img src={project.profileImg} alt="profile" />
+                      {/* <Profile> <img src={} alt="profile" /></Profile> */}
+                      {/* {project.chatMemProfile.map((img, index) => (
+                            <div key={index}>{img}</div>
+                          ))} */}
+                    </ProfileInList>
+                  </ProfileContainer>
+                  <Etc></Etc>
                 </ListResult>
               ))}
           </InfiniteScroll>

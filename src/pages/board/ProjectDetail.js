@@ -245,7 +245,6 @@ const ProjectDetail = () => {
   const request = () => {
     console.log("실행");
     const postData = {
-      memberId: email,
       projectId: projectId,
       applyStatus: true,
     };
@@ -253,7 +252,7 @@ const ProjectDetail = () => {
   };
 
   const requestProject = async (postData) => {
-    const isRequest = await AxiosApi.searchRequest(projectId);
+    const isRequest = await AxiosApi.searchRequest();
     // console.log("isRequest.data.memberId", isRequest.data[0].memberId);
     if (isRequest.data[0]) {
       alert("이미 신청한 프로젝트 입니다.");

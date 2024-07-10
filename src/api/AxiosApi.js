@@ -103,8 +103,8 @@ const AxiosApi = {
     return await AxiosInstance.get("/board/list");
   },
 
-  getProjectList: async () => {
-    return await AxiosInstance.get("/project/list");
+  getProjectList: async (page) => {
+    return await AxiosInstance.get(`/project/list?page=${page}`);
   },
 
   boardDelete: async (id) => {
@@ -321,9 +321,8 @@ const AxiosApi = {
     return await AxiosInstance.get(`/chat/${roomId}/messages`);
   },
   // 프로젝트 요청 조회
-  searchRequest: async (projectId) => {
-    console.log("projectId", projectId);
-    return await AxiosInstance.get(`/apply/list/${projectId}`);
+  searchRequest: async () => {
+    return await AxiosInstance.get(`/apply/list/`);
   },
 
   // 프로젝트 요청

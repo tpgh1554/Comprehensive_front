@@ -185,13 +185,13 @@ const SignUp = () => {
   };
 
   const onChangeIdentityNumber = (e) => {
-    let value = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 입력받기
+    const value = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 입력받기
     if (value.length > 7) {
       value = value.slice(0, 7); // 최대 7자리까지만 입력받기
     }
 
     // 하이픈 포맷팅 적용
-    let formattedValue = value;
+    const formattedValue = value;
     if (value.length > 6) {
       formattedValue = value.slice(0, 6) + "-" + value.slice(6);
     }

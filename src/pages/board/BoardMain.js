@@ -3,7 +3,9 @@ import SelectBoard from "./SelectBoard";
 import BoardList from "./BoardList";
 import HeadBar from "./HeadBar";
 import ProjectList from "./ProjectList";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { UserContext } from "../../context/UserStore";
+import { useNavigate } from "react-router-dom";
 
 const BoardLayout = styled.div`
   display: flex;
@@ -25,6 +27,16 @@ const Container = styled.div`
 `;
 const BoardMain = () => {
   const [isClick, setIsClick] = useState({ a: true, b: false });
+
+  // 로그인 안 할시에 로그인 창으로 이동
+  const navigate = useNavigate();
+  const context = useContext(UserContext);
+  const { loginStatus } = context;
+  useEffect(() => {
+    if (!loginStatus) {
+      navigate("/apueda/login");
+    }
+  }, []);
 
   return (
     <BoardLayout>

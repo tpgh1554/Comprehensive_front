@@ -1,19 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AxiosApi from '../../api/AxiosApi';
+import React, { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import AxiosApi from "../../api/AxiosApi";
+import { UserContext } from "../../context/UserStore";
 
 const ChatManage = () => {
   const [rooms, setRooms] = useState([]);
   const navigate = useNavigate();
+  // 로그인 안 할시에 로그인 창으로 이동
+  const context = useContext(UserContext);
+  const { loginStatus } = context;
+  useEffect(() => {
+    if (!loginStatus) {
+      navigate("/apueda/login");
+    }
+  }, []);
 
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const memberId = localStorage.getItem('email');
+        const memberId = localStorage.getItem("email");
         const response = await AxiosApi.getJoinedRooms(memberId);
         setRooms(response.data);
       } catch (error) {
-        console.error('Error fetching chat rooms', error);
+        console.error("Error fetching chat rooms", error);
       }
     };
 
@@ -23,13 +32,15 @@ const ChatManage = () => {
   const handleJoinRoom = (roomId) => {
     navigate(`/chat/${roomId}`);
   };
-  
+
   const handleDeleteRoom = async (roomId) => {
     try {
       await AxiosApi.exitRoom(roomId);
-      setRooms((prevRooms) => prevRooms.filter((room) => room.roomId !== roomId));
+      setRooms((prevRooms) =>
+        prevRooms.filter((room) => room.roomId !== roomId)
+      );
     } catch (error) {
-      console.error('Error deleting room', error);
+      console.error("Error deleting room", error);
     }
   };
 

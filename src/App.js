@@ -15,6 +15,7 @@ import LoginPage from "./login/Login";
 import SignUp from "./login/Signup";
 import MemberUpdate from "./login/MemberUpdate";
 import Upload from "./api/firebase/ImageUploader";
+import UserStore from "./context/UserStore";
 
 import Header from "./components/Header";
 import NaviBar from "./components/NaviBar";
@@ -37,52 +38,54 @@ function App() {
   return (
     <>
       <GlobalStyle />
-      <Router>
-        <Header />
-        <NaviBar />
-        <Routes>
-          {/*첫 메인 페이지 경로*/}
-          <Route path="/" element={<Navigate to="/apueda" />} />
-          <Route path="/apueda" element={<Mainpage />} />
-          <Route path="/apueda/mypage" element={<MypageMain />} />
-          <Route path="/apueda/chatmainpage" element={<ChatMain />} />
-          <Route path="/apueda/chatmanage" element={<ChatManage />} />
-          <Route path="/chat/:roomId" element={<ChatRoom />} />
-          <Route path="/apueda/datingapp" element={<DatingApp />} />
-          <Route path="/apueda/board" element={<BoardMain />} />
-          <Route
-            path="/apueda/board/projectDetail/:projectId"
-            element={<ProjectDetail />}
-          />
-          <Route
-            path="/apueda/board/boardDetail/:boardId"
-            element={<BoardDetail />}
-          />
+      <UserStore>
+        <Router>
+          <Header />
+          <NaviBar />
+          <Routes>
+            {/*첫 메인 페이지 경로*/}
+            <Route path="/" element={<Navigate to="/apueda" />} />
+            <Route path="/apueda" element={<Mainpage />} />
+            <Route path="/apueda/mypage" element={<MypageMain />} />
+            <Route path="/apueda/chatmainpage" element={<ChatMain />} />
+            <Route path="/apueda/chatmanage" element={<ChatManage />} />
+            <Route path="/chat/:roomId" element={<ChatRoom />} />
+            <Route path="/apueda/datingapp" element={<DatingApp />} />
+            <Route path="/apueda/board" element={<BoardMain />} />
+            <Route
+              path="/apueda/board/projectDetail/:projectId"
+              element={<ProjectDetail />}
+            />
+            <Route
+              path="/apueda/board/boardDetail/:boardId"
+              element={<BoardDetail />}
+            />
 
-          <Route
-            path="/apueda/modify/project/:projectId"
-            element={<WriteProject />}
-          />
-          <Route
-            path="/apueda/modify/board/:boardId"
-            element={<WriteBoard />}
-          />
-          <Route path="/apueda/writeproject" element={<WriteProject />} />
-          <Route path="/apueda/writeboard" element={<WriteBoard />} />
-          <Route path="/apueda/mypage/mypj" element={<Mypj />} />
-          <Route path="/apueda/mypage/mywrite" element={<Mywrite />} />
-          <Route path="/apueda/subinfo" element={<Subinfo />} />
-          <Route path="/apueda/login" element={<LoginPage />} />
-          <Route path="/apueda/signup" element={<SignUp />} />
-          <Route
-            path="/apueda/mypage/memberupdate"
-            element={<MemberUpdate />}
-          />
-          <Route path="/apueda/mypage/editinfo" element={<EditInfo />} />
-          <Route path="/apueda/mypage/friend" element={<Friend />} />
-          <Route path="/apueda/mysub" element={<Mysub />} />
-        </Routes>
-      </Router>
+            <Route
+              path="/apueda/modify/project/:projectId"
+              element={<WriteProject />}
+            />
+            <Route
+              path="/apueda/modify/board/:boardId"
+              element={<WriteBoard />}
+            />
+            <Route path="/apueda/writeproject" element={<WriteProject />} />
+            <Route path="/apueda/writeboard" element={<WriteBoard />} />
+            <Route path="/apueda/mypage/mypj" element={<Mypj />} />
+            <Route path="/apueda/mypage/mywrite" element={<Mywrite />} />
+            <Route path="/apueda/subinfo" element={<Subinfo />} />
+            <Route path="/apueda/login" element={<LoginPage />} />
+            <Route path="/apueda/signup" element={<SignUp />} />
+            <Route
+              path="/apueda/mypage/memberupdate"
+              element={<MemberUpdate />}
+            />
+            <Route path="/apueda/mypage/editinfo" element={<EditInfo />} />
+            <Route path="/apueda/mypage/friend" element={<Friend />} />
+            <Route path="/apueda/mysub" element={<Mysub />} />
+          </Routes>
+        </Router>
+      </UserStore>
     </>
   );
 }

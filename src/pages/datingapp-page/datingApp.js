@@ -1,21 +1,35 @@
-// card.js 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+// card.js
+import React, { useState, useEffect, useMemo, useRef, useContext } from "react";
 import styled from "styled-components";
 import AxiosApi from "../../api/AxiosApi";
 import TinderCard from "react-tinder-card";
-import { FaRegCircleCheck, FaRegCircleXmark, FaArrowRotateLeft } from "react-icons/fa6";
-
-
+import {
+  FaRegCircleCheck,
+  FaRegCircleXmark,
+  FaArrowRotateLeft,
+} from "react-icons/fa6";
+import { UserContext } from "../../context/UserStore";
+import { useNavigate } from "react-router-dom";
 
 function DatingApp() {
   const [cardList, setCardList] = useState([]);
   const [likedList, setLikedList] = useState([]); // 좋아요 누른 사람들은 현재페이지에서 나갈때 일괄 신청 되도록 리스트에 입력
   const [unlikedList, setUnlikedList] = useState([]); // 싫어요 누른 사람들은 현재페이지에서 나갈때 일괄 신청 되도록 리스트에 입력
-  const myEmail = localStorage.getItem('email')
+  const myEmail = localStorage.getItem("email");
   const [currentIndex, setCurrentIndex] = useState(0); // 겹친 카드중 선택 순서
   const [lastDirection, setLastDirection] = useState();
   // used for outOfFrame closure
   const currentIndexRef = useRef(currentIndex);
+
+  // 로그인 안 할시에 로그인 창으로 이동
+  const navigate = useNavigate();
+  const context = useContext(UserContext);
+  const { loginStatus } = context;
+  useEffect(() => {
+    if (!loginStatus) {
+      navigate("/apueda/login");
+    }
+  }, []);
 
   const childRefs = useMemo(
     () =>
@@ -30,7 +44,7 @@ function DatingApp() {
       try {
         const response = await AxiosApi.getCardList(myEmail); // AxiosApi에서 사용자 정보를 가져옴
         const userList = response.data.map((user) => ({
-          email : user.email,
+          email: user.email,
           nickname: user.nickname,
           url: user.profileImgPath,
           skill: user.skill,
@@ -45,13 +59,21 @@ function DatingApp() {
     };
     showUserInfo();
   }, [myEmail]);
-  useEffect(()=>{
-    if (currentIndex === -1) { // 카드가 더이상 없으면 마지막카드가 사라지고 알림 출력위해 지연시간 설정
-      setTimeout( () => {
-        if (window.confirm("더이상 카드가 없습니다. 모든 친구 신청을 보내고 메인페이지로 이동하시겠습니까? (취소 시 페이지이동 X)")) {
+  useEffect(() => {
+    if (currentIndex === -1) {
+      // 카드가 더이상 없으면 마지막카드가 사라지고 알림 출력위해 지연시간 설정
+      setTimeout(() => {
+        if (
+          window.confirm(
+            "더이상 카드가 없습니다. 모든 친구 신청을 보내고 메인페이지로 이동하시겠습니까? (취소 시 페이지이동 X)"
+          )
+        ) {
           likedList.forEach(async (user) => {
             try {
-              const response = await AxiosApi.friendRequest(myEmail, user.email);
+              const response = await AxiosApi.friendRequest(
+                myEmail,
+                user.email
+              );
               console.log("Response:", response.data);
             } catch (error) {
               console.error("Error sending friend request:", error);
@@ -59,7 +81,10 @@ function DatingApp() {
           });
           unlikedList.forEach(async (user) => {
             try {
-              const response = await AxiosApi.unlikeFriendRequest(myEmail, user.email);
+              const response = await AxiosApi.unlikeFriendRequest(
+                myEmail,
+                user.email
+              );
               console.log("Response:", response.data);
             } catch (error) {
               console.error("Error sending friend request:", error);
@@ -67,7 +92,7 @@ function DatingApp() {
           });
           window.location.href = "/"; // 메인 페이지로 이동
         }
-      }, 1500); 
+      }, 1500);
     }
   }, [currentIndex, likedList, unlikedList, myEmail]);
 
@@ -77,7 +102,8 @@ function DatingApp() {
 
     if (direction === "right") {
       setLikedList((prev) => [...prev, cardList[index]]);
-    } else if (direction === 'left') { // 왼쪽으로 넘겼을 때 실행 함수 (싫어요
+    } else if (direction === "left") {
+      // 왼쪽으로 넘겼을 때 실행 함수 (싫어요
       setUnlikedList((prev) => [...prev, cardList[index]]);
     }
   };
@@ -109,9 +135,13 @@ function DatingApp() {
     const lastCard = cardList[newIndex];
 
     if (lastDirection === "right") {
-      setLikedList((prev) => prev.filter(user => user.nickname !== lastCard.nickname));
+      setLikedList((prev) =>
+        prev.filter((user) => user.nickname !== lastCard.nickname)
+      );
     } else if (lastDirection === "left") {
-      setUnlikedList((prev) => prev.filter(user => user.nickname !== lastCard.nickname));
+      setUnlikedList((prev) =>
+        prev.filter((user) => user.nickname !== lastCard.nickname)
+      );
     }
 
     updateCurrentIndex(newIndex);
@@ -187,9 +217,7 @@ function DatingApp() {
               You swiped {lastDirection}
             </ResultBox>
           ) : (
-            <ResultBox>
-              모든 카드를 넘겨주세요!
-            </ResultBox>
+            <ResultBox>모든 카드를 넘겨주세요!</ResultBox>
           )}
         </ButtonArea>
       </PhoneFrame>
@@ -214,13 +242,17 @@ const PhoneFrame = styled.div`
   box-sizing: border-box;
   width: 30vw;
   height: 80vh;
-  background-image: linear-gradient(to right, #ff5253 0%, rgb(255,60,100) 90%);
+  background-image: linear-gradient(
+    to right,
+    #ff5253 0%,
+    rgb(255, 60, 100) 90%
+  );
   border-radius: 4dvi;
 
   & * {
     user-select: none;
   }
-  
+
   @keyframes popup {
     0% {
       transform: scale(1, 1);
@@ -281,7 +313,10 @@ const CardImage = styled.div`
   overflow: hidden;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); // 절대위치의 카드를 가운데 정렬하기 위해 사용
+  transform: translate(
+    -50%,
+    -50%
+  ); // 절대위치의 카드를 가운데 정렬하기 위해 사용
   width: 20vw;
   height: 50vh;
   border-radius: 2vh;
@@ -323,7 +358,7 @@ const Buttons = styled.div`
     -webkit-text-stroke: 0.3vh #000000;
     background-color: #ffffff;
     transition: 200ms;
-    margin: 0 .5vw;
+    margin: 0 0.5vw;
     white-space: nowrap;
     flex-shrink: 1; /* 버튼이 부모 크기에 맞춰 작아지도록 설정 */
     flex-grow: 1;
@@ -355,7 +390,12 @@ const SpanBox = styled.div`
   bottom: 0;
   margin: 5vh 0 0 0;
   color: #fff;
-  background-image: linear-gradient(to bottom, transparent 0%, rgb(0,0,0,0.5) 40%, rgba(0,0,0,0.8) 100%); // %는 처음기준 위치
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgb(0, 0, 0, 0.5) 40%,
+    rgba(0, 0, 0, 0.8) 100%
+  ); // %는 처음기준 위치
 `;
 const Span = styled.span`
   display: flex;
@@ -364,5 +404,3 @@ const Span = styled.span`
   text-align: left;
   margin: 1vh;
 `;
-
-

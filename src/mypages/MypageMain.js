@@ -2,8 +2,10 @@ import React from "react";
 import styled from "styled-components";
 import GlobalStyle from "../font/GlobalStyle";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import Myprofile from "./Myprofile";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserStore";
 
 const Container = styled.div`
   height: 80vh;
@@ -66,6 +68,16 @@ const Button = styled.button`
 
 const MypageMain = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 로그인 안 할시에 로그인 창으로 이동
+  const navigate = useNavigate();
+  const context = useContext(UserContext);
+  const { loginStatus } = context;
+  useEffect(() => {
+    if (!loginStatus) {
+      navigate("/apueda/login");
+    }
+  }, []);
 
   const openModal = () => {
     setIsModalOpen(true);

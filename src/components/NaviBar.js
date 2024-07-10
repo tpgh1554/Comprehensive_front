@@ -153,7 +153,7 @@ export default function NaviBar() {
                 isLoginUser={!isLoginUser}
                 onClick={() => {
                   localStorage.clear();
-                  window.location.reload();
+                  navigate("/");
                   alert("로그아웃 되었습니다. (localStorage 모두 삭제)");
                 }}
               >

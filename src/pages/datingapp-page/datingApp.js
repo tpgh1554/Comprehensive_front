@@ -90,7 +90,7 @@ function DatingApp() {
               console.error("Error sending friend request:", error);
             }
           });
-          window.location.href = "/"; // 메인 페이지로 이동
+          navigate("/"); //window.location.href = "/"; // 메인 페이지로 이동
         }
       }, 1500);
     }

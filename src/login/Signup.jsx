@@ -135,32 +135,35 @@ const SignUp = ({ profile }) => {
       setFile(selectedFile);
     }
   };
+
+  // 이미지 변경 확인 용
+  useEffect(() => {
+    console.log("imgSrc : " + imgSrc);
+    console.log("file : " + file.name);
+  }, [file]);
   const onSubmit = () => {
     if (imgSrc !== basicProfile && imgSrc !== profile) {
       const storageRef = storage.ref();
-      const fileRef = storageRef.child(file.name);
+      const fileRef = storageRef.child(`${email}`);
       fileRef.put(file).then(() => {
         console.log("저장성공!");
         fileRef.getDownloadURL().then((url) => {
           console.log("저장경로 확인 : " + url);
           setUrl(url);
+          setProfileImgPath(url);
           regist(url);
+          console.log(url);
+          console.log(profileImgPath);
         });
       });
     } else {
       if (imgSrc === profile) {
         regist(profile);
       } else {
-        regist();
+        regist(basicProfile);
       }
     }
   };
-
-  // 이미지 변경 확인 용
-  // useEffect(() => {
-  //   console.log("imgSrc : " + imgSrc);
-  //   console.log("file : " + file.name);
-  // }, [file]);
 
   // 입력 인증 번호 확인
   const onChangeEmailCode = (e) => {
@@ -296,9 +299,9 @@ const SignUp = ({ profile }) => {
     setIdentifyNumberValid(value.length >= 7);
     console.log(identifyNumberValid);
   };
-  useEffect(() => {
-    console.log(identifyNumberValid); // 유효성 상태가 변경될 때마다 콘솔에 출력
-  }, [identifyNumberValid]);
+  // useEffect(() => {
+  //   console.log(identifyNumberValid); // 유효성 상태가 변경될 때마다 콘솔에 출력
+  // }, [identifyNumberValid]);
 
   // 체크박스
   // 스킬 체크
@@ -329,7 +332,7 @@ const SignUp = ({ profile }) => {
     setMyInfo(e.target.value);
   };
 
-  const regist = async (url) => {
+  const regist = async (profileImgPath) => {
     const user = {
       email,
       password,
@@ -362,7 +365,7 @@ const SignUp = ({ profile }) => {
     pwdValid &&
     pwdConcord &&
     identifyNumberValid &&
-    file &&
+    // file &&
     privacyIsChecked &&
     privacyIsChecked2;
 
@@ -371,8 +374,7 @@ const SignUp = ({ profile }) => {
       <Box>
         <Contents>
           <h1>회원가입</h1>
-          <ProfileBox>
-            {" "}
+          <ProfileBox className="profile">
             <div className="imgBox">
               <img src={imgSrc} alt="프로필이미지" />
             </div>
@@ -493,7 +495,7 @@ const SignUp = ({ profile }) => {
                   checked={privacyIsChecked}
                 />
                 [필수] 서비스 이용약관 동의
-                <PrivacyBtn onClick={onClickSub}> > </PrivacyBtn>
+                <PrivacyBtn onClick={onClickSub}> ▶ </PrivacyBtn>
               </label>
               <label>
                 <CheckBox
@@ -502,11 +504,11 @@ const SignUp = ({ profile }) => {
                   checked={privacyIsChecked2}
                 />
                 [필수] 개인정보 수집 및 이용 동의
-                <PrivacyBtn onClick={onClickSub2}> > </PrivacyBtn>
+                <PrivacyBtn onClick={onClickSub2}> ▶ </PrivacyBtn>
               </label>
             </PrivacyBox>
           </InputContainer>
-          <SubmitBtn onClick={regist} disabled={isFormValid ? false : true}>
+          <SubmitBtn onClick={onSubmit} disabled={isFormValid ? false : true}>
             가입
           </SubmitBtn>
         </Contents>

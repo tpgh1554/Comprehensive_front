@@ -49,53 +49,47 @@ export const Contents = styled.div`
 export const ProfileBox = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 10px;
-  &.profile {
+  /* &.profile {
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-bottom: 50px;
-    &.imgBox {
-      position: relative;
-      width: 20%;
-      padding-bottom: 20%;
-      margin-bottom: 30px;
-      border-radius: 50%;
-      background-color: var(--GREY);
-      overflow: hidden;
-      &.img {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-      }
-      @media only screen and (max-width: 768px) {
-        width: 30%;
-        padding-bottom: 30%;
-      }
-      @media only screen and (max-width: 480px) {
-        width: 50%;
-        padding-bottom: 50%;
-      }
-    }
-    &.label {
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-size: 0.8em;
-      font-weight: 600;
-      cursor: pointer;
-      background-color: var(--LIGHTVIO);
-      transition: 0.3s ease-out;
-      &:hover {
-        background-color: var(--VIOLET);
-        color: white;
-      }
-    }
-    &.input {
-      display: none;
+    margin-bottom: 50px; */
+  & .imgBox {
+    /* position: relative; */
+    width: 200px;
+    height: 200px;
+    padding-bottom: 20%;
+    margin-bottom: 30px;
+    border-radius: 50%;
+    background-color: var(--GREY);
+    overflow: hidden;
+    & img {
+      width: 200px;
+      height: 200px;
     }
   }
+  & label {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: var(--LIGHTVIO);
+    transition: 0.3s ease-out;
+    &:hover {
+      background-color: var(--VIOLET);
+      color: white;
+    }
+  }
+  & input {
+    display: none;
+  }
+  /* } */
 `;
 
 export const InputContainer = styled.div`
@@ -133,7 +127,9 @@ export const SkillContext = styled.div`
   margin-right: 10px; /* 각 체크박스 사이의 간격 설정 */
 `;
 
-export const CheckBox = styled.input``;
+export const CheckBox = styled.input`
+  margin-right: 8px;
+`;
 
 export const TextBox = styled.div``;
 

@@ -15,12 +15,11 @@ import {
   Text,
   SubmitBtn,
 } from "./style/SignFormStyle";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import Upload from "../api/firebase/ImageUploader";
 import { storage } from "../api/firebase/Firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import AxiosApi from "../api/AxiosApi";
+import basicProfile from "../image/person-icon2.png";
 
 const MemberUpdate = () => {
   // 입력하는 값을 저장하기 위한 것들
@@ -31,18 +30,18 @@ const MemberUpdate = () => {
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
   const [identityNumber, setIdentityNumber] = useState("");
-  const [profileImgPath, setProfileImgPath] = useState("");
+
   const [skill, setSkill] = useState("");
   const [myInfo, setMyInfo] = useState("");
-  const [formattedIdentityNumber, setFormattedIdentityNumber] = useState("");
 
   // 유효성 검사
   const [pwdValid, setPwdValid] = useState(false); // 비밀번호 유효성 검사
   const [pwdConcord, setPwdConcord] = useState(false); // 비밀번호 일치여부 확인
+  const [checkedValid, setCheckedValid] = useState(false); // 스킬 필수 체크
 
   // Firebase 파일 설정
   const [file, setFile] = useState("");
-  const [previewUrl, setPreviewUrl] = useState("");
+  const [imgSrc, setImgSrc] = useState("");
   // 네비게이션
   const navigate = useNavigate();
   // 오류메세지
@@ -50,25 +49,18 @@ const MemberUpdate = () => {
   const [passwordError2, setPasswordError2] = useState("");
 
   useEffect(() => {
-    const imgUrl = localStorage.getItem("imgUrl");
-    if (imgUrl) {
-      setPreviewUrl(imgUrl);
-
-      setFile(imgUrl);
-    }
-  }, []); // 빈 배열을 의존성 배열로 사용
-
-  useEffect(() => {
     const memberInfo = async () => {
+      const profile = localStorage.getItem("imgUrl");
       try {
         const rsp = await AxiosApi.getUserInfo2();
         setUserInfo(rsp.data);
-        setFile(previewUrl);
-        setEmail(userInfo.email);
-        setName(userInfo.name);
-        setIdentityNumber(userInfo.identityNumber);
-        setSkill(userInfo.skill);
-        setMyInfo(userInfo.myInfo);
+        setImgSrc(profile);
+        setNickname(rsp.data.nickname);
+        setEmail(rsp.data.email);
+        setName(rsp.data.name);
+        setIdentityNumber(rsp.data.identityNumber);
+        // setSkill(userInfo.skill);
+        setMyInfo(rsp.data.myInfo);
         console.log(rsp.data);
       } catch (e) {
         console.log(e);
@@ -77,33 +69,75 @@ const MemberUpdate = () => {
     memberInfo();
   }, []);
 
-  const handleFileChange = (selectedFile) => {
-    setFile(selectedFile);
-    const fileReader = new FileReader();
-    fileReader.onload = () => {
-      setPreviewUrl(fileReader.result);
-    };
-    fileReader.readAsDataURL(selectedFile);
-  };
+  // 파이어베이스 수정
+  const canvasRef = useRef(null);
+  // 입력받은 이미지 파일 주소
+  const handleFileInputChange = (e) => {
+    // const selectedFile = e.target.files?.[0];
 
-  const uploadImg = async () => {
-    try {
-      if (!file) {
-        throw new Error("파일이 선택되지 않았습니다.");
-      }
-      const fileRef = ref(storage, `images/${email}`);
-      const snapshot = await uploadBytes(fileRef, file, {
-        contentType: file.type,
+    // // 밑에꺼 크기 사이즈 변경하는 부분 오류나면 다시 복구 예정
+    // if (selectedFile) {
+    //   const objectUrl = URL.createObjectURL(selectedFile);
+    //   setImgSrc(objectUrl);
+    //   // 파이어베이스에 보내기위해 변수에 저장
+    //   setFile(selectedFile);
+    // }
+
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      const img = new Image();
+      img.src = URL.createObjectURL(selectedFile);
+      img.onload = () => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = 800;
+        canvas.height = 800;
+        ctx.drawImage(img, 0, 0, 800, 800);
+        console.log("이미지 그리기 완료");
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const resizedFile = new File([blob], selectedFile.name, {
+                type: "image/png",
+              });
+              setFile(resizedFile);
+              setImgSrc(URL.createObjectURL(resizedFile));
+            } else {
+              console.log("이미지 변환 중 오류 발생");
+            }
+          },
+          "image/png",
+          0.9
+        );
+
+        URL.revokeObjectURL(img.src);
+      };
+      img.onerror = () => {
+        console.log("이미지 로드 중 오류 발생");
+      };
+    }
+  };
+  // 이미지 저장
+  const onSubmit = () => {
+    if (imgSrc !== basicProfile && imgSrc !== userInfo.profileImgPath) {
+      const storageRef = storage.ref();
+      const fileRef = storageRef.child(`${email}`);
+      fileRef.put(file).then(() => {
+        console.log("저장성공!");
+        fileRef.getDownloadURL().then((url) => {
+          console.log("저장경로 확인 : " + url);
+          localStorage.setItem("imgUrl", url);
+          regist(url);
+        });
       });
-      console.log("이미지 파이어베이스 업로드 성공");
-      const url = await getDownloadURL(snapshot.ref);
-      console.log("경로 : " + url);
-      localStorage.setItem("imgUrl", url);
-      setProfileImgPath(url);
-      return url; // 업로드가 성공하면 URL 반환
-    } catch (e) {
-      console.log("파일 업로드 에러 : " + e);
-      throw e; // 에러 발생 시 예외 던짐
+    } else if (imgSrc === basicProfile) {
+      regist(basicProfile);
+      localStorage.setItem("imgUrl", basicProfile);
+    } else if (imgSrc === userInfo.profileImgPath) {
+      regist(userInfo.profileImgPath);
+      localStorage.setItem("imgUrl", userInfo.profileImgPath);
     }
   };
 
@@ -139,6 +173,9 @@ const MemberUpdate = () => {
   };
   const onChangeNickname = (e) => {
     setNickname(e.target.value);
+    if (e.target.value === null) {
+      setNickname(userInfo.nickname);
+    }
   };
   // 체크박스
   // 스킬 체크
@@ -168,25 +205,26 @@ const MemberUpdate = () => {
     setMyInfo(e.target.value);
   };
 
-  const test = async () => {
-    return await uploadImg(); // 업로드 이미지 함수가 완료 될 때 까지 기다리는듯
-  };
+  const regist = async (url = "") => {
+    const originImage = imgSrc === basicProfile ? "" : imgSrc;
+    const image = url !== "" ? url : originImage;
 
-  const regist = async () => {
+    console.log("프로필 이미지 경로는 : " + image);
     const user = {
       email,
+      name,
       password,
-      nickname,
-      profileImgPath,
+      nickname: nickname,
+      identityNumber,
+      profileImgPath: image,
       skill,
       myInfo,
     };
     try {
-      const imgPath = await test();
-      setProfileImgPath(imgPath);
-
-      const response = await AxiosApi.memberUpdate(user);
-      if (response.data) {
+      console.log(user);
+      localStorage.setItem("imgUrl", image);
+      const rsp = await AxiosApi.memberUpdate(user);
+      if (rsp.data) {
         alert("회원 정보 수정에 성공했습니다.");
         console.log(user);
         navigate("/apueda/mypage");
@@ -220,8 +258,15 @@ const MemberUpdate = () => {
       <Box>
         <Contents>
           <h1>회원 정보 수정</h1>
-          <ProfileBox>
-            <Upload setFile={handleFileChange} previewUrl={previewUrl} />
+          <ProfileBox className="profileImgPath">
+            <div className="imgBox">
+              <img src={imgSrc} alt="프로필이미지" />
+            </div>
+            <label>
+              <input type="file" onChange={(e) => handleFileInputChange(e)} />
+              파일 선택
+            </label>
+            <canvas ref={canvasRef} style={{ display: "none" }} />
           </ProfileBox>
 
           <InputContainer>
@@ -257,8 +302,8 @@ const MemberUpdate = () => {
             <LongInput placeholder={userInfo.name} disabled />
             <span>닉네임</span>
             <LongInput
-              placeholder={userInfo.nickname}
               value={nickname}
+              placeholder={userInfo.nickname}
               onChange={onChangeNickname}
             />
             주민번호
@@ -285,7 +330,7 @@ const MemberUpdate = () => {
               />
             </TextBox>
           </InputContainer>
-          <SubmitBtn onClick={regist}>수정</SubmitBtn>
+          <SubmitBtn onClick={onSubmit}>수정</SubmitBtn>
           <SubmitBtn onClick={memberDel}>탈퇴</SubmitBtn>
         </Contents>
       </Box>

@@ -43,7 +43,7 @@ const Column = styled.div`
 const List = styled.div`
   width: 100%;
   list-style-type: none;
-  padding: 18px;
+  padding: 0 18px 18px 18px;
 `;
 
 const ListResult = styled.div`
@@ -76,6 +76,7 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   width: 70%;
+  justify-content: center;
 `;
 
 const Etc = styled.div`
@@ -85,6 +86,7 @@ const Etc = styled.div`
   right: 0;
   width: 10%;
   position: relative;
+  justify-content: center;
 `;
 
 export const Button = styled.button`

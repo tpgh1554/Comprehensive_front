@@ -220,7 +220,7 @@ const AxiosApi = {
   },
   // 플젝 글쓰기
   postProject: async (postData) => {
-    console.log("postProject chatRoom", postData.chatRoom);
+    console.log("postProject chatRoom", postData.imgPath);
     const project = {
       projectTitle: postData.title,
       projectContent: postData.content,
@@ -231,6 +231,7 @@ const AxiosApi = {
       projectName: postData.roomName,
       regDate: postData.currentDate,
       chatRoom: { roomId: postData.chatRoom },
+      imgPath: postData.imgPath,
     };
     return await AxiosInstance.post("/project/insert", project);
   },

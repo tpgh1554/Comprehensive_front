@@ -22,7 +22,13 @@ import PasswordModal from "./ProjectNameModal";
 import SkillModal from "./SkillModal";
 import ProjectNameModal from "./ProjectNameModal";
 import { getCurrentTime, getFormattedDate } from "../../utils/formatDate";
-
+import { storage } from "../../api/firebase/Firebase";
+import styled from "styled-components";
+import { resizeImage } from "../../utils/resizeImage";
+const UserImage = styled.div`
+  width: 300px;
+  height: 300px;
+`;
 const WriteProject = () => {
   const inputRef = useRef(null); // 인원 입력용 ref 추가
   const inputRefForPeriod = useRef(null); // 기간 입력용 ref 추가
@@ -42,7 +48,9 @@ const WriteProject = () => {
   const [recruitNum, setRecruitNum] = useState("");
   const [projectName, setProjectName] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([]);
+  const [imgPath, setImgPath] = useState("");
   const { projectId } = useParams();
+  const [url, setUrl] = useState("");
 
   const navigate = useNavigate();
 
@@ -101,6 +109,8 @@ const WriteProject = () => {
 
   // 프로젝트 이름 작성 모달
   const openProjectNameModal = () => {
+    handleUploadClick(imgPath);
+
     setIsProjectNameModalOpen(true);
   };
 
@@ -111,8 +121,13 @@ const WriteProject = () => {
 
   // 등록 버튼
   const handleSubmit = async () => {
+    console.log("selectedSkills.length : ", selectedSkills.length);
     if (!title) {
       alert("제목을 입력해주세요");
+      return;
+    }
+    if (selectedSkills.length === 0) {
+      alert("스킬은 하나이상 선택해주세요");
       return;
     }
     if (!content) {
@@ -157,7 +172,6 @@ const WriteProject = () => {
           projectName: roomName,
           regDate: currentDate + getCurrentTime(),
         };
-        console.log("postData", postData, "currentDate", currentDate);
         response = await AxiosApi.modifyProject(projectId, postData);
         if (response.status === 200) {
           alert("프로젝트가 성공적으로 수정되었습니다.");
@@ -165,7 +179,6 @@ const WriteProject = () => {
           throw new Error("프로젝트 수정에 실패했습니다.");
         }
       } else {
-        console.log("등록 실행");
         const postData = {
           title,
           content,
@@ -175,6 +188,7 @@ const WriteProject = () => {
           roomName: roomName,
           chatRoom: chatRoom,
           regDate: currentDate,
+          imgPath: url,
         };
         // 등록 로직
         response = await AxiosApi.postProject(postData);
@@ -194,15 +208,11 @@ const WriteProject = () => {
 
   useEffect(() => {
     if (!projectId) {
-      console.log("등록실행", projectId);
       //handleRegister();
     } else {
-      console.log("수정실행", projectId);
       const handleSubmit = async () => {
         try {
           const rsp = await AxiosApi.getProjectDetail(projectId);
-          console.log("수정 데이터 불러오기 ", rsp.data);
-          console.log("수정 데이터 projectTime ", rsp.data.projectTime);
           setTitle(rsp.data.projectTitle);
           setSelectedSkills(rsp.data.skillName);
           setRecruitNum(rsp.data.recruitNum);
@@ -231,6 +241,46 @@ const WriteProject = () => {
     if (window.confirm(confirmMessage)) {
       navigate("/apueda/board");
     } else {
+    }
+  };
+
+  // 이미지 버튼 클릭시 input실행
+  const handleFileClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  // firebase에 이미지 올리기
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    resizeImage(file, 370, 310, (blob) => {
+      const resizedFile = new File([blob], file.name, { type: "image/jpeg" });
+      console.log("resizeImage 실행");
+      setImgPath(resizedFile);
+      console.log("resizedFile : ", imgPath);
+      // handleUploadClick(resizedFile);
+      // 리사이징된 이미지를 부모 컴포넌트로 전달
+    });
+  };
+  // firebase에 이미지 올리기
+  const handleUploadClick = async (imgPath) => {
+    try {
+      const storageRef = storage.ref();
+      const fileRef = storageRef.child(imgPath.name);
+
+      // 파일을 업로드하고 기다립니다.
+      await fileRef.put(imgPath);
+      console.log("File uploaded successfully!");
+
+      // 다운로드 URL을 가져오고 기다립니다.
+      const url = await fileRef.getDownloadURL();
+      console.log("저장경로 확인 : " + url);
+
+      // 상태를 업데이트합니다.
+      setUrl(url);
+    } catch (error) {
+      // 에러를 처리합니다.
+      console.error("Upload failed", error);
     }
   };
 
@@ -291,21 +341,19 @@ const WriteProject = () => {
                 </DropdownInput>
               )}
             </div>
-            {/* <Button alt="Upload" onClick={handleFileClick}>
-              이미지
-            </Button> */}
+            <Button
+              alt="Upload"
+              onClick={handleFileClick}
+              style={{ width: "auto" }}
+            >
+              배너 이미지
+            </Button>
             <InputImage
               type="file"
               accept="image/*"
               ref={fileInputRef}
-              // onChange={handleFileChange}
+              onChange={handleFileInputChange}
             />
-            <Button>모임 장소</Button>
-            {/* <input
-              type="text"
-              placeholder="비번 입력"
-              onChange={(e) => setPassword(e.target.value)}
-            /> */}
           </InputButtonSection>
           <Content
             placeholder="내용을 입력해주세요(10,000자 이내)"
@@ -315,6 +363,7 @@ const WriteProject = () => {
             onChange={(e) => setContent(e.target.value)}
             value={content}
           />
+          {url && <UserImage src={url} alt="uploaded" />}
           <Bottom>
             {/* <ConfirmButton onClick={handleRegister}>등록</ConfirmButton> */}
             <ConfirmButton onClick={openProjectNameModal}>등록</ConfirmButton>

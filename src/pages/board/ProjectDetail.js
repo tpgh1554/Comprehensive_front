@@ -242,11 +242,10 @@ const ProjectDetail = () => {
       }
     }
   };
-  const request = () => {
-    console.log("실행");
+  const request = (pId) => {
+    console.log("실행", pId);
     const postData = {
-      projectId: projectId,
-      applyStatus: true,
+      projectId: { projectId: pId },
     };
     requestProject(postData);
   };
@@ -347,7 +346,9 @@ const ProjectDetail = () => {
                   ))}
               </Skills>
               <ListBtt>
-                <Button onClick={() => request()}>신청</Button>
+                <Button onClick={() => request(projectContent.projectId)}>
+                  신청
+                </Button>
                 <Button onClick={() => navigate("/apueda/board")}>목록</Button>
               </ListBtt>
             </Footer>

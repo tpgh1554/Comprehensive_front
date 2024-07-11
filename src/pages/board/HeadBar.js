@@ -90,7 +90,7 @@ const HeadBar = ({ setIsClick }) => {
         </SelectBoardButton>
       </HeadContainer>
       <SearchContainer>
-        <SearchFilter>검색필터</SearchFilter>
+        <SearchFilter></SearchFilter>
         {selectedButton.a ? (
           <WriteBoard onClick={() => navigate("/apueda/writeproject")}>
             글쓰기

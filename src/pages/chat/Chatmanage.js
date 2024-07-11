@@ -20,6 +20,7 @@ const ChatManage = () => {
       try {
         const memberId = localStorage.getItem("email");
         const response = await AxiosApi.getJoinedRooms(memberId);
+        console.log(response.data);
         setRooms(response.data);
       } catch (error) {
         console.error("Error fetching chat rooms", error);

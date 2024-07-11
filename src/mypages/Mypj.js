@@ -5,15 +5,13 @@ import { useEffect, useState } from "react";
 import AxiosApi from "../api/AxiosApi";
 
 const Container = styled.div`
-  height: 100vh;
   width: 100%;
-  position: relative; /* 상대적 위치 설정 */
   display: flex;
   background-color: white;
-  text-align: center;
+
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  margin-bottom: 200px; //푸터랑 멀게
 `;
 
 const Exit = styled.img`
@@ -29,75 +27,102 @@ const Exit = styled.img`
 `;
 
 const ExitWrap = styled.div``;
-
 const Title = styled.div`
-  font-size: 50px;
+  font-size: 40px;
+  font-weight: 700;
   color: black;
-  position: absolute; /* 절대 위치 설정 */
-  top: 20px; /* 원하는 위치로 조정 */
-  left: 50%; /* 가운데 정렬을 위한 설정 */
-  transform: translateX(-50%); /* 가운데 정렬 */
+
+  @media (max-width: 700px) {
+    font-size: 30px;
+  }
 `;
 
 const ButtonContainer = styled.div`
-  position: absolute; /* 절대 위치 설정 */
-  top: 100px; /* 원하는 위치로 조정 */
-  left: 50%; /* 가운데 정렬을 위한 설정 */
-  transform: translateX(-50%); /* 가운데 정렬 */
+  position: relative;
   display: grid;
   grid-template-columns: repeat(2, auto);
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 30px;
+  margin-bottom: 30px;
 `;
 
 const Button = styled.button`
-  background-color: ${(props) => (props.primary ? "#ff5353" : "gray")};
+  background-color: ${(props) =>
+    props.primary === "true" ? "#ff5353" : "gray"};
   color: white;
   border: 1px solid black;
   padding: 6px;
   font-size: 20px;
-
   cursor: pointer;
   width: 25vw;
   &:hover {
     background-color: black;
   }
+  @media (max-width: 700px) {
+    width: 40vw;
+  }
 `;
 
-const ReqContainer = styled.div`
+const ProfileImage = styled.div`
+  img {
+    vertical-align: -20px;
+    width: 65px;
+    height: 60px;
+    border-radius: 100px;
+    margin-right: 10px; /* 프로필 사진과 닉네임 사이 간격 조정 */
+  }
+
+  @media (max-width: 500px) {
+    img {
+      width: 50px;
+      height: 50px;
+    }
+  }
+`;
+//프로젝트
+const ProjectContainer = styled.div`
   display: flex;
-  text-align: left;
   width: 60vw;
+
   border: 3px solid #ff5353;
-  border-radius: 20px;
+  flex-direction: column;
+  margin-bottom: 20px;
 `;
 
-const StyledTable = styled.table`
-  border-collapse: collapse;
-  margin-top: 30px;
-  margin-left: 30px;
-  margin-right: 30px;
-  thead {
-    font-size: 30px;
-    th {
-      text-align: left;
-    }
-  }
+const ProjectTitle = styled.div`
+  display: flex;
+  justify-content: left;
 
-  tbody {
-    text-align: left;
-    font-size: 25px;
-    tr {
-      border-bottom: 3px solid gray;
-    }
-  }
+  padding-left: 20px;
+`;
+
+const ProjectItem = styled.div`
+  display: flex;
+  padding-left: 20px;
+
+  flex-direction: column; /* 세로에서 가로로 변경 */
+`;
+
+const Item = styled.div`
+  display: flex;
+  align-items: center; /* 세로 중앙 정렬 */
+`;
+
+const Skill = styled.div`
+  margin-left: 20px; /* Skill을 항상 오른쪽에 위치시킵니다. */
+`;
+const GoEndBtn = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
 `;
 
 const Gobutton = styled.button`
   width: 150px;
   height: 50px;
-  margin-right: 100px;
-  margin-bottom: 20px;
+  margin-right: 30px;
+
   background-color: white;
   font-size: 20px;
   cursor: pointer;
@@ -111,7 +136,6 @@ const Gobutton = styled.button`
 `;
 
 const Endbutton = styled.button`
-  margin-top: 20px;
   width: 150px;
   height: 50px;
   background-color: white;
@@ -125,21 +149,19 @@ const Endbutton = styled.button`
     color: white;
   }
 `;
+//프로젝트
 
-const ProfileImage = styled.div`
-  img {
-    width: 65px;
-    height: 60px;
-    border-radius: 100px;
-  }
+//요청
 
-  @media (max-width: 500px) {
-    img {
-      width: 50px;
-      height: 50px;
-    }
-  }
+const ReqContainer = styled.div`
+  display: flex;
+  text-align: left;
+  width: 60vw;
+  border: 3px solid #ff5353;
+  border-radius: 20px;
+  height: 10vw;
 `;
+//
 
 const ImgNickNameBox = styled.div`
   display: flex;
@@ -151,6 +173,20 @@ const Mypj = () => {
   const [showProject, setShowProject] = useState(true);
   const [showApp, setShowApp] = useState(false);
   const [projectReq, setProjectReq] = useState([]);
+  const [projectList, setProjectList] = useState([]);
+
+  useEffect(() => {
+    const fechMyProject = async () => {
+      try {
+        const rsp = await AxiosApi.myProjectList();
+        console.log(rsp.data);
+        setProjectList(rsp.data);
+      } catch (error) {
+        console.error("에러", error);
+      }
+    };
+    fechMyProject();
+  }, []);
 
   useEffect(() => {
     const fechProjectApply = async () => {
@@ -158,8 +194,6 @@ const Mypj = () => {
         const rsp = await AxiosApi.myProjectApplyList();
         console.log(rsp.data);
         setProjectReq(rsp.data);
-
-        //친구 이미지 저장
       } catch (error) {
         console.error("에러", error);
       }
@@ -174,7 +208,7 @@ const Mypj = () => {
 
         <ButtonContainer>
           <Button
-            primary={showProject ? true : false}
+            primary={showProject ? "true" : "false"}
             onClick={() => {
               setShowProject(true);
               setShowApp(false);
@@ -184,7 +218,7 @@ const Mypj = () => {
           </Button>
 
           <Button
-            primary={showApp ? true : false}
+            primary={showApp ? "true" : "false"}
             onClick={() => {
               setShowProject(false);
               setShowApp(true);
@@ -196,44 +230,41 @@ const Mypj = () => {
 
         {showProject && (
           <div>
-            <StyledTable>
-              <thead>
-                <tr>
-                  <th>프로젝트 이름(프로젝트 기한)</th>
-                </tr>
-              </thead>
-              <thead>
-                <tr>
-                  <th>비밀번호</th>
-                </tr>
-              </thead>
+            {projectList.map((project, projectIndex) => (
+              <ProjectContainer key={projectIndex}>
+                <ProjectTitle>
+                  <h1> {project.chatManages[0]?.chatRoom?.roomName}</h1>
+                </ProjectTitle>
+                <ProjectItem>
+                  {project.chatManages.map((manage, manageIndex) => (
+                    <Item>
+                      <ProfileImage>
+                        <img src={manage.member.profileImgPath} alt="이미지x" />
+                      </ProfileImage>
+                      <h2>
+                        {manage.member.nickname}
+                        {manage.host && (
+                          <span
+                            style={{
+                              fontWeight: "bold",
+                            }}
+                          >
+                            (리더)
+                          </span>
+                        )}
+                      </h2>
 
-              <tbody>
-                <tr>
-                  <td>
-                    이미지 + 닉네임(리더)/Skill : 자바 리액트 자바스크립트
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    이미지 + 닉네임(리더)/Skill : 자바 리액트 자바스크립트
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    이미지 + 닉네임(리더)/Skill : 자바 리액트 자바스크립트
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    이미지 + 닉네임(리더)/Skill : 자바 리액트 자바스크립트 나는
-                    뭘 잘할까
-                  </td>
-                </tr>
-              </tbody>
-            </StyledTable>
-            <Gobutton>이동하기</Gobutton>
-            <Endbutton>프로젝트 종료</Endbutton>
+                      <Skill> Skill : {manage.member.skill}</Skill>
+                      <button>강퇴</button>
+                    </Item>
+                  ))}
+                </ProjectItem>
+                <GoEndBtn>
+                  <Gobutton>이동하기</Gobutton>
+                  <Endbutton>프로젝트 종료</Endbutton>
+                </GoEndBtn>
+              </ProjectContainer>
+            ))}
           </div>
         )}
 

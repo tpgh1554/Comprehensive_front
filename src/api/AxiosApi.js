@@ -202,10 +202,16 @@ const AxiosApi = {
 
   //-------------------------------------------메세지------------------------------------------------
 
-  //프로젝트(김기주)
+  //마이 프로젝트(김기주)
+  myProjectList: async () => {
+    return await AxiosInstance.get("/chat/myproject");
+  },
+
   myProjectApplyList: async () => {
     return await AxiosInstance.get("/apply/list");
   },
+
+  //마이 프로젝트(김기주)
 
   // ----------------------- 게시판 시작 -----------------------
   // 스킬 리스트 가지고 오기(등록용)

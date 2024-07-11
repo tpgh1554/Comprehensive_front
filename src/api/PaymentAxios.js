@@ -29,15 +29,13 @@ const PaymentApi = {
     buyer_email,
     paymentMethodCode,
     paymentDetails,
-    isPaymentAvailable,
+
     isDeleted
   ) => {
     const savePaymentinfo = {
       user: buyer_email,
       paymentMethodCode: paymentMethodCode,
       paymentDetails: paymentDetails,
-      isPaymentAvailable: isPaymentAvailable,
-      isDeleted: isDeleted,
     };
     return await AxiosInstance.post("/payments/info", savePaymentinfo);
   },

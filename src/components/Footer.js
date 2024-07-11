@@ -82,7 +82,7 @@ const Footer = () => {
         <Item>김기주|임정후|김동환|강인구|김세호</Item>
         <Item>서울특별시 강남구 역삼로</Item>
         <Item>전화번호 02-123-4567</Item>
-        <Item>이메일 : sick@example.com</Item>
+        <Item>이메일 : apueda@naver.com</Item>
       </Box>
       <Box style={{ flexDirection: "column" }}>
         <Item>CopyRight © 2024 sick All Rights Reserved.</Item>

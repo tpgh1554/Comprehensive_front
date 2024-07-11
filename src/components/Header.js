@@ -13,7 +13,7 @@ const Header = () => {
           <Box>
             <LogoContainer onClick={() => navigate("/apueda")}>
               <Logo />
-            <Span>아프다</Span>
+              <Span>아프다</Span>
             </LogoContainer>
           </Box>
         </Container>
@@ -27,9 +27,12 @@ export default Header;
 const Body = styled.div`
   display: flex;
   flex-direction: column;
-  align-items:center;
+  align-items: center;
   height: auto;
   margin: 0 15vw;
+  @media (max-width: 500px) {
+    display: none;
+  }
 `;
 const Container = styled.div`
   width: 100%;

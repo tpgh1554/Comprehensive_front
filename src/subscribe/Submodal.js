@@ -36,6 +36,12 @@ const ModalStyle = styled.div`
       right: 15px;
     }
   }
+  @media (max-width: 500px) {
+    section {
+      width: 100%;
+      height: 100%;
+    }
+  }
 
   @keyframes modal-show {
     from {
@@ -76,6 +82,9 @@ const Reddeco = styled.div`
   height: 100%;
   background-color: #f92f23;
   display: flex;
+  @media (max-width: 500px) {
+    display: none;
+  }
 `;
 const Submain = styled.div`
   width: 90%;
@@ -85,6 +94,9 @@ const Submain = styled.div`
   position: relative;
   text-align: center;
   align-items: center;
+  @media (max-width: 500px) {
+    width: 100%;
+  }
 `;
 
 const Grayline = styled.div`
@@ -98,6 +110,9 @@ const Modalhead = styled.div`
   margin-left: 5%;
   margin-right: 5%;
   margin-top: 30px;
+  @media (max-width: 500px) {
+    width: 100%;
+  }
 `;
 const Modbox = styled.div`
   width: 90%;
@@ -106,6 +121,10 @@ const Modbox = styled.div`
   margin-right: 5%;
   margin-top: 10px;
   position: relative;
+  @media (max-width: 500px) {
+    width: 100%;
+    margin-bottom: 50px;
+  }
 `;
 const Chbox = styled.div`
   display: flex;
@@ -146,6 +165,9 @@ const Agencybox = styled.div`
   margin-right: 5%;
   text-align: center;
   position: relative;
+  @media (max-width: 500px) {
+    margin: 0;
+  }
 `;
 
 const Longbox = styled.div`
@@ -204,7 +226,6 @@ const Modal = (props) => {
     setIsChecked2(event.target.checked);
   };
 
-  // useEffect를 사용하여 isChecked1과 isChecked2 상태가 변경될 때 isChecked 상태를 업데이트
   useEffect(() => {
     if (isChecked1 && isChecked2) {
       setIsChecked(true);
@@ -327,6 +348,7 @@ const Modal = (props) => {
                       <Payment
                         isChecked1={isChecked1}
                         isChecked2={isChecked2}
+                        close={close}
                       />
                     </Agencybox>
                     <Button onClick={close}>취소</Button>

@@ -165,10 +165,10 @@ const MemberUpdate = () => {
     setPassword2(newPassword);
     if (password === newPassword) {
       setPwdConcord(true);
-      setPasswordError("");
+      setPasswordError2("");
     } else {
       setPwdConcord(false);
-      setPasswordError("비밀번호가 일치하지 않습니다.");
+      setPasswordError2("비밀번호가 일치하지 않습니다.");
     }
   };
   const onChangeNickname = (e) => {
@@ -199,6 +199,13 @@ const MemberUpdate = () => {
 
     const updatedSkills = skills.filter((_, idx) => updatedChecked[idx]);
     setSkill(updatedSkills);
+
+    // 체크된 항목이 하나라도 있으면  checkedValid를 true로 설정
+    if (updatedChecked.some((checked) => checked)) {
+      setCheckedValid(true);
+    } else {
+      setCheckedValid(false);
+    }
   };
 
   const onChangeMyinfo = (e) => {
@@ -237,21 +244,24 @@ const MemberUpdate = () => {
     }
   };
 
-  const memberDel = async () => {
-    const accToken = localStorage.getItem("accessToken");
-    try {
-      const response = await AxiosApi.signout(accToken);
-      if (response.data) {
-        alert("회원 삭제에 성공했습니다.");
-        navigate("/apueda");
-      } else {
-        alert("회원 삭제에 실패했습니다.");
-      }
-    } catch (e) {
-      console.log(e);
-      alert("회원 삭제 중 오류가 발생했습니다.");
-    }
-  };
+  // 일단 회원탈퇴 제외
+  // const memberDel = async () => {
+  //   const accToken = localStorage.getItem("accessToken");
+  //   try {
+  //     const response = await AxiosApi.signout(accToken);
+  //     if (response.data) {
+  //       alert("회원 삭제에 성공했습니다.");
+  //       navigate("/apueda");
+  //     } else {
+  //       alert("회원 삭제에 실패했습니다.");
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //     alert("회원 삭제 중 오류가 발생했습니다.");
+  //   }
+  // };
+
+  const isFormValid = pwdValid && pwdConcord && checkedValid;
 
   return (
     <Container>
@@ -330,8 +340,10 @@ const MemberUpdate = () => {
               />
             </TextBox>
           </InputContainer>
-          <SubmitBtn onClick={onSubmit}>수정</SubmitBtn>
-          <SubmitBtn onClick={memberDel}>탈퇴</SubmitBtn>
+          <SubmitBtn onClick={onSubmit} disabled={isFormValid ? false : true}>
+            수정
+          </SubmitBtn>
+          {/* <SubmitBtn onClick={memberDel}>탈퇴</SubmitBtn> */}
         </Contents>
       </Box>
     </Container>

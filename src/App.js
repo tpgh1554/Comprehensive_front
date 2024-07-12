@@ -34,6 +34,8 @@ import Footer from "./components/Footer";
 import BoardDetail from "./pages/board/BoardDetail";
 import WriteBoard from "./pages/board/WirteBoard";
 import ChatRoom from "./pages/chat/ChatRoom";
+import Kakaologin from "./login/Kakaologin";
+
 function App() {
   return (
     <>
@@ -83,6 +85,7 @@ function App() {
             <Route path="/apueda/mypage/editinfo" element={<EditInfo />} />
             <Route path="/apueda/mypage/friend" element={<Friend />} />
             <Route path="/apueda/mysub" element={<Mysub />} />
+            <Route path="/apueda/kakaologin" element={<Kakaologin />} />
           </Routes>
         </Router>
       </UserStore>

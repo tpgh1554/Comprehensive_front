@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
+
   return (
     <>
       <GlobalStyle />
@@ -30,9 +31,6 @@ const Body = styled.div`
   align-items: center;
   height: auto;
   margin: 0 15vw;
-  @media (max-width: 500px) {
-    display: none;
-  }
 `;
 const Container = styled.div`
   width: 100%;

@@ -154,7 +154,7 @@ const Privacy = (props) => {
     navigate("/apueda");
   };
   const mysu = () => {
-    navigate("/mysub");
+    navigate("/apueda/mysub");
   };
 
   const status = "구독";

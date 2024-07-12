@@ -130,7 +130,7 @@ const Unsubmodal = (props) => {
     navigate("/apueda");
   };
   const mysu = () => {
-    navigate("/mysub");
+    navigate("/apueda/mysub");
   };
 
   const status = "해지";

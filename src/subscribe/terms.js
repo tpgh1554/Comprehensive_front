@@ -51,6 +51,12 @@ const ModalStyle = styled.div`
       }
     }
   }
+  @media (max-width: 500px) {
+    section {
+      width: 100%;
+      height: 100%;
+    }
+  }
 
   @keyframes modal-show {
     from {
@@ -87,7 +93,7 @@ const Button = styled.button`
   }
 `;
 const TermsContainer = styled.div`
-  height: 380px;
+  height: 90%;
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
@@ -109,7 +115,7 @@ const TermsText = styled.p`
 `;
 const Bubox = styled.div`
   width: 100%;
-  height: 200px;
+  height: 10%;
 
   text-align: center;
 `;
@@ -143,8 +149,6 @@ const Termsmodal = (props) => {
                 있으며, 동의 거부 시 회원 가입 및 일부 서비스 이용에 제한이 있을
                 수 있습니다.
               </TermsText>
-            </TermsContainer>
-            <TermsContainer>
               <TermsTitle>개인 정보 제공 및 위탁 안내 이용 약관</TermsTitle>
               <TermsText>
                 <strong>1. 개인 정보 제공 대상</strong>
@@ -169,6 +173,7 @@ const Termsmodal = (props) => {
                 있으며, 동의 거부 시 일부 서비스 이용에 제한이 있을 수 있습니다.
               </TermsText>
             </TermsContainer>
+
             <Bubox>
               <Button onClick={close}>닫기</Button>
             </Bubox>

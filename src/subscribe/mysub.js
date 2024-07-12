@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import Paging from "./paging";
 import Resubmodal from "./resubmodal";
 import Unsubmodal from "./unsubmodal";
+import Advertis from "../components/advertis";
 
 const Subpage = styled.div`
   width: 100%;
@@ -137,6 +138,14 @@ const Mysub = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
+  const [subAdOpen, setSubAdOpen] = useState(false);
+  const onAdClickSub = (e) => {
+    setSubAdOpen(true);
+  };
+  const cloAdseSub = () => {
+    setSubAdOpen(false);
+  };
+
   const onClickSub = (e) => {
     setSubOpen(true);
   };
@@ -226,7 +235,7 @@ const Mysub = () => {
         <Deadline>{deline}</Deadline>
         <Subbutt onClick={subnav}>{buttonText}</Subbutt>
       </Subinfobox>
-      <Datails>결제내역</Datails>
+      <Datails onClick={onAdClickSub}>결제내역</Datails>
       <Datailsbox>
         <Detailtitle>
           <Textbox style={{ marginLeft: "10%" }}>결제일</Textbox>
@@ -262,6 +271,7 @@ const Mysub = () => {
         merchantuid={merchantuid}
         deadLine={deadLine}
       />
+      <Advertis open={subAdOpen} close={cloAdseSub} />
     </Subpage>
   );
 };

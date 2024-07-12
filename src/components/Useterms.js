@@ -55,7 +55,12 @@ const ModalStyle = styled.div`
       }
     }
   }
-
+  @media (max-width: 500px) {
+    section {
+      width: 100%;
+      height: 100%;
+    }
+  }
   @keyframes modal-show {
     from {
       opacity: 0;

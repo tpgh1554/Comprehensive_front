@@ -14,11 +14,18 @@ const TiContain = styled.div`
   align-items: center;
   margin: 0px 22% 9px 9%;
   text-align: center;
+  @media (max-width: 500px) {
+    margin-right: 5%;
+    width: 16%;
+  }
 `;
 const DetTitle = styled.h3`
   width: 230px;
   color: black;
   margin: 0px 29% 0px 0%;
+  @media (max-width: 500px) {
+    margin-right: 17%;
+  }
 `;
 const Detamo = styled.p`
   color: #444;

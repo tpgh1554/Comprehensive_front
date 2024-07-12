@@ -4,9 +4,9 @@ import AxiosApi from "../api/PaymentAxios";
 import Detaillist from "./detailllist";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Unsubmodal from "./unsubmodal";
 import Paging from "./paging";
 import Resubmodal from "./resubmodal";
+import Unsubmodal from "./unsubmodal";
 
 const Subpage = styled.div`
   width: 100%;
@@ -26,6 +26,9 @@ const Subinfobox = styled.div`
   margin-top: 10vh;
   display: flex;
   align-items: center;
+  @media (max-width: 500px) {
+    width: 100%;
+  }
 `;
 
 const Logoimg = styled.div`
@@ -72,6 +75,13 @@ const Datails = styled.div`
   text-align: center;
   align-content: center;
   margin-top: 10%;
+  @media (max-width: 500px) {
+    width: 100%;
+    border-radius: 0;
+    text-align: left;
+    color: black;
+    background-color: w;
+  }
 `;
 
 const Datailsbox = styled.div`
@@ -81,6 +91,11 @@ const Datailsbox = styled.div`
   height: 700px;
   display: flex;
   flex-direction: column;
+  @media (max-width: 500px) {
+    width: 100%;
+    height: 410px;
+    margin-top: 30px;
+  }
 `;
 
 const Detailtitle = styled.div`
@@ -95,6 +110,9 @@ const Textbox = styled.div`
   font-size: 23px;
   color: black;
   text-align: center;
+  @media (max-width: 500px) {
+    font-size: 17px;
+  }
 `;
 const Detailbox = styled.div`
   height: 640px;

@@ -4,7 +4,6 @@ import PaymentApi from "../api/PaymentAxios";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import CheckModal from "./checkmodal";
 
 const ModalStyle = styled.div`
   .modal {
@@ -40,6 +39,12 @@ const ModalStyle = styled.div`
       font-size: 18px;
       position: absolute;
       right: 15px;
+    }
+  }
+  @media (max-width: 500px) {
+    section {
+      width: 100%;
+      height: 100%;
     }
   }
 
@@ -118,23 +123,14 @@ const Unsubinfoli = styled.li`
 `;
 
 const Unsubmodal = (props) => {
-  const { open, close, type, header, children, deadLine, merchantuid, member } =
-    props;
+  const { open, close, header, deadLine, merchantuid, member } = props;
   const navigate = useNavigate();
-  const [subOpen, setSubOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState("");
-  const [modalHeader, setModalHeader] = useState("");
-
-  const onClickSub = () => {
-    setSubOpen(true);
-  };
-  const closeSub = () => {
-    setSubOpen(false);
-  };
 
   const confirm = () => {
     navigate("/apueda");
+  };
+  const mysu = () => {
+    navigate("/mysub");
   };
 
   const status = "해지";
@@ -164,19 +160,16 @@ const Unsubmodal = (props) => {
       console.log("예약해지:", unscheduleResponse.data);
       const rsp = await PaymentApi.unsavesub(status);
       if (rsp.data) {
-        setSubOpen(true);
-        setModalHeader("성공");
-        setModalContent("아프다 구독 해지");
+        alert("아프다 구독 해지");
+        confirm();
       } else {
-        setSubOpen(true);
-        setModalHeader("실패");
-        setModalContent("구독 해지에 실패 하였습니다");
+        alert("아프다 구독 해지에 실패 하셨습니다. 다시 시도해 주세요.");
+        mysu();
       }
     } catch (error) {
       console.error(error);
-      setSubOpen(true);
-      setModalHeader("실패");
-      setModalContent("구독 해지에 실패 하였습니다");
+      alert("아프다 구독 해지에 실패 하셨습니다. 다시 시도해 주세요.");
+      mysu();
     }
   };
 
@@ -205,15 +198,6 @@ const Unsubmodal = (props) => {
               </Uninfo>
               <Unbutton onClick={unSavesub}>해지</Unbutton>
             </Unsubbox>
-            <CheckModal
-              open={subOpen}
-              close={closeSub}
-              category="해지 창"
-              confirm={confirm}
-              header={modalHeader}
-            >
-              {modalContent}
-            </CheckModal>
           </section>
         )}
       </div>

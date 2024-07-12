@@ -1,8 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import PaymentApi from "../api/PaymentAxios";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
+const Textbox = styled.div`
+  font-size: 15px;
+  text-align: center;
+`;
+const Uninfo = styled.div`
+  width: 80%;
+  height: 45%;
+  background-color: #ced4da;
+  margin-top: 5%;
+`;
+const Unsubinfoul = styled.ul`
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+`;
+const Unsubinfoli = styled.li`
+  background-color: none;
+  font-size: 15px;
+  margin-top: 10%;
+  margin-left: 5%;
+`;
 const ModalStyle = styled.div`
   .modal {
     display: none;
@@ -23,8 +46,8 @@ const ModalStyle = styled.div`
   }
 
   section {
-    width: 30%;
-    height: 80%;
+    width: 35%;
+    height: 60%;
     margin: 0 auto;
     border-radius: 0.6rem;
     background-color: #fff;
@@ -55,6 +78,12 @@ const ModalStyle = styled.div`
           color: #000;
         }
       }
+    }
+  }
+  @media (max-width: 500px) {
+    section {
+      width: 88%;
+      height: 70%;
     }
   }
 
@@ -100,25 +129,33 @@ const TerCon = styled.div`
   display: flex;
   flex-direction: column;
   text-align: center;
-
+  margin-top: 20px;
   align-items: center;
   width: 100%;
-  height: 90%;
+  height: 100%;
 `;
 
 const Grayline = styled.div`
   width: 100%;
   height: 2px;
   background-color: #dee2e6;
+  margin-top: 30px;
 `;
 const Bubox = styled.div`
   text-align: right;
-
   width: 100%;
 `;
 
 const Privacy = (props) => {
   const { open, close, category, setModalOpen, merchantuid, deadLine } = props;
+  const navigate = useNavigate();
+
+  const confirm = () => {
+    navigate("/apueda");
+  };
+  const mysu = () => {
+    navigate("/mysub");
+  };
 
   const status = "구독";
   const date = new Date(deadLine);
@@ -148,6 +185,13 @@ const Privacy = (props) => {
       );
       console.log("재예약:", resub.data);
       const rsp = await PaymentApi.unsavesub(status);
+      if (rsp.data) {
+        alert("아프다 재구독에 성공하셨어요");
+        confirm();
+      } else {
+        alert("아프다 재구독에 실패하셨습니다 재시도 해주세요");
+        mysu();
+      }
     } catch (error) {
       console.error(error);
     }
@@ -162,6 +206,20 @@ const Privacy = (props) => {
               <button onClick={close}>&times;</button>
             </header>
             <TerCon>
+              <Textbox style={{ fontSize: "20px", fontWeight: "bold" }}>
+                아프다 재구독을 하시겠습니까?
+              </Textbox>
+              <Textbox>
+                재구독을 하시면 {deadLine}일에 결제 예약이 됩니다.
+              </Textbox>
+              <Textbox>구독 하시면 다음과 같은 혜택을 얻으실수 있어요.</Textbox>
+              <Uninfo>
+                <Unsubinfoul>
+                  <Unsubinfoli>무제한 개발자 매칭</Unsubinfoli>
+                  <Unsubinfoli>광고 없는 아프다</Unsubinfoli>
+                  <Unsubinfoli>아무 조건없이 상대 프로필 보기</Unsubinfoli>
+                </Unsubinfoul>
+              </Uninfo>
               <Grayline />
               <Bubox>
                 <Button onClick={reSavesub}>재구독</Button>

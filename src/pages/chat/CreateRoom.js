@@ -3,14 +3,15 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import AxiosApi from '../../api/AxiosApi';
 
-const CreateRoom = ({ userEmail }) => {
+const CreateRoom = () => {
   const [roomName, setRoomName] = useState('');
   const [roomId, setRoomId] = useState('');
   const [created, setCreated] = useState(false);
+  const email = localStorage.getItem("accessToken");
 
   const handleCreateRoom = async () => {
     try {
-      const response = await AxiosApi.createRoom(roomId, roomName);
+      const response = await AxiosApi.createOpenRoom(roomName, email);
       setRoomId(response.data.roomId);
       setRoomName(response.data.roomName);
       setCreated(true);

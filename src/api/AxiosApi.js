@@ -293,11 +293,16 @@ const AxiosApi = {
   // ----------------------- 게시판 끝 -----------------------
   // -----------------------채   팅-----------------------
   // 방 생성
-  createRoom: async (roomName) => {
-    const roomData = { roomName: roomName };
+  createRoom: async (roomName, max_count,) => {
+    const roomData = { roomName: roomName, max_count: max_count };
     return await AxiosInstance.post("/chat/create", roomData);
   },
-  // 방 입장
+  // 오픈채팅방 생성
+  createOpenRoom: async (roomName) => {
+    const roomData = { roomName: roomName };
+    return await AxiosInstance.post("/chat/create-open-chat", roomData);
+  },
+  // 방 입장 플젝, 오픈 공통
   joinRoom: async (roomId) => {
     return await AxiosInstance.post(`/chat/join-to-room/${roomId}`);
   },
@@ -316,6 +321,10 @@ const AxiosApi = {
     } catch (error) {
       throw new Error("Error fetching joined rooms: " + error.message);
     }
+  },
+  // 전체 오픈채팅방 조회 postType을 false로 보내야 오픈채팅방이 조회됨
+  getOpenChatList: async (postType) => {
+    return await AxiosInstance.post("/chat/fint-open-chat-list", { postType });
   },
 
   // 방 이름으로 방 찾기

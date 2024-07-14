@@ -5,8 +5,8 @@ const Logo = () => {
   return <Logoimg />;
 };
 const Logoimg = styled.div`
-  width: 50px;
-  height: 50px;
+  width: 4vw;
+  height: 4vw;
   background-image: url(${logoimg});
   background-size: cover;
   background-repeat: no-repeat;

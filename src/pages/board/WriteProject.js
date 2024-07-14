@@ -150,13 +150,15 @@ const WriteProject = () => {
     try {
       const email = localStorage.getItem("accessToken");
       let chatRoom = roomName;
+      const max_count = recruitNum;
       if (!projectId) {
         // 등록 로직
-        const createRoomResponse = await AxiosApi.createRoom(roomName, email);
+        const createRoomResponse = await AxiosApi.createRoom(roomName, max_count, email);
         if (!createRoomResponse.data) {
           throw new Error("채팅방 생성이 실패했습니다.");
         }
         chatRoom = createRoomResponse.data.roomId;
+        console.log(chatRoom);
       }
 
       let response;
@@ -194,6 +196,7 @@ const WriteProject = () => {
         response = await AxiosApi.postProject(postData);
         if (response.data) {
           alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
+          console.log(postData);
         } else {
           throw new Error("프로젝트 게시글 등록이 실패했습니다.");
         }

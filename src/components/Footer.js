@@ -4,6 +4,7 @@ import { useState } from "react";
 import Privacy from "./Privacy";
 import { FaGithub } from "react-icons/fa";
 import { FaSquareGithub } from "react-icons/fa6";
+import ccl from "../../src/image/img_cc_by_nc_nd.png";
 
 const Footer = () => {
   const [terOpen, setTerOpen] = useState(false);
@@ -79,13 +80,20 @@ const Footer = () => {
       <Item>(주) 아프다</Item>
 
       <Box style={{ flexDirection: "column" }}>
-        <Item>김기주|임정후|김동환|강인구|김세호</Item>
+        <Item>
+          <a href="https://github.com/kkimkiju">김기주 <FaGithub/></a> |
+          <a href="https://github.com/limfarmer"> 임정후 <FaGithub/></a> |
+          <a href="https://github.com/kimfjd"> 김동환 <FaGithub/></a> |
+          <a href="https://github.com/dzface"> 강인구 <FaGithub/></a> |
+          <a href="https://github.com/tpgh1554"> 김세호 <FaGithub/></a>
+        </Item>
         <Item>서울특별시 강남구 역삼로</Item>
         <Item>전화번호 02-123-4567</Item>
         <Item>이메일 : apueda@naver.com</Item>
       </Box>
-      <Box style={{ flexDirection: "column" }}>
-        <Item>CopyRight © 2024 sick All Rights Reserved.</Item>
+      <Box style={{ flexDirection: "row", justifyContent:"space-between" }}>
+        <Item>CopyRight 2024 APUEDA TEAM All Rights Reserved.</Item>
+        <Item><img src={ccl} alt="" /></Item>
       </Box>
 
       <Useterms
@@ -114,7 +122,8 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
-  background-color: #ff5353;
+  border-top: .2rem solid black;
+  // background-image: linear-gradient(to top,#ff5253 0%,rgba(100, 60, 255, 1) 90%);
   width: 100%;
   height: 350px;
   /* color: white; */
@@ -128,6 +137,10 @@ const Box = styled.div`
 const Item = styled.span`
   margin-bottom: 7px;
   font-size: 18px;
+  &>a{
+    text-decoration: none;
+    color: initial;
+  }
 `;
 
 const Terms = styled.div`

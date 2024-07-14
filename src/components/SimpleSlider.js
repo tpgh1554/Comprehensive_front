@@ -26,7 +26,7 @@ export default function SimpleSlider() {
   return (
     <StyledSliderContainer>
       <Slider {...settings}>
-        <FirstCut>
+        <SlideBox className="first">
           <Container>
             <Box>
               <Item>
@@ -50,8 +50,8 @@ export default function SimpleSlider() {
             </Box>
             <ImageBox ><Img src={teamicon}/></ImageBox>
           </Container>
-        </FirstCut>
-        <SecondCut>
+        </SlideBox>
+        <SlideBox className="second">
           <Container>
             <Box>
               <Item>
@@ -75,8 +75,8 @@ export default function SimpleSlider() {
             </Box>
             <ImageBox ><Img src={alien}/></ImageBox>
           </Container>
-        </SecondCut>
-        <ThirdCut>
+        </SlideBox>
+        <SlideBox className="third">
           <Container>
             <Box>
               <Item>
@@ -100,7 +100,7 @@ export default function SimpleSlider() {
             </Box>
             <ImageBox ><Img src={couple}/></ImageBox>
           </Container>
-        </ThirdCut>
+        </SlideBox>
       </Slider>
     </StyledSliderContainer>
   );
@@ -108,13 +108,13 @@ export default function SimpleSlider() {
 
 const StyledSliderContainer = styled.div`
   .slick-dots {
-    bottom: 50px; // dots 위치를 조정
+    bottom: .5vh; // dots 위치를 조정
     li {
-      margin: 0 20px;
+      margin: 0 2vw 2vw 0;
     }
     button {
       &::before {
-        font-size: 20px;
+        font-size: 1vw;
         color: black; // dots 색상 조정
       }
     }
@@ -124,48 +124,62 @@ const StyledSliderContainer = styled.div`
   }
 `;
 
-const FirstCut = styled.div`
+const SlideBox = styled.div`
   display: flex;
   align-content: center;
   justify-content: center;
   width: 100%;
-  min-height: 500px;
-  background-color: rgb(255, 70, 130);
-`;
+  height: 55vh;
 
-const SecondCut = styled.div`
-  display: flex;
-  align-content: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 500px;
-  background-image: linear-gradient(to top, #11fbc8 0%, #007BCB 100%);
-`;
+  // 첫 번째 슬라이드 스타일
+  &.first {
+    background-color: rgb(255, 70, 130);
+  }
 
-const ThirdCut = styled.div`
-  display: flex;
-  align-content: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 500px;
-  background-image: linear-gradient(to right, #6a11cb 10%, #2575fc 100%);
+  // 두 번째 슬라이드 스타일
+  &.second {
+    background-image: linear-gradient(to top, #11fbc8 0%, #007BCB 100%);
+  }
+
+  // 세 번째 슬라이드 스타일
+  &.third {
+    background-image: linear-gradient(to right, #6a11cb 10%, #2575fc 100%);
+  }
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 90svh;
+  }
 `;
 
 const Container = styled.div`
   display: flex;
   align-items: center;
   margin: 0 5vw;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 const Box = styled.div`
   display: flex;
   flex-direction: column;
   width: 50%;
   height: auto;
+  @media (max-width: 768px) {
+    align-items: center;
+    width: 100%;
+    order: 2;
+  }
 `;
 const ImageBox = styled.div`
   width: 50%;
   height: auto;
   box-sizing: border-box;
+  @media (max-width: 768px) {
+    width: 100%;
+    order: 1;
+    margin-bottom: 20px;
+  }
 `;
 const Img = styled.img`
   width: 100%;
@@ -173,17 +187,26 @@ const Img = styled.img`
   object-fit: fill;
 `;
 const Item = styled.div`
-  font-size: 60px;
+  font-size: 3.3vw;
+  white-space: nowrap; // 줄바뀜 방지
   color: white;
-  margin-bottom: 20px;
+  margin-bottom: 1vh;
+  & > div{margin-top: 2vh}
+  @media (max-width: 768px) {
+    order: 1;
+    & div{
+      font-size: 10vw;
+    }
+  }
 `;
 
 const Item2 = styled.div`
   display: flex;
   flex-direction: row;
   align-content: center;
+  white-space: nowrap; // 줄바뀜 방지
   margin-bottom: 10px;
-  font-size: 15px;
+  font-size: 1vw;
   color: white;
   & > div {
     display: flex;
@@ -191,32 +214,48 @@ const Item2 = styled.div`
     margin: 10px; // Box의 직계 자식 div에 스타일 적용
   }
   & span {
-    font-size: 22px;
+    font-size: 1.5vw;
     color: rgb(50,50,50);
     text-align: left;
-    padding: 20px;
+    padding: 1vw;
+  }
+  @media (max-width: 768px) {
+    order: 2;
+    flex-direction: column;
+    & div{font-size:5vw; align-content: center; };
+    & span{font-size:3.5vw};
   }
 `;
 const PlaystoreButton = styled.div`
-  width: 200px;
-  height: 50px;
+  width: 12vw;
+  height: 5vh;
   border-radius: 20px;
   background-color: white;
   background-image: url(${googlelogo});
-  background-size: cover;
+  background-size: contain;
+  background-repeat: no-repeat;
   background-position: center;
+  padding: 10%;
   cursor: pointer;
+  @media (max-width:768px ) {
+    width: 30vw;
+    height: 3vh;
+}
 `;
 const DatingAppButton = styled.div`
   display: flex;
   align-items: center; // 수직 가운데 정렬
-  width: 200px;
-  height: 50px;
+  width: 12vw;
+  height: 5vh;
   border-radius: 20px;
   background-color: white;
   background-image: url(${lovechaticon});
   background-size: contain;
   background-position: right;
   background-repeat: no-repeat;
-  cursor: pointer;
+  padding: 10% 0;
+  @media (max-width:768px ) {
+    width: 30vw;
+    height: 3vh;
+}
 `;

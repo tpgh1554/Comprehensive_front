@@ -1,13 +1,14 @@
 // ChatRoom.js
 import styled from 'styled-components';
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import AxiosApi from '../../api/AxiosApi';
 import { connectWebSocket, sendMessage } from '../../api/StompClient'; // 수정된 부분
 import { FaPaperPlane, FaAngleLeft } from 'react-icons/fa';
 const ChatRoom = () => {
   const { roomId } = useParams(); // roomId 정보를 가져옴
   const navigate = useNavigate();
+  const location = useLocation();
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [isConnected, setIsConnected] = useState(false);
@@ -42,7 +43,7 @@ const ChatRoom = () => {
       (client) => {
         stompClientRef.current = client;
         setIsConnected(true);
-        console.log('WebSocket connected');
+        console.log('WebSocket connected : ' , client);
       },
       (error) => console.error('STOMP error', error)
     );
@@ -66,7 +67,7 @@ const ChatRoom = () => {
     e.preventDefault();
     if (isConnected && message.trim()) {
       const accessToken = localStorage.getItem('accessToken');
-      const profileImgPath = localStorage.getItem('profileImgPath');
+      const profileImgPath = localStorage.getItem('imgUrl');
       sendMessage({
         senderId: localStorage.getItem('email'),
         content: message,
@@ -94,19 +95,22 @@ const ChatRoom = () => {
               나가기
             </p>
           </BackButton>
-          <div>채팅방이름</div>
+          <div>{location.state?.roomName || '채팅방 이름'}</div>
         </Title>
         <ChatBox>
           {messages.map((msg, index) => (
             <MessageItem key={index} isSender={msg.senderId === localStorage.getItem('email')}>
               <Message isSender={msg.senderId === localStorage.getItem('email')}>
+              <MessageBox isSender={msg.senderId === localStorage.getItem('email')}>
                 <MessageContent isSender={msg.senderId === localStorage.getItem('email')}>
                   <p>{msg.content}</p>
                 </MessageContent>
+                  <NicknameItem isSender={msg.senderId === localStorage.getItem('email')}>{msg.senderNickname}</NicknameItem>
+              </MessageBox>
                 <ProfileImage src={msg.profileImgPath || 'https://via.placeholder.com/40'} alt="Profile" />
               </Message>
               <TimeInfo>{new Date(msg.localDateTime).toLocaleString()}</TimeInfo>
-            </MessageItem>
+            </MessageItem> 
           ))}
           <div ref={messagesEndRef} />
         </ChatBox>
@@ -201,23 +205,34 @@ const MessageItem = styled.div`
 `;
 const Message = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   max-width: 70%;
   flex-direction: ${(props) => (props.isSender ? 'row' : 'row-reverse')};
 `;
 const TimeInfo = styled.div`
   white-space: nowrap;
+  margin-top: 0.01rem; // 상하 간격 줄이기
 `;
+const MessageBox = styled.div`
+display: flex;
+flex-direction: column;
+align-items: ${(props) => (props.isSender ? 'flex-end' : 'flex-start')};
+`
+const NicknameItem = styled.p`
+ margin: ${(props) => (props.isSender ? '0.5rem 0 0 1rem' : '0.5rem 1vw 0 0')}; // 상하 간격 줄이기
+`
 const ProfileImage = styled.img`
-  width: 40px;
-  height: 40px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  margin: 0 1vw;
+  margin: 2vh 1vw 0 1vw;
 `;
 
 const MessageContent = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
+  max-width: 20vw;
   color: ${(props) => (props.isSender ? 'white' : 'black')};
   background: ${(props) =>
     props.isSender
@@ -225,6 +240,7 @@ const MessageContent = styled.div`
       : '#E2E2E2'};
   border-radius: ${(props) => (props.isSender ? '2vw 2vw 0 2vw' : '2vw 2vw 2vw 0 ')};
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+  word-wrap: break-word;
   padding: 0.5vw 1vh;
 `;
 

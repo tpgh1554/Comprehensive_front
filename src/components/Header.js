@@ -54,6 +54,7 @@ const LogoContainer = styled.div`
 // 폰트
 const Span = styled.span`
   text-align: left;
-  font-size: 50px;
+  font-size: 3.5vw;
+  caret-color: transparent; // 커서 깜박임 제거
   font-family: "PyeongChangPeace-Bold", sans-serif;
 `;

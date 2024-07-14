@@ -155,7 +155,12 @@ function DatingApp() {
           <div>매일 새롭게 만나는 5명의 아프다맨~</div>
         </Title>
         <Window>
-          {cardList.map((character, index) => (
+          {cardList.map((character, index) => {
+          const skills = character.skill.split(",");
+          const firstSkill = skills[0];
+          const remainingSkills = skills.length - 1;
+          return (
+            
             <TinderCard
               ref={childRefs[index]}
               className="swipe"
@@ -175,7 +180,8 @@ function DatingApp() {
                     <br />
                   </Span>
                   <Span>
-                    #{character.skill}
+                  # {firstSkill}
+                  {remainingSkills > 0 && ` (+${remainingSkills})`}
                     <br />
                   </Span>
                   <Span>
@@ -185,7 +191,7 @@ function DatingApp() {
                 </SpanBox>
               </CardImage>
             </TinderCard>
-          ))}
+            )})}
         </Window>
         <ButtonArea>
           <Buttons>
@@ -228,11 +234,15 @@ export default DatingApp;
 
 const Body = styled.div`
   width: auto;
-  height: 100vh;
+  height: 90vh;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  @media (max-width:768px){
+    width: 95vw;
+    height: 100svh;
+  }
 `;
 const PhoneFrame = styled.div`
   display: flex;
@@ -241,7 +251,7 @@ const PhoneFrame = styled.div`
   align-items: center;
   box-sizing: border-box;
   width: 30vw;
-  height: 80vh;
+  height: 85vh;
   background-image: linear-gradient(
     to right,
     #ff5253 0%,
@@ -276,9 +286,15 @@ const PhoneFrame = styled.div`
       transform: scale(1, 1);
     }
   }
+  @media (max-width:768px){
+    width: 78vw;
+    height: 90vh;
+    border-radius: 5dvi;
+  }
 `;
 // 앱모양 창 내부 와이드값 Window, Title, BottonArea
-const widthvalue = "28vw";
+const widthvalue = "28.5vw";
+const mobilewidthvalue = "73vw"
 const Title = styled.div`
   display: flex;
   justify-content: center;
@@ -287,10 +303,15 @@ const Title = styled.div`
   height: 10vh;
   background-color: white;
   border-radius: 3.3vi 3.3vi 0 0;
-  margin-top: 2vh;
+  margin-top: 1vh;
   padding-top: 1vh;
   & div {
     font-size: 1.5vw;
+  }
+  @media (max-width:768px){
+    width: ${mobilewidthvalue};
+    height: 6vh;
+    & div {font-size: 4vw};
   }
 `;
 
@@ -301,12 +322,25 @@ const Window = styled.div`
   align-items: center;
   box-sizing: border-box;
   width: ${widthvalue};
-  min-height: 55vh;
+  height: 60vh;
   background-color: white;
-  & > *:nth-child(2) {
-    // 두번째 요소인 tinder card 설정 부분 현재 일부 카드만 선택되어 수정 필요
+  & > :nth-child(1) {
+    background-color: rgb(255, 70, 130);
+  }
+
+  & > :nth-child(2) {
+    background-image: linear-gradient(to top, #11fbc8 0%, #007bcb 100%);
+  }
+
+  & > :nth-child(3) {
+    background-image: linear-gradient(to right, #6a11cb 10%, #2575fc 100%);
+  }
+  @media (max-width:768px){
+    width: ${mobilewidthvalue};
+    height: 82vh;
   }
 `;
+
 // 카드 이미지 설정
 const CardImage = styled.div`
   position: absolute;
@@ -318,21 +352,32 @@ const CardImage = styled.div`
     -50%
   ); // 절대위치의 카드를 가운데 정렬하기 위해 사용
   width: 20vw;
-  height: 50vh;
+  height: 55vh;
   border-radius: 2vh;
   box-sizing: border-box;
   box-shadow: 0px 0px 60px 0px rgba(0, 0, 0, 0.3);
   background-size: cover;
   background-position: center;
   background-repeat: space;
+  @media (max-width:768px){
+    width: 70vw;
+    height: 65vh;
+  }
 `;
 const ButtonArea = styled.div`
   width: ${widthvalue};
+  height: 12vh;
   background-color: white;
   border-radius: 0 0 3.3vi 3.3vi;
   white-space: nowrap;
-  margin-bottom: 5vh;
-  padding-bottom: 2vh;
+  margin-bottom: 1vh;
+  padding-bottom: 3vh;
+  @media (max-width:768px){
+    width: ${mobilewidthvalue};
+    height: 10vh;
+    margin-bottom: 2vh;
+    padding-bottom: 10vh;
+  }
 `;
 const Buttons = styled.div`
   display: flex;
@@ -347,8 +392,9 @@ const Buttons = styled.div`
   & button {
     display: flex;
     justify-content: center; // 좌우 가운데 정렬
+    align-items: center;
     width: 10vw;
-    height: 5vh;
+    height: 6vh;
     text-align: center;
     border: 0.5vw solid #ff5253;
     border-radius: 3vw;
@@ -367,16 +413,33 @@ const Buttons = styled.div`
   :hover {
     transform: scale(1.05);
   }
+  @media (max-width:768px){
+    width: ${mobilewidthvalue};
+    height: 5vh;
+    margin-bottom: 1vh;
+    & button{
+      width: 10vw;
+      height: 6vh;
+      font-size: 5vmin;
+      border-radius: 5vw;
+      border: 1vw solid #ff5253;
+      margin: 0 1vw;
+    }
+  }
 `;
 const ResultBox = styled.div`
   display: flex;
   justify-content: center;
-  font-size: 2vmin;
+  font-size: 3vmin;
   color: #000;
   animation-name: popup;
   animation-duration: 800ms;
   flex-shrink: 1; /* 버튼이 부모 크기에 맞춰 작아지도록 설정 */
   flex-grow: 1;
+  @media (max-width:768px){
+    font-size: 4vmin;
+    
+  }
 `;
 //카드 내부 정보 정렬
 const SpanBox = styled.div`
@@ -386,7 +449,7 @@ const SpanBox = styled.div`
   justify-content: flex-end;
   width: 100%;
   height: 50%;
-  font-size: 1.5vh;
+  font-size: 2vh;
   bottom: 0;
   margin: 5vh 0 0 0;
   color: #fff;
@@ -402,5 +465,9 @@ const Span = styled.span`
   align-self: flex-start;
   justify-content: left;
   text-align: left;
-  margin: 1vh;
+  margin: 0 0 2vh 1vw;
+  @media (max-width:768px){
+    font-size: 5vmin;
+    margin-bottom: 3vh;
+  }
 `;

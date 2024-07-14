@@ -19,18 +19,12 @@ import {
 } from "./style/SignFormStyle";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Upload from "../api/firebase/ImageUploader";
 import { storage } from "../api/firebase/Firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import AxiosApi from "../api/AxiosApi";
 import Privacy from "../components/Privacy";
 import Privacy2 from "../components/Privacy2";
 import styled from "styled-components";
 import basicProfile from "../image/person-icon2.png";
-
-// SubmitBtn = styled.div`
-
-// `;
 
 const SignUp = ({ profile }) => {
   // 입력하는 값을 저장하기 위한 것들

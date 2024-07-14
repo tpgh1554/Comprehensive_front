@@ -14,6 +14,8 @@ import Mywrite from "./mypages/Mywrite";
 import LoginPage from "./login/Login";
 import SignUp from "./login/Signup";
 import MemberUpdate from "./login/MemberUpdate";
+import FindId from "./login/FindId";
+import FindPw from "./login/FindPw";
 import Upload from "./api/firebase/ImageUploader";
 import UserStore from "./context/UserStore";
 
@@ -78,6 +80,8 @@ function App() {
             <Route path="/apueda/subinfo" element={<Subinfo />} />
             <Route path="/apueda/login" element={<LoginPage />} />
             <Route path="/apueda/signup" element={<SignUp />} />
+            <Route path="/apueda/findid" element={<FindId/>}/>
+            <Route path="/apueda/findpw" element={<FindPw/>} />
             <Route
               path="/apueda/mypage/memberupdate"
               element={<MemberUpdate />}

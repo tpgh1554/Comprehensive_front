@@ -31,7 +31,7 @@ const Body = styled.div`
 `;
 
 const Container = styled.div`
-  width: 100dvw;
+  width: 100%;
   max-width: 1920px;
   height: auto;
   @media (max-width: 500px){

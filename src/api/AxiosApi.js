@@ -293,7 +293,7 @@ const AxiosApi = {
   // ----------------------- 게시판 끝 -----------------------
   // -----------------------채   팅-----------------------
   // 방 생성
-  createRoom: async (roomName, max_count,) => {
+  createRoom: async (roomName, max_count) => {
     const roomData = { roomName: roomName, max_count: max_count };
     return await AxiosInstance.post("/chat/create", roomData);
   },
@@ -345,6 +345,30 @@ const AxiosApi = {
   requestProject: async (postData) => {
     console.log("postData", postData);
     return await AxiosInstance.post(`/apply/insert`, postData);
+  },
+
+  ProjectRequestAccept: async (applyId) => {
+    return await AxiosInstance.post("/apply/accept", {
+      applyId: applyId, // applyId를 Request Body에 담아 보냄
+    });
+  },
+
+  ProjectRequestReject: async (applyId) => {
+    return await AxiosInstance.post("/apply/reject", applyId, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  },
+
+  ProjectKickOut: async (roomid, memberId, projectId) => {
+    return await AxiosInstance.get("/project/kick", {
+      params: {
+        roomId: roomid,
+        memberId: memberId,
+        projectId: projectId,
+      },
+    });
   },
   // -----------------------채   팅-----------------------
   // -----------------------데이트 어플-----------------------

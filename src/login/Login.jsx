@@ -7,6 +7,7 @@ import { UserContext } from "../context/UserStore";
 
 const Container = styled.div`
   width: 100%;
+  padding-top: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,7 +34,7 @@ const Box = styled.div`
   justify-content: center;
   align-items: center;
   border: 3px solid #ff5353;
-  background: rgba(249, 47, 35, 0.7);
+  background: rgba(255, 83, 53, 0.8);
   border-radius: 10px;
   padding: 30px;
   box-sizing: border-box;
@@ -142,6 +143,12 @@ const LoginPage = () => {
   const handleSignup = () => {
     navigate("/apueda/signup");
   };
+  const handleFindId = () => {
+    navigate("/apueda/findid");
+  };
+  const handleFindPw = () => {
+    navigate("/apueda/findpw");
+  };
 
   return (
     <Container>
@@ -164,9 +171,9 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
             <ButtonBox>
-              <FindBtn>아이디찾기</FindBtn>
+              <FindBtn onClick={handleFindId}>아이디찾기</FindBtn>
               <span> / </span>
-              <FindBtn>비밀번호찾기</FindBtn>
+              <FindBtn onClick={handleFindPw}>비밀번호찾기</FindBtn>
             </ButtonBox>
           </InputContainer>
           <SummitBtnBox>

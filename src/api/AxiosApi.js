@@ -78,13 +78,16 @@ const AxiosApi = {
   signup: async (user) => {
     return await axios.post(Apueda_Domain + "/auth/signup", user);
   },
+  // 아이디 찾기
+  findId: async (user) => {
+    return await axios.post(Apueda_Domain + "/auth/findid", user);
+  },
+  // 비밀번호 찾기(변경하기)
+  findPw: async (user) => {
+    return await axios.post(Apueda_Domain + "/auth/findpw", user);
+  },
 
   // 사용자 정보 가져오기
-  // getUserInfo: async (email) => {
-  //   return await axios.get(
-  //     `${Apueda_Domain}/members/memberinfo?email=${email}`
-  //   );
-  // },
   getUserInfo2: async () => {
     return await AxiosInstance.get("/members/memberinfo2");
   },

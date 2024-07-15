@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   width: 100%;
+  padding-top: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,7 +32,7 @@ export const Box = styled.div`
   justify-content: center;
   align-items: center;
   border: 3px solid #ff5353;
-  background: rgba(255, 83, 53, 0.7);
+  background: rgba(255, 83, 53, 0.8);
   border-radius: 10px;
   padding: 30px;
   box-sizing: border-box;
@@ -140,11 +141,12 @@ export const Text = styled.textarea`
 export const SubmitBtn = styled.button`
   height: 40px;
   width: 40%;
-  background-color: rgba(255, 83, 83, 0.8);
+  margin-top: 20px;
+  background-color: rgba(255, 83, 53, 0.8);
   &:disabled {
     cursor: not-allowed;
     &:hover {
-      background-color: rgba(255, 83, 83, 0.8);
+      background-color: rgba(255, 83, 53, 0.8);
     }
   }
 `;

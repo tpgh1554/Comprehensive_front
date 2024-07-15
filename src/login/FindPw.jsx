@@ -1,17 +1,17 @@
 import {
-    Container,
-    Box,
-    Contents,
-    InputContainer,
-    EmailBox,
-    ShortInput,
-    CheckBtn,
-    SubmitBtn,
-  } from "./style/SignFormStyle";
+  Container,
+  Box,
+  Contents,
+  InputContainer,
+  EmailBox,
+  ShortInput,
+  CheckBtn,
+  SubmitBtn,
+} from "./style/SignFormStyle";
 import logo from "../image/apueda-logo-black.png";
 import styled from "styled-components";
 import AxiosApi from "../api/AxiosApi";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 const Logo = styled.div`
   width: 150px;
   height: 150px;
@@ -20,11 +20,10 @@ const Logo = styled.div`
   background-position: center;
 `;
 const FindPw = () => {
-    
   const [email, setEmail] = useState("");
   const [emailValid, setEmailValid] = useState(false); // 이메일 형식 검사
   const [codeValid, setCodeValid] = useState(false); // 인증번호 검사
-  
+
   const [emailError, setEmailError] = useState("");
   // 이메일 코드 작성
   const [inputCode, setInputCode] = useState(null);
@@ -79,18 +78,17 @@ const FindPw = () => {
     } else {
       setEmailError("올바른 이메일 형식입니다.");
       setEmailValid(true);
-       }
+    }
   };
 
-    return (
-        <Container>
-            <Box>
-                <Contents>
-                    
-                <Logo/>
-                <h2>비밀번호 찾기</h2>
-                <InputContainer>
-                <EmailBox>
+  return (
+    <Container>
+      <Box>
+        <Contents>
+          <Logo />
+          <h2>비밀번호 찾기</h2>
+          <InputContainer>
+            <EmailBox>
               <ShortInput
                 placeholder="이메일"
                 value={email}
@@ -117,12 +115,11 @@ const FindPw = () => {
                 확인
               </CheckBtn>
             </EmailBox>
-            </InputContainer>
-                <SubmitBtn>찾기
-                </SubmitBtn>
-                </Contents>
-            </Box>
-        </Container>
-     );
-}
+          </InputContainer>
+          <SubmitBtn>찾기</SubmitBtn>
+        </Contents>
+      </Box>
+    </Container>
+  );
+};
 export default FindPw;

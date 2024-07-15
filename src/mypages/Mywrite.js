@@ -6,7 +6,6 @@ import AxiosApi from "../api/AxiosApi";
 const Container = styled.div`
   height: auto;
   width: 100%;
-  position: relative; /* 상대적 위치 설정 */
   display: flex;
   background-color: white;
   text-align: center;
@@ -66,7 +65,7 @@ const ListWrapper = styled.div`
   align-items: center; /* 수직으로 가운데 정렬 */
   min-width: 450px;
   padding: 20px;
-  background-color: aliceblue;
+  background-color: white;
   border: 3px solid #ff5353;
   border-radius: 30px;
 
@@ -92,9 +91,14 @@ const ListWrapper = styled.div`
 `;
 
 const DelButton = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 80px;
   height: 30px;
   background-color: #ff5353;
+  text-decoration: none;
+
   color: white;
   border: none;
   border-radius: 20px;
@@ -143,40 +147,40 @@ const Mywrite = () => {
     fetchBoardList();
   }, []);
 
-  const boardDelete = async (boardId) => {
-    const confirm = window.confirm("글을 삭제하시겠습니까?");
-    if (confirm) {
-      try {
-        // API를 호출하여 게시글 삭제
-        await AxiosApi.boardDelete(boardId);
-        // 삭제 성공 시, 상태 업데이트 등 추가 로직 처리
-        console.log(boardId);
-        console.log("삭제 성공");
-        window.alert("삭제완료");
-        window.location.reload();
-      } catch (error) {
-        console.error("삭제 오류", error);
-        console.log(boardId);
-      }
-    }
-  };
-  const projectDelete = async (projectId) => {
-    const confirm = window.confirm("글을 삭제하시겠습니까?");
-    if (confirm) {
-      try {
-        // API를 호출하여 게시글 삭제
-        await AxiosApi.projectDelete(projectId);
-        // 삭제 성공 시, 상태 업데이트 등 추가 로직 처리
-        console.log(projectId);
-        console.log("삭제 성공");
-        window.alert("삭제완료");
-        window.location.reload();
-      } catch (error) {
-        console.error("삭제 오류", error);
-        console.log(projectId);
-      }
-    }
-  };
+  // const boardDelete = async (boardId) => {
+  //   const confirm = window.confirm("글을 삭제하시겠습니까?");
+  //   if (confirm) {
+  //     try {
+  //       // API를 호출하여 게시글 삭제
+  //       await AxiosApi.boardDelete(boardId);
+  //       // 삭제 성공 시, 상태 업데이트 등 추가 로직 처리
+  //       console.log(boardId);
+  //       console.log("삭제 성공");
+  //       window.alert("삭제완료");
+  //       window.location.reload();
+  //     } catch (error) {
+  //       console.error("삭제 오류", error);
+  //       console.log(boardId);
+  //     }
+  //   }
+  // };
+  // const projectDelete = async (projectId) => {
+  //   const confirm = window.confirm("글을 삭제하시겠습니까?");
+  //   if (confirm) {
+  //     try {
+  //       // API를 호출하여 게시글 삭제
+  //       await AxiosApi.projectDelete(projectId);
+  //       // 삭제 성공 시, 상태 업데이트 등 추가 로직 처리
+  //       console.log(projectId);
+  //       console.log("삭제 성공");
+  //       window.alert("삭제완료");
+  //       window.location.reload();
+  //     } catch (error) {
+  //       console.error("삭제 오류", error);
+  //       console.log(projectId);
+  //     }
+  //   }
+  // };
 
   return (
     <>
@@ -211,12 +215,13 @@ const Mywrite = () => {
                 {projectList.map((project, index) => (
                   <div key={index}>
                     <ListWrapper>
-                      <h1>프로젝트 명 : {project.projectTitle}</h1>
+                      <h1>제목 : {project.projectTitle}</h1>
 
                       <DelButton
-                        onClick={() => projectDelete(project.projectId)}
+                        as={Link}
+                        to={`/apueda/board/projectDetail/${project.projectId}`}
                       >
-                        삭제
+                        이동
                       </DelButton>
                     </ListWrapper>
                   </div>
@@ -232,10 +237,13 @@ const Mywrite = () => {
                 {boardList.map((board, index) => (
                   <div key={index}>
                     <ListWrapper>
-                      <h1>{board.title}</h1>
+                      <h1>제목 : {board.title}</h1>
 
-                      <DelButton onClick={() => boardDelete(board.boardId)}>
-                        삭제
+                      <DelButton
+                        as={Link}
+                        to={`/apueda/board/boardDetail/${board.boardId}`}
+                      >
+                        이동
                       </DelButton>
                     </ListWrapper>
                   </div>

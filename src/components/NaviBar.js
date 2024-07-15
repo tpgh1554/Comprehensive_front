@@ -99,8 +99,8 @@ export default function NaviBar() {
           <ProfileButton>
             <motion.button
               style={{
-                width: "60px",
-                height: "60px",
+                width: "20vw", // 프로필사진 버튼 영역
+                height: "5vw",
                 border: 0,
                 backgroundColor: "transparent",
                 fontSize: "40px",
@@ -184,10 +184,13 @@ const Container = styled.div`
   position: fixed;
   z-index: 100;
   display: flex;
-  margin: 10vh -80px 0 0; // 네비바 위치
+  margin: 10vh -90px 0 0; // 네비바 위치
   flex-direction: column;
   align-self: flex-end; /* 자신을 교차축 방향으로 오른쪽 정렬 */
   align-items: center; // 하위 아이템 정렬
+  @media (max-width:500px){
+    margin: 10vh -55px 0 0; // 네비바 위치
+    }
 `;
 
 const Box = styled.div`
@@ -220,25 +223,32 @@ const Arrow = styled.div`
   margin: 0;
 `;
 
-const Img = styled.img`
-  width: 60px;
-  height: 60px;
-
+const Img = styled.img` // 메뉴아이콘 크기
+  width: 4vw;
+  height: 4vw;
   background-size: contain;
+  @media (max-width:500px){
+    width: 10vw;
+    height: 10vw;
+    }
 `;
 const ProfileImage = styled.div`
   img {
-    width: 60px;
-    height: 60px;
+    width: 4vw;
+    height: 4vw;
     object-fit: cover;
     border-radius: 100%;
-    border: 7px solid rgba(150, 150, 150, 0.5);
+    border: .5vw solid rgba(150, 150, 150, 0.5);
+    @media (max-width:500px){
+      width: 10vw;
+    height: 10vw;
+    }
   }
 `;
 const Overlay = styled.div`
   position: absolute;
   color: rgb(255, 255, 255);
-  font-size: 14px;
+  font-size: 1vw;
   opacity: 0;
   transition: opacity 0.3s ease;
 `;

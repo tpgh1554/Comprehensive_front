@@ -86,7 +86,7 @@ const ChatRoom = () => {
     <Body>
       <Container>
         <Head>
-          <div>프로젝트 채팅방</div>
+        <div>{location.state?.roomType === "프로젝트" ? "프로젝트 채팅방" : "오픈 채팅방"}</div>
         </Head>
         <Title>
           <BackButton onClick={() => navigate(-1)}>
@@ -141,12 +141,17 @@ const Body = styled.div`
 `;
 const Container = styled.div`
   overflow: auto;
-  width: 60vw;
+  width: 45vw;
   height: auto;
   min-height: 700px;
   border: 0.5vi solid rgb(255, 83, 83);
   border-radius: 3vi;
   margin-top: 2vh;
+  @media (max-width:500px){
+    width: 100svw;
+    height: 85svh;
+    border: 1vi solid rgb(255, 83, 83);
+  }
 `;
 
 const Head = styled.div`
@@ -212,6 +217,9 @@ const Message = styled.div`
 const TimeInfo = styled.div`
   white-space: nowrap;
   margin-top: 0.01rem; // 상하 간격 줄이기
+  @media (max-width:500px){
+    font-size: 3vw;
+  }
 `;
 const MessageBox = styled.div`
 display: flex;
@@ -226,6 +234,10 @@ const ProfileImage = styled.img`
   height: 80px;
   border-radius: 50%;
   margin: 2vh 1vw 0 1vw;
+  @media (max-width:500px){
+    width: 10vw;
+    height: 10vw;
+  }
 `;
 
 const MessageContent = styled.div`
@@ -238,10 +250,14 @@ const MessageContent = styled.div`
     props.isSender
       ? 'linear-gradient(to right, rgba(128, 0, 255, 0.9) 0%, rgba(64, 36, 255, 0.9) 60%, rgba(0, 80, 255, 0.8) 100%)'
       : '#E2E2E2'};
-  border-radius: ${(props) => (props.isSender ? '2vw 2vw 0 2vw' : '2vw 2vw 2vw 0 ')};
+  border-radius: ${(props) => (props.isSender ? '1.5vw 1.5vw 0 1.5vw' : '1.5vw 1.5vw 1.5vw 0 ')};
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
   word-wrap: break-word;
   padding: 0.5vw 1vh;
+  @media (max-width: 500px){
+    max-width:50vw;
+    border-radius: ${(props) => (props.isSender ? '4vw 4vw 0 4vw' : '4vw 4vw 4vw 0 ')};
+  }
 `;
 
 const Form = styled.form`

@@ -45,7 +45,7 @@ export default Section;
 const Body = styled.div`
 width: auto;
 padding-top: 10vh;
-@media(max-width: 768px) {
+@media(max-width: 500px) {
   height: auto;
 }
 `
@@ -57,7 +57,7 @@ const Container = styled.div`
   height: 50vh;
   align-items: center;
   margin-bottom: 20vh;
-  @media(max-width: 768px) {
+  @media(max-width: 500px) {
   flex-direction: column;
   height: 20vh;
   margin-bottom: 20vh;
@@ -81,6 +81,9 @@ const Item = styled.div`
   color: black;
   margin-bottom: 20px;
   &>div{word-wrap: break-word;}
+  @media(max-width: 500px){
+    &>div{font-size:4.5vw}
+  }
 `;
 const Item2 = styled.div`
 
@@ -92,5 +95,8 @@ const Item2 = styled.div`
   & > div {
     word-wrap: break-word;
     margin: 10px 0; // Box의 직계 자식 div에 스타일 적용
+  }
+  @media(max-width: 500px){
+    &>div{font-size:4vw}
   }
 `;

@@ -145,7 +145,7 @@ const SlideBox = styled.div`
   &.third {
     background-image: linear-gradient(to right, #6a11cb 10%, #2575fc 100%);
   }
-  @media (max-width: 768px) {
+  @media (max-width: 500px) {
     width: 100%;
     height: 90svh;
   }
@@ -155,7 +155,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   margin: 0 5vw;
-  @media (max-width: 768px) {
+  @media (max-width: 500px) {
     flex-direction: column;
     align-items: center;
   }
@@ -165,7 +165,7 @@ const Box = styled.div`
   flex-direction: column;
   width: 50%;
   height: auto;
-  @media (max-width: 768px) {
+  @media (max-width: 500px) {
     align-items: center;
     width: 100%;
     order: 2;
@@ -175,7 +175,7 @@ const ImageBox = styled.div`
   width: 50%;
   height: auto;
   box-sizing: border-box;
-  @media (max-width: 768px) {
+  @media (max-width: 500px) {
     width: 100%;
     order: 1;
     margin-bottom: 20px;
@@ -187,15 +187,15 @@ const Img = styled.img`
   object-fit: fill;
 `;
 const Item = styled.div`
-  font-size: 3.3vw;
-  white-space: nowrap; // 줄바뀜 방지
+  font-size: 3vw;
+  //white-space: nowrap; // 줄바뀜 방지
   color: white;
   margin-bottom: 1vh;
   & > div{margin-top: 2vh}
-  @media (max-width: 768px) {
+  @media (max-width: 500px) {
     order: 1;
     & div{
-      font-size: 10vw;
+      font-size: 9vw;
     }
   }
 `;
@@ -219,7 +219,7 @@ const Item2 = styled.div`
     text-align: left;
     padding: 1vw;
   }
-  @media (max-width: 768px) {
+  @media (max-width: 500px) {
     order: 2;
     flex-direction: column;
     & div{font-size:5vw; align-content: center; };

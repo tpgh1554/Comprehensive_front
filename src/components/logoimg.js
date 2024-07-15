@@ -10,5 +10,7 @@ const Logoimg = styled.div`
   background-image: url(${logoimg});
   background-size: cover;
   background-repeat: no-repeat;
+  @media (max-width: 500px){width: 10vw; height: 10vw;}
+
 `;
 export default Logo;

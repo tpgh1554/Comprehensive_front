@@ -327,9 +327,20 @@ const AxiosApi = {
       throw new Error("Error fetching joined rooms: " + error.message);
     }
   },
+    // 입장 중인 오픈채팅방 리스트 찾기
+    getJoinedOpenChatRooms: async (memberId) => {
+      try {
+        const response = await AxiosInstance.get("/chat/find-my-open-chat", {
+          params: { memberId: memberId },
+        });
+        return response;
+      } catch (error) {
+        throw new Error("Error fetching joined rooms: " + error.message);
+      }
+    },
   // 전체 오픈채팅방 조회 postType을 false로 보내야 오픈채팅방이 조회됨
   getOpenChatList: async (postType) => {
-    return await AxiosInstance.post("/chat/fint-open-chat-list", { postType });
+    return await AxiosInstance.post("/chat/find-open-chat-list", { postType });
   },
 
   // 방 이름으로 방 찾기
@@ -404,6 +415,15 @@ const AxiosApi = {
     return await AxiosInstance.post(`/datingapp/cardlist`, null, {
       params: {
         myEmail: myEmail,
+      },
+    });
+  },
+  // 정기구독 여부 확인
+  checkSubscribe: async () => {
+    const accessToken = AxiosApi.getAccessToken();
+    return await AxiosInstance.post(`/check-subscribe`, null, {
+      params: {
+        accessToken: accessToken,
       },
     });
   },

@@ -6,7 +6,8 @@ import CreateRoom from "./CreateRoom";
 import styled from "styled-components";
 
 const ChatManage = () => {
-  const [rooms, setRooms] = useState([]);
+  const [myRooms, setMyRooms] = useState([]);
+  const [myOpenChatRooms, setMyOpenChatRooms] = useState([]);
   const [chatRooms, setChatRooms] = useState([]);
   const navigate = useNavigate();
   // 로그인 안 할시에 로그인 창으로 이동
@@ -24,13 +25,27 @@ const ChatManage = () => {
         const memberId = localStorage.getItem("email");
         const response = await AxiosApi.getJoinedRooms(memberId);
         console.log(response.data);
-        setRooms(response.data);
+        setMyRooms(response.data);
       } catch (error) {
         console.error("Error fetching chat rooms", error);
       }
     };
 
     fetchProjectRooms();
+  }, []);
+  useEffect(() => {
+    const fetchMyOpenChatRooms = async () => {
+      try {
+        const memberId = localStorage.getItem("email");
+        const response = await AxiosApi.getJoinedOpenChatRooms(memberId);
+        console.log(response.data);
+        setMyOpenChatRooms(response.data);
+      } catch (error) {
+        console.error("Error fetching chat rooms", error);
+      }
+    };
+
+    fetchMyOpenChatRooms();
   }, []);
   useEffect(() => {
     const fetchOpenChatRooms = async () => {
@@ -47,18 +62,38 @@ const ChatManage = () => {
 
   const handleJoinRoom = async (roomId, roomName) => {
     try {
-      const response = await AxiosApi.joinRoom(roomId);
+      await AxiosApi.joinRoom(roomId);
       console.log(`Joining room with ID: ${roomId}`);
-      navigate(`/chat/${roomId}`, { state: { roomName } });
+      navigate(`/chat/${roomId}`, { state: { roomName, roomType: "프로젝트" } });
     } catch (error) {
       console.error("Error joining room", error);
     }
   };
-
+  const handleJoinOpenChatRoom = async (roomId, roomName) => {
+    try {
+      await AxiosApi.getJoinedOpenChatRooms(roomId);
+      console.log(`Joining room with ID: ${roomId}`);
+      navigate(`/chat/${roomId}`, { state: { roomName, roomType: "오픈" } });
+    } catch (error) {
+      console.error("Error joining room", error);
+    }
+  };
+  // 프로젝트 채팅방 삭제
   const handleDeleteRoom = async (roomId) => {
     try {
       await AxiosApi.exitRoom(roomId);
-      setRooms((prevRooms) =>
+      setMyRooms((prevRooms) =>
+        prevRooms.filter((room) => room.roomId !== roomId)
+      );
+    } catch (error) {
+      console.error("Error deleting room", error);
+    }
+  };
+  // 오픈채팅방 삭제
+  const handleDeleteOpenChatRoom = async (roomId) => {
+    try {
+      await AxiosApi.exitRoom(roomId);
+      setMyOpenChatRooms((prevRooms) =>
         prevRooms.filter((room) => room.roomId !== roomId)
       );
     } catch (error) {
@@ -71,12 +106,13 @@ const ChatManage = () => {
       <ModalBox>
         <CreateRoom />
       </ModalBox>
-      <ProjectChatBox>
+      <Box>
+      <MyProjectChatBox>
         <h2>참여중인 프로젝트 채팅방 목록</h2>
         <ul>
-          {rooms.map((room) => (
-            <List>
-              <li key={room.roomId}>
+          {myRooms.map((room) => (
+            <List key={room.roomId}>
+              <li>
                 <a href="#" onClick={() => handleJoinRoom(room.roomId, room.roomName)}>
                   {room.roomName}
                 </a>
@@ -87,28 +123,52 @@ const ChatManage = () => {
             </List>
           ))}
         </ul>
-      </ProjectChatBox>
-      <OpenChatBox>
+      </MyProjectChatBox>
+      <MyOpenChatBox>
+      <h2>참여중인 오픈 채팅방 목록</h2>
+        <ul>
+          {myOpenChatRooms.map((room) => (
+            <List key={room.roomId}>
+              <li>
+                <a href="#" onClick={() => handleJoinOpenChatRoom(room.roomId, room.roomName)}>
+                  {room.roomName}
+                </a>
+                <button onClick={() => handleDeleteOpenChatRoom(room.roomId)}>
+                  삭제
+                </button>
+              </li>
+            </List>
+          ))}
+        </ul>
+      </MyOpenChatBox>
+      </Box>
+      <Box>
+      <OpenChatList>
         <h2>오픈 채팅방</h2>
+        <ul>
         {chatRooms.map((room) => (
-          <List>
-            <li key={room.roomId}>
+          <List key={room.roomId}>
+            <li>
               <a href="#" onClick={() => handleJoinRoom(room.roomId, room.roomName)}>
                 {room.roomName}
               </a>
             </li>
           </List>
         ))}
-      </OpenChatBox>
+        </ul>
+      </OpenChatList>
+      </Box>
+      
+      
     </Container>
   );
 };
 
 export default ChatManage;
 const ModalBox = styled.div`
-  position: absolute;
+  //position: absolute;
   z-index: 100;
-  display: none;
+  //display: none;
 `;
 
 const Container = styled.div`
@@ -116,21 +176,31 @@ const Container = styled.div`
   flex-direction: row;
   width: auto;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 `;
-const ProjectChatBox = styled.div`
-  margin: 20vh 5vw;
+const Box = styled.div`
+display: flex;
+flex-direction: column;
+justify-content: flex-start;
+align-items: flex-start;
+`
+const MyProjectChatBox = styled.div`
+  margin: 5vh 5vw;
 `;
-const OpenChatBox = styled.div`
-  margin: 20vh 5vw;
+const MyOpenChatBox = styled.div`
+margin: 5vh 5vw;
+`;
+const OpenChatList = styled.div`
+  margin: 5vh 5vw;
 `;
 const List = styled.div`
 display: flex;
-justify-content: flex-start;
-  font-size: 40px;
+flex-direction: column;
+align-items: flex-start;
+  font-size: 1vw;
 
   ul {
-    margin-top: 80px; /* 위아래 간격을 없애고 싶다면 0으로 설정합니다 */
+    margin-top: 0; /* 위아래 간격을 없애고 싶다면 0으로 설정합니다 */
     padding: 0; /* 패딩도 필요에 따라 조정합니다 */
   }
   li {

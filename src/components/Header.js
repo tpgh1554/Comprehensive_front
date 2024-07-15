@@ -36,6 +36,7 @@ const Container = styled.div`
   width: 100%;
   max-width: 1920px;
   height: auto;
+  @media (max-width: 500px){width: 100dvw; height: 10vw;}
 `;
 
 const Box = styled.div`
@@ -57,4 +58,5 @@ const Span = styled.span`
   font-size: 3.5vw;
   caret-color: transparent; // 커서 깜박임 제거
   font-family: "PyeongChangPeace-Bold", sans-serif;
+  @media (max-width: 500px){font-size: 8vw}
 `;

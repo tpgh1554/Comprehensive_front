@@ -127,6 +127,11 @@ const Container = styled.div`
   width: 100%;
   height: 350px;
   /* color: white; */
+  @media (max-width:500px){
+    &>div:nth-child(5){
+      flex-direction: column;
+    }
+  }
 `;
 
 const Box = styled.div`
@@ -140,6 +145,9 @@ const Item = styled.span`
   &>a{
     text-decoration: none;
     color: initial;
+  }
+  @media (max-width:500px){
+    font-size: 3.5vw;
   }
 `;
 

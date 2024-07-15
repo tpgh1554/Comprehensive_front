@@ -18,6 +18,8 @@ function DatingApp() {
   const myEmail = localStorage.getItem("email");
   const [currentIndex, setCurrentIndex] = useState(0); // 겹친 카드중 선택 순서
   const [lastDirection, setLastDirection] = useState();
+  const [isSubscribed, setIsSubscribed] = useState(false); // 구독 여부 상태
+  const [hasUsedFreeTrial, setHasUsedFreeTrial] = useState(false); // 비구독자의 무료 사용 여부
   // used for outOfFrame closure
   const currentIndexRef = useRef(currentIndex);
 
@@ -40,6 +42,17 @@ function DatingApp() {
   );
 
   useEffect(() => {
+    const checkSubscription = async () => {
+      try {
+        const response = await AxiosApi.checkSubscribe();
+        setIsSubscribed(response.data); // 구독 여부 상태 업데이트
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    checkSubscription();
+
     const showUserInfo = async () => {
       try {
         const response = await AxiosApi.getCardList(myEmail); // AxiosApi에서 사용자 정보를 가져옴
@@ -63,38 +76,47 @@ function DatingApp() {
     if (currentIndex === -1) {
       // 카드가 더이상 없으면 마지막카드가 사라지고 알림 출력위해 지연시간 설정
       setTimeout(() => {
-        if (
-          window.confirm(
-            "더이상 카드가 없습니다. 모든 친구 신청을 보내고 메인페이지로 이동하시겠습니까? (취소 시 페이지이동 X)"
-          )
-        ) {
-          likedList.forEach(async (user) => {
-            try {
-              const response = await AxiosApi.friendRequest(
-                myEmail,
-                user.email
-              );
-              console.log("Response:", response.data);
-            } catch (error) {
-              console.error("Error sending friend request:", error);
-            }
-          });
-          unlikedList.forEach(async (user) => {
-            try {
-              const response = await AxiosApi.unlikeFriendRequest(
-                myEmail,
-                user.email
-              );
-              console.log("Response:", response.data);
-            } catch (error) {
-              console.error("Error sending friend request:", error);
-            }
-          });
-          navigate("/"); //window.location.href = "/"; // 메인 페이지로 이동
+        if (!isSubscribed && hasUsedFreeTrial) {
+          // 비구독자 처리 및 무료 사용 이미 한 경우
+          alert("더이상 카드가 없습니다. 24시간 후에 다시 이용해 주세요.");
+        } else {
+          // 구독자 처리 또는 비구독자의 첫 무료 사용
+          if (
+            window.confirm(
+              "더이상 카드가 없습니다. 모든 친구 신청을 보내고 메인페이지로 이동하시겠습니까? (취소 시 페이지이동 X)"
+            )
+          ) {
+            likedList.forEach(async (user) => {
+              try {
+                const response = await AxiosApi.friendRequest(
+                  myEmail,
+                  user.email
+                );
+                console.log("Response:", response.data);
+              } catch (error) {
+                console.error("Error sending friend request:", error);
+              }
+            });
+            unlikedList.forEach(async (user) => {
+              try {
+                const response = await AxiosApi.unlikeFriendRequest(
+                  myEmail,
+                  user.email
+                );
+                console.log("Response:", response.data);
+              } catch (error) {
+                console.error("Error sending friend request:", error);
+              }
+            });
+            navigate("/"); // 메인 페이지로 이동
+          }
+          if (!isSubscribed) {
+            setHasUsedFreeTrial(true); // 비구독자의 첫 무료 사용을 기록
+          }
         }
       }, 1500);
     }
-  }, [currentIndex, likedList, unlikedList, myEmail]);
+  }, [currentIndex, likedList, unlikedList, myEmail, isSubscribed, hasUsedFreeTrial]);
 
   const swiped = (direction, nameToDelete, index) => {
     setLastDirection(direction);
@@ -103,7 +125,7 @@ function DatingApp() {
     if (direction === "right") {
       setLikedList((prev) => [...prev, cardList[index]]);
     } else if (direction === "left") {
-      // 왼쪽으로 넘겼을 때 실행 함수 (싫어요
+      // 왼쪽으로 넘겼을 때 실행 함수 (싫어요)
       setUnlikedList((prev) => [...prev, cardList[index]]);
     }
   };
@@ -239,7 +261,7 @@ const Body = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  @media (max-width:768px){
+  @media (max-width:500px){
     width: 95vw;
     height: 100svh;
   }
@@ -286,7 +308,7 @@ const PhoneFrame = styled.div`
       transform: scale(1, 1);
     }
   }
-  @media (max-width:768px){
+  @media (max-width:500px){
     width: 78vw;
     height: 90vh;
     border-radius: 5dvi;
@@ -308,7 +330,7 @@ const Title = styled.div`
   & div {
     font-size: 1.5vw;
   }
-  @media (max-width:768px){
+  @media (max-width:500px){
     width: ${mobilewidthvalue};
     height: 6vh;
     & div {font-size: 4vw};
@@ -335,7 +357,7 @@ const Window = styled.div`
   & > :nth-child(3) {
     background-image: linear-gradient(to right, #6a11cb 10%, #2575fc 100%);
   }
-  @media (max-width:768px){
+  @media (max-width:500px){
     width: ${mobilewidthvalue};
     height: 82vh;
   }
@@ -359,7 +381,7 @@ const CardImage = styled.div`
   background-size: cover;
   background-position: center;
   background-repeat: space;
-  @media (max-width:768px){
+  @media (max-width:500px){
     width: 70vw;
     height: 65vh;
   }
@@ -372,7 +394,7 @@ const ButtonArea = styled.div`
   white-space: nowrap;
   margin-bottom: 1vh;
   padding-bottom: 3vh;
-  @media (max-width:768px){
+  @media (max-width:500px){
     width: ${mobilewidthvalue};
     height: 10vh;
     margin-bottom: 2vh;
@@ -413,7 +435,7 @@ const Buttons = styled.div`
   :hover {
     transform: scale(1.05);
   }
-  @media (max-width:768px){
+  @media (max-width:500px){
     width: ${mobilewidthvalue};
     height: 5vh;
     margin-bottom: 1vh;
@@ -436,7 +458,7 @@ const ResultBox = styled.div`
   animation-duration: 800ms;
   flex-shrink: 1; /* 버튼이 부모 크기에 맞춰 작아지도록 설정 */
   flex-grow: 1;
-  @media (max-width:768px){
+  @media (max-width:500px){
     font-size: 4vmin;
     
   }
@@ -459,14 +481,25 @@ const SpanBox = styled.div`
     rgb(0, 0, 0, 0.5) 40%,
     rgba(0, 0, 0, 0.8) 100%
   ); // %는 처음기준 위치
+  & span:nth-child(1){
+    font-size: 8vw;
+    margin-bottom: 2vh;
+  }
+  & span:nth-child(2){
+    font-size: 5vw;
+    margin-bottom: 1vh;
+  }
+  & span:nth-child(3){
+    font-size: 5vw;
+  }
 `;
 const Span = styled.span`
   display: flex;
   align-self: flex-start;
   justify-content: left;
   text-align: left;
-  margin: 0 0 2vh 1vw;
-  @media (max-width:768px){
+  margin-left: 4vw;
+  @media (max-width:500px){
     font-size: 5vmin;
     margin-bottom: 3vh;
   }

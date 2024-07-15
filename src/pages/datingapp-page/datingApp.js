@@ -481,16 +481,31 @@ const SpanBox = styled.div`
     rgb(0, 0, 0, 0.5) 40%,
     rgba(0, 0, 0, 0.8) 100%
   ); // %는 처음기준 위치
+
   & span:nth-child(1){
+    font-size: 3vw;
+    margin-bottom: 1vh;
+  }
+  & span:nth-child(2){
+    font-size: 2vw;
+    margin-bottom: 1vh;
+  }
+  & span:nth-child(3){
+    font-size: 1vw;
+    margin-bottom: 5vh;
+  }
+  @media (max-width:500px){
+    & span:nth-child(1){
     font-size: 8vw;
-    margin-bottom: 2vh;
+    margin-bottom: 1vh;
   }
   & span:nth-child(2){
     font-size: 5vw;
     margin-bottom: 1vh;
   }
   & span:nth-child(3){
-    font-size: 5vw;
+    font-size: 4vw;
+  }
   }
 `;
 const Span = styled.span`
@@ -498,9 +513,8 @@ const Span = styled.span`
   align-self: flex-start;
   justify-content: left;
   text-align: left;
-  margin-left: 4vw;
+  margin-left: 1vw;
   @media (max-width:500px){
-    font-size: 5vmin;
-    margin-bottom: 3vh;
+    margin-left: 5vw;
   }
 `;

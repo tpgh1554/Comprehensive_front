@@ -99,7 +99,7 @@ export default function NaviBar() {
           <ProfileButton>
             <motion.button
               style={{
-                width: "20vw", // 프로필사진 버튼 영역
+                width: "5vw", // 프로필사진 버튼 영역
                 height: "5vw",
                 border: 0,
                 backgroundColor: "transparent",

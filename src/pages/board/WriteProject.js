@@ -26,8 +26,8 @@ import { storage } from "../../api/firebase/Firebase";
 import styled from "styled-components";
 import { resizeImage } from "../../utils/resizeImage";
 const UserImage = styled.div`
-  width: 300px;
-  height: 300px;
+  /* width: 300px;
+  height: 300px; */
 `;
 const WriteProject = () => {
   const inputRef = useRef(null); // 인원 입력용 ref 추가
@@ -109,7 +109,7 @@ const WriteProject = () => {
 
   // 프로젝트 이름 작성 모달
   const openProjectNameModal = () => {
-    handleUploadClick(imgPath);
+    //handleUploadClick(url);
 
     setIsProjectNameModalOpen(true);
   };
@@ -121,7 +121,6 @@ const WriteProject = () => {
 
   // 등록 버튼
   const handleSubmit = async () => {
-    console.log("selectedSkills.length : ", selectedSkills.length);
     if (!title) {
       alert("제목을 입력해주세요");
       return;
@@ -153,7 +152,11 @@ const WriteProject = () => {
       const max_count = recruitNum;
       if (!projectId) {
         // 등록 로직
-        const createRoomResponse = await AxiosApi.createRoom(roomName, max_count, email);
+        const createRoomResponse = await AxiosApi.createRoom(
+          roomName,
+          max_count,
+          email
+        );
         if (!createRoomResponse.data) {
           throw new Error("채팅방 생성이 실패했습니다.");
         }
@@ -161,10 +164,8 @@ const WriteProject = () => {
         console.log(chatRoom);
       }
 
-      let response;
       if (projectId) {
         // 수정 로직
-        console.log("수정 실행");
         const postData = {
           projectTitle: title,
           projectContent: content,
@@ -173,8 +174,9 @@ const WriteProject = () => {
           recruitNum: recruitNum,
           projectName: roomName,
           regDate: currentDate + getCurrentTime(),
+          imgPath: imgPath,
         };
-        response = await AxiosApi.modifyProject(projectId, postData);
+        const response = await AxiosApi.modifyProject(projectId, postData);
         if (response.status === 200) {
           alert("프로젝트가 성공적으로 수정되었습니다.");
         } else {
@@ -190,15 +192,15 @@ const WriteProject = () => {
           roomName: roomName,
           chatRoom: chatRoom,
           regDate: currentDate,
-          imgPath: url,
+          imgPath: imgPath,
         };
         // 등록 로직
-        response = await AxiosApi.postProject(postData);
+        const response = await AxiosApi.postProject(postData);
         if (response.data) {
           alert("프로젝트 게시글이 등록되었고 채팅방이 생성되었습니다.");
           console.log(postData);
         } else {
-          throw new Error("프로젝트 게시글 등록이 실패했습니다.");
+          throw new Error("프로젝트 게  시글 등록이 실패했습니다.");
         }
       }
 
@@ -210,20 +212,19 @@ const WriteProject = () => {
   };
 
   useEffect(() => {
-    if (!projectId) {
-      //handleRegister();
-    } else {
+    if (projectId) {
       const handleSubmit = async () => {
         try {
           const rsp = await AxiosApi.getProjectDetail(projectId);
+          console.log("rsp.data.projectTime", rsp.data);
           setTitle(rsp.data.projectTitle);
           setSelectedSkills(rsp.data.skillName);
           setRecruitNum(rsp.data.recruitNum);
           setContent(rsp.data.projectContent);
-          //setSelectDate(rsp.data.projectTime);
+          setSelectDate(rsp.data.projectTime);
           setProjectName(rsp.data.projectName);
-          setModifyDate(rsp.data.projectTime);
-          console.log(" modifytDate ", modifytDate);
+          setSelectDate(modifytDate);
+          setImgPath(rsp.data.imgPath);
         } catch (e) {
           console.log(e);
         }
@@ -254,35 +255,30 @@ const WriteProject = () => {
     }
   };
   // firebase에 이미지 올리기
+
   const handleFileInputChange = (e) => {
     const file = e.target.files[0];
     resizeImage(file, 370, 310, (blob) => {
       const resizedFile = new File([blob], file.name, { type: "image/jpeg" });
-      console.log("resizeImage 실행");
-      setImgPath(resizedFile);
-      console.log("resizedFile : ", imgPath);
-      // handleUploadClick(resizedFile);
-      // 리사이징된 이미지를 부모 컴포넌트로 전달
+      setUrl(resizedFile);
     });
   };
+  useEffect(() => {
+    handleUploadClick(url);
+  }, [url]);
   // firebase에 이미지 올리기
   const handleUploadClick = async (imgPath) => {
     try {
       const storageRef = storage.ref();
       const fileRef = storageRef.child(imgPath.name);
 
-      // 파일을 업로드하고 기다립니다.
       await fileRef.put(imgPath);
       console.log("File uploaded successfully!");
 
-      // 다운로드 URL을 가져오고 기다립니다.
       const url = await fileRef.getDownloadURL();
-      console.log("저장경로 확인 : " + url);
 
-      // 상태를 업데이트합니다.
-      setUrl(url);
+      setImgPath(url);
     } catch (error) {
-      // 에러를 처리합니다.
       console.error("Upload failed", error);
     }
   };

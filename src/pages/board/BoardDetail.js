@@ -169,12 +169,7 @@ const BoardDetail = () => {
       // console.log(boardId, "  아이디 값 넘기기 ");
       try {
         const response = await AxiosApi.getBoardDetail(id);
-        console.log(
-          "상세 보기 데이터 ",
-          response.data.memberId.email,
-          ",",
-          email
-        );
+        console.log("상세 보기 데이터 ", response.data.content);
 
         setBoardContent(response.data);
       } catch (e) {
@@ -310,7 +305,10 @@ const BoardDetail = () => {
           )}
           {boardContent && (
             <Body>
-              <Content>{boardContent.content}</Content>
+              {/* <Content>{boardContent.content}</Content> */}
+              <Content
+                dangerouslySetInnerHTML={{ __html: boardContent.content }}
+              />
             </Body>
           )}
           {boardContent && (

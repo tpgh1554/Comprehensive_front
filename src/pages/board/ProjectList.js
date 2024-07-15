@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../utils/formatDate";
 import InfiniteScroll from "react-infinite-scroll-component";
 import noImg from "../../image/noImage.jpg";
+import ProjectSearchBar from "./ProjectSearchBar";
 const Container = styled.div`
   width: 100%;
   height: 100%;
@@ -131,13 +132,16 @@ export const Button = styled.button`
   width: auto;
   overflow: hidden;
 `;
-
+const Input = styled.input`
+  width: 100%;
+`;
 const ProjectList = () => {
   const [projectList, setProjectList] = useState([]);
   const [sortBy, setSortBy] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPageSize, setTotalPageSize] = useState(0); // 총 페이지 수
   const [imgUrl, setImgUrl] = useState("");
+  const [isSearchModal, setIsSearchModal] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     const fetchProjectList = async () => {
@@ -187,16 +191,27 @@ const ProjectList = () => {
     e.currentTarget.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
   };
   const handleMouseDown = (e) => {
-    console.log("!");
+    //console.log("!");
     e.currentTarget.style.transform = "none";
     e.currentTarget.style.transition = "transform 0.5s ease";
     e.currentTarget.style.boxShadow = "none";
   };
+  const OpenSearchModal = () => {
+    console.log("서치 모달 실행");
+    setIsSearchModal(true);
+  };
   return (
     <Container>
       <ListContainer>
+        {isSearchModal && <ProjectSearchBar isOpen={isSearchModal} />}
         <ContentNameList>
-          <Column>검색필터</Column>
+          <Column onClick={OpenSearchModal}>
+            스킬필터
+            {isSearchModal && <ProjectSearchBar isOpen={isSearchModal} />}
+          </Column>
+          <Column style={{ width: "30%" }}>
+            <Input placeholder="제목 검색" />
+          </Column>
           {/* <Column>제목</Column> */}
           <Column>
             <Button onClick={sortByCreatedAt}>등록일자</Button>

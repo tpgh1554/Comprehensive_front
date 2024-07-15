@@ -50,7 +50,7 @@ export const ConfirmButton = styled.button`
 export const ContentContainer = styled.div`
   display: flex;
   width: 100%;
-  height: 90%;
+  height: 100%;
   list-style-type: none;
   background-color: #ffffff;
   border-radius: 30px;

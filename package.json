@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^42.0.1",
+    "@ckeditor/ckeditor5-react": "^8.0.0",
     "@react-spring/web": "^9.5.5",
     "@stomp/stompjs": "^7.0.0",
     "@testing-library/jest-dom": "^5.14.1",

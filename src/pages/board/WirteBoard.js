@@ -3,26 +3,39 @@ import BoardLayout from "../../components/BoardLayout";
 import { HeadContainer } from "../../style/SelectBoardStyle";
 import {
   Title,
-  InputButtonSection,
-  Button,
   Bottom,
   ConfirmButton,
-  Content,
   ContentContainer,
   Top,
   Container,
-  DropdownInput,
-  InputImage,
-  InsertConfirm,
 } from "../../style/WriteStyle";
 import AxiosApi from "../../api/AxiosApi";
 import { useNavigate, useParams } from "react-router-dom";
-import SkillModal from "./SkillModal";
 import { getCurrentTime, getFormattedDate } from "../../utils/formatDate";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import styled from "styled-components";
+const Content = styled.div`
+  padding-bottom: 16px;
 
+  button:nth-child(n + 8):nth-child(-n + 13) {
+    display: none;
+  }
+  /* button:nth-child(n + 14):nth-child(-n + 16) {
+    display: none;
+  } */
+  & .ck-dropdown {
+    display: none;
+  }
+  & .ck-content {
+    height: 550px;
+  }
+  & .ck-content :focus {
+    border: 1px solid black;
+  }
+`;
 const WriteBoard = () => {
   const fileInputRef = useRef(null);
-  // const [currentDate, setCurrentDate] = useState(getFormattedDate()); // 기간선택시 최소 날짜를 오늘 날짜로 고정
   const [modifytDate, setModifyDate] = useState(
     new Date().toISOString().split("T")[0]
   ); // 수정 버튼시 날짜 포맷 다시 되돌리기
@@ -45,7 +58,7 @@ const WriteBoard = () => {
     }
 
     try {
-      const email = localStorage.getItem("accessToken");
+      //const email = localStorage.getItem("accessToken");
       const postData = {
         title: title,
         content: content,
@@ -105,16 +118,29 @@ const WriteBoard = () => {
             value={title}
           />
 
-          <Content
-            placeholder="내용을 입력해주세요(10,000자 이내)"
-            cols={100}
-            style={{ resize: "none" }}
-            maxLength={10000}
-            onChange={(e) => setContent(e.target.value)}
-            value={content}
-          />
+          <Content style={{ width: "85%", height: "auto" }}>
+            <CKEditor
+              editor={ClassicEditor}
+              data={content}
+              config={{ extraPlugins: [] }}
+              onReady={(editor) => {
+                // You can store the "editor" and use when it is needed.
+                console.log("Editor is ready to use!", editor);
+              }}
+              onChange={(event, editor) => {
+                setContent(editor.getData());
+                console.log({ event, editor, content });
+              }}
+              onBlur={(event, editor) => {
+                console.log("Blur.", editor);
+              }}
+              onFocus={(event, editor) => {
+                console.log("Focus.", editor);
+              }}
+            />
+          </Content>
+
           <Bottom>
-            {/* <ConfirmButton onClick={handleRegister}>등록</ConfirmButton> */}
             <ConfirmButton onClick={() => handleSubmit()}>등록</ConfirmButton>
             <ConfirmButton onClick={cancel}>취소</ConfirmButton>
           </Bottom>

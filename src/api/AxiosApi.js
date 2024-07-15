@@ -229,19 +229,21 @@ const AxiosApi = {
       projectContent: postData.content,
       // projectPassword: postData.pw,
       skillName: postData.skills,
-      projectTime: postData.endDate,
+      projectTime: postData.projectTime,
       recruitNum: postData.recruitNum,
       projectName: postData.roomName,
       regDate: postData.currentDate,
       chatRoom: { roomId: postData.chatRoom },
       imgPath: postData.imgPath,
     };
+
     return await AxiosInstance.post("/project/insert", project);
   },
   // 플젝 상세 보기
   getProjectDetail: async (projectId) => {
     return await AxiosInstance.get(`/project/detail/${projectId}`);
   },
+
   // 내가 쓴 플젝 보기
   getMyProjectList: async () => {
     return await AxiosInstance.get("/project/mypj");

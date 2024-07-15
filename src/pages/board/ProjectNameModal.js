@@ -27,7 +27,7 @@ const ProjectNameModal = ({
     };
   }, []);
   const handleSave = async () => {
-    console.log("수정실행");
+    //console.log("수정실행");
     try {
       await onRoomNameSave(inputRoomName);
       onClick(inputRoomName);
@@ -39,7 +39,7 @@ const ProjectNameModal = ({
     }
   };
   useEffect(() => {
-    console.log("수정데이터 제목 불러옴", modifyData);
+    //console.log("수정데이터 제목 불러옴", modifyData);
     setInputRoomName(modifyData);
   }, [modifyData]);
   return (

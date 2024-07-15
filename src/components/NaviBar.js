@@ -88,7 +88,7 @@ export default function NaviBar() {
   const logoutHandler = () => {
     localStorage.clear();
     navigate("/apueda");
-    setLoginStatus(false);
+    setLoginStatus("");
     alert("로그아웃 되었습니다. (localStorage 모두 삭제)");
   };
 

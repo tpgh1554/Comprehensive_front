@@ -102,6 +102,12 @@ export const InputContainer = styled.div`
 
 export const EmailBox = styled.div`
   gap: 10px;
+  display: flex;
+  flex-direction: column;
+`;
+export const ShortInputContainer = styled.div`
+  display: flex;
+  /* flex-direction: row; */
 `;
 
 export const ShortInput = styled.input`
@@ -109,8 +115,12 @@ export const ShortInput = styled.input`
   width: 80%;
   background-color: rgba(0, 0, 0, 0.8);
 `;
-
-export const CheckBtn = styled.button``;
+export const CheckBtn = styled.button`
+  margin-left: 20px;
+  height: 40px;
+  width: 50px;
+  background-color: white;
+`;
 
 export const LongInput = styled.input`
   height: 40px;

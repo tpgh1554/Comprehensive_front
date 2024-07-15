@@ -12,6 +12,8 @@ import logo from "../image/apueda-logo-black.png";
 import styled from "styled-components";
 import AxiosApi from "../api/AxiosApi";
 import React, { useState } from "react";
+import PasswordModal from "./FindPasswordModal";
+
 const Logo = styled.div`
   width: 150px;
   height: 150px;
@@ -19,44 +21,37 @@ const Logo = styled.div`
   background-size: cover;
   background-position: center;
 `;
+
 const FindPw = () => {
   const [email, setEmail] = useState("");
-  const [emailValid, setEmailValid] = useState(false); // 이메일 형식 검사
-  const [codeValid, setCodeValid] = useState(false); // 인증번호 검사
-
+  const [emailValid, setEmailValid] = useState(false);
+  const [codeValid, setCodeValid] = useState(false);
   const [emailError, setEmailError] = useState("");
-  // 이메일 코드 작성
   const [inputCode, setInputCode] = useState(null);
   const [sentCode, setSentCode] = useState(null);
+  const [isModalOpen, setModalOpen] = useState(false);
 
-  // 입력 인증 번호 확인
   const onChangeEmailCode = (e) => {
     const currCode = Number(e.target.value);
     setInputCode(currCode);
   };
 
-  // 이메일 인증
   const authorizeMail = async () => {
     try {
       const rsp = await AxiosApi.mail(email);
-      console.log("전송 인증번호:", rsp.data);
-      setEmailValid("");
       setEmailError("");
       if (rsp.data !== null) {
         setSentCode(rsp.data);
-        console.log("인증 코드 설정 후:", sentCode); // sentCode 값이 올바르게 설정되었는지 확인
       }
     } catch (error) {
       console.error("이메일 요청 오류:", error);
-      // 오류 처리 로직 추가
     }
   };
 
-  // 이메일 인증번호 입력
   const checkCode = () => {
     if (inputCode === null) {
       console.log("코드를 입력해 주세요");
-      return; // inputCode가 null일 경우 함수 실행 중지
+      return;
     }
     if (inputCode === sentCode) {
       setCodeValid(true);
@@ -66,18 +61,41 @@ const FindPw = () => {
       console.log("다시 입력해 주세요");
     }
   };
-  // 이메일 인풋
+
   const onChangeEmail = (e) => {
     const currEmail = e.target.value;
     setEmail(currEmail);
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/; // 이메일 입력 정규식
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (!emailRegex.test(e.target.value)) {
-      // 입력값이 정규식에 만족하지 않으면~
       setEmailError("이메일 형식이 올바르지 않습니다.");
       setEmailValid(false);
     } else {
       setEmailError("올바른 이메일 형식입니다.");
       setEmailValid(true);
+      console.log(emailValid);
+    }
+  };
+
+  const openModal = () => {
+    const allValid = emailValid && codeValid;
+    if (allValid) {
+      setModalOpen(true);
+    } else {
+      console.log("이메일 인증을 완료해 주세요.");
+    }
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+  const handlePasswordSubmit = async (password) => {
+    try {
+      const response = await AxiosApi.findPw({ email, password });
+      console.log("비밀번호 변경 응답:", response.data);
+      closeModal();
+    } catch (error) {
+      console.error("비밀번호 변경 오류:", error);
     }
   };
 
@@ -116,10 +134,14 @@ const FindPw = () => {
               </CheckBtn>
             </EmailBox>
           </InputContainer>
-          <SubmitBtn>찾기</SubmitBtn>
+          <SubmitBtn onClick={openModal}>찾기</SubmitBtn>
         </Contents>
       </Box>
+      {isModalOpen && (
+        <PasswordModal onClose={closeModal} onSubmit={handlePasswordSubmit} />
+      )}
     </Container>
   );
 };
+
 export default FindPw;

@@ -10,6 +10,8 @@ import logo from "../image/apueda-logo-black.png";
 import React, { useState } from "react";
 import styled from "styled-components";
 import AxiosApi from "../api/AxiosApi";
+import FindIdModal from "./FindIdModal";
+
 const Logo = styled.div`
   width: 150px;
   height: 150px;
@@ -17,16 +19,19 @@ const Logo = styled.div`
   background-size: cover;
   background-position: center;
 `;
+
 const FindId = () => {
   const [formattedIdentityNumber, setFormattedIdentityNumber] = useState("");
   const [name, setName] = useState("");
   const [identityNumber, setIdentityNumber] = useState("");
   const [email, setEmail] = useState("");
   const [identifyNumberValid, setIdentifyNumberValid] = useState(false); // 주민번호 숫자 다 입력했는지 확인
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
 
   const onChangeName = (e) => {
     setName(e.target.value);
   };
+
   const onChangeIdentityNumber = (e) => {
     let value = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 입력받기
     if (value.length > 7) {
@@ -57,9 +62,13 @@ const FindId = () => {
       const rsp = await AxiosApi.findId(user);
       setEmail(rsp.data);
       console.log(rsp.data);
+      setIsModalOpen(true); // 모달 열기
     } catch (e) {
       console.log(e);
     }
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -83,7 +92,9 @@ const FindId = () => {
           <SubmitBtn onClick={findIdHandler}>찾기</SubmitBtn>
         </Contents>
       </Box>
+      {isModalOpen && <FindIdModal email={email} onClose={closeModal} />}
     </Container>
   );
 };
+
 export default FindId;

@@ -59,7 +59,6 @@ const MemberUpdate = () => {
         setEmail(rsp.data.email);
         setName(rsp.data.name);
         setIdentityNumber(rsp.data.identityNumber);
-        // setSkill(userInfo.skill);
         setMyInfo(rsp.data.myInfo);
         console.log(rsp.data);
       } catch (e) {

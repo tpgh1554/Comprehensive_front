@@ -7,7 +7,7 @@ import { UserContext } from "../context/UserStore";
 
 const Container = styled.div`
   width: 100%;
-  padding-top: 50px;
+  padding-top: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,7 +19,10 @@ const Container = styled.div`
     border-radius: 8px;
     cursor: pointer;
     &:hover {
-      background-color: #c72519; /* hover 시 배경색 변경 */
+      /* background-color: #c72519; */
+      background-color: white; /* hover 시 배경색 변경 */
+      border: 2px solid black;
+      color: black;
     }
     &:active {
       background-color: #87160e; /* 클릭 시 배경색 변경 */
@@ -34,7 +37,8 @@ const Box = styled.div`
   justify-content: center;
   align-items: center;
   border: 3px solid #ff5353;
-  background: rgba(255, 83, 53, 0.8);
+  /* background: rgba(255, 83, 53, 0.8); */
+  background-color: #ff5353;
   border-radius: 10px;
   padding: 30px;
   box-sizing: border-box;
@@ -66,13 +70,14 @@ const LoginTxt = styled.div`
   height: auto;
   text-align: left;
   margin-bottom: -20px;
+  color: white;
 `;
 
 const InputBox = styled.input`
   display: flex;
   flex-direction: column;
   border: none;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.6);
   width: 40%;
   height: 40px;
   padding-left: 10px;
@@ -87,6 +92,7 @@ const FindBtn = styled.button`
   border: 0;
   background: none;
   display: flex;
+  color: white;
 `;
 const SummitBtnBox = styled.div`
   display: flex;
@@ -103,14 +109,17 @@ const LoginBtn = styled.button`
 const SignUpBtn = styled.button`
   border: 0;
   height: 40px;
-  background-color: #ff5353;
+  /* background-color: #ff5353; */
+  background-color: rgba(0, 0, 0, 0.6);
   color: #ffffff;
-  border: 2px solid black;
+  /* border: 2px solid black; */
 `;
 const ThirdLoginBtn = styled.button`
   border: 0;
   height: 40px;
-  background-color: #ffffde;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  /* background-color: #ffffde; */
 `;
 const LoginPage = () => {
   const [email, setEmail] = useState("");

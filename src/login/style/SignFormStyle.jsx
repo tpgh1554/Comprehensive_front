@@ -2,13 +2,14 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   width: 100%;
-  padding-top: 50px;
+  padding-top: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
 
   & input {
     border-radius: 8px;
+    border: none;
     color: #ffffff;
   }
   & button {
@@ -31,11 +32,12 @@ export const Box = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border: 3px solid #ff5353;
-  background: rgba(255, 83, 53, 0.8);
+
+  background: rgba(255, 83, 83, 1);
   border-radius: 10px;
   padding: 30px;
   box-sizing: border-box;
+  color: white;
 `;
 
 export const Contents = styled.div`
@@ -152,12 +154,16 @@ export const SubmitBtn = styled.button`
   height: 40px;
   width: 40%;
   margin-top: 20px;
-  background-color: rgba(255, 83, 53, 0.8);
-  &:disabled {
-    cursor: not-allowed;
-    &:hover {
-      background-color: rgba(255, 83, 53, 0.8);
-    }
+  /* background-color: rgba(255, 83, 53, 0.8); */
+  border: none;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+
+  &&:hover {
+    /* background-color: rgba(255, 83, 53, 0.8); */
+    background-color: white;
+    color: black;
+    border: 2px solid black;
   }
 `;
 export const PrivacyBox = styled.div`

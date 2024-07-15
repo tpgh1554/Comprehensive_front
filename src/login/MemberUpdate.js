@@ -214,15 +214,15 @@ const MemberUpdate = () => {
   const regist = async (url = "") => {
     const originImage = imgSrc === basicProfile ? "" : imgSrc;
     const image = url !== "" ? url : originImage;
-
+    const profileImgPath = image;
     console.log("프로필 이미지 경로는 : " + image);
     const user = {
       email,
       name,
-      password,
-      nickname: nickname,
       identityNumber,
-      profileImgPath: image,
+      password,
+      nickname,
+      profileImgPath,
       skill,
       myInfo,
     };

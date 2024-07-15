@@ -1,5 +1,5 @@
 //NaviBar.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAnimate, stagger, motion } from "framer-motion";
 import AxiosApi from "../api/AxiosApi";
@@ -13,6 +13,7 @@ import card from "../image/credit-card.png";
 import profile from "../image/profile.png";
 import loginIcon from "../image/login-icon.png";
 import logout from "../image/logout.png";
+import { UserContext } from "../context/UserStore";
 
 export default function NaviBar() {
   const email = localStorage.getItem("email");
@@ -21,6 +22,10 @@ export default function NaviBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+
+  const context = useContext(UserContext);
+  const { setLoginStatus } = context;
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -79,6 +84,13 @@ export default function NaviBar() {
 
     return scope;
   }
+  // 로그아웃 시 로컬스토리지 비우고 로그인 상태 변경
+  const logoutHandler = () => {
+    localStorage.clear();
+    navigate("/apueda");
+    setLoginStatus(false);
+    alert("로그아웃 되었습니다. (localStorage 모두 삭제)");
+  };
 
   return (
     <Body>
@@ -149,14 +161,7 @@ export default function NaviBar() {
                 <Img src={loginIcon} />
                 <Overlay>로그인</Overlay>
               </MenuItem>
-              <MenuItem
-                isLoginUser={!isLoginUser}
-                onClick={() => {
-                  localStorage.clear();
-                  navigate("/");
-                  alert("로그아웃 되었습니다. (localStorage 모두 삭제)");
-                }}
-              >
+              <MenuItem isLoginUser={!isLoginUser} onClick={logoutHandler}>
                 <Img src={logout} />
                 <Overlay>로그아웃</Overlay>
               </MenuItem>

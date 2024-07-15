@@ -346,9 +346,12 @@ const ProjectDetail = () => {
                   ))}
               </Skills>
               <ListBtt>
-                <Button onClick={() => request(projectContent.projectId)}>
-                  신청
-                </Button>
+                {projectContent.existStatus && (
+                  <Button onClick={() => request(projectContent.projectId)}>
+                    신청
+                  </Button>
+                )}
+
                 <Button onClick={() => navigate("/apueda/board")}>목록</Button>
               </ListBtt>
             </Footer>

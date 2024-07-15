@@ -375,6 +375,16 @@ const AxiosApi = {
       },
     });
   },
+
+  ProjectExit: async (roomid, memberId) => {
+    return await AxiosInstance.get("/project/exit", {
+      params: {
+        roomId: roomid,
+        memberId: memberId,
+      },
+    });
+  },
+
   // -----------------------채   팅-----------------------
   // -----------------------데이트 어플-----------------------
   // 좋아요 이후 친구 신청

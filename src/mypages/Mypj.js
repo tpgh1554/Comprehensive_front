@@ -82,6 +82,7 @@ const ProfileImage = styled.div`
 const ProjectContainer = styled.div`
   display: flex;
   width: 70vw;
+  border-radius: 30px;
   border: 3px solid #ff5353;
   flex-direction: column;
   margin-bottom: 20px;
@@ -105,7 +106,15 @@ const Item = styled.div`
 `;
 
 const Skill = styled.div`
+  display: flex;
+  justify-content: center;
   margin-left: 20px;
+  margin-right: 10px;
+  background-color: #ff5353;
+  border-radius: 30px;
+  width: 50px;
+  padding-top: 3px;
+  color: white;
 `;
 
 const GoEndBtn = styled.div`
@@ -153,6 +162,8 @@ const ReqContainer = styled.div`
   border: 3px solid #ff5353;
   border-radius: 20px;
   min-height: 10vw;
+  flex-direction: column;
+  margin-bottom: 20px;
 `;
 
 const ImgNickNameBox = styled.div`
@@ -160,13 +171,14 @@ const ImgNickNameBox = styled.div`
   flex-direction: row;
   align-items: center;
   text-align: center;
+  padding: 10px;
 `;
 
 const ReqBtn = styled.div`
+  margin-left: auto;
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 5px;
+  align-items: center;
   @media (max-width: 500px) {
     flex-direction: column;
   }
@@ -176,7 +188,7 @@ const ButtonStyle = styled.button`
   min-width: 5vw;
   height: 30px;
   margin-left: auto;
-  margin-right: 30px;
+  margin-right: 10px;
   color: white;
   background-color: #ff5353;
   border: none;
@@ -189,6 +201,9 @@ const ButtonStyle = styled.button`
     height: 25px;
   }
 `;
+
+const AcceptBtn = styled.div``;
+const RejectBtn = styled.div``;
 
 const Mypj = () => {
   const [showProject, setShowProject] = useState(true);
@@ -253,11 +268,26 @@ const Mypj = () => {
   };
 
   const handleKickOut = async (roomid, email, projectId, nickname) => {
-    const isConfirmed = window.confirm(`${nickname}님을 강퇴하시겠습니까?`);
+    const isConfirmed = window.confirm(`${nickname}님 Exit`);
     if (isConfirmed) {
       try {
         await AxiosApi.ProjectKickOut(roomid, email, projectId);
-        window.alert("강퇴하였습니다.");
+        window.alert("Exit Successful.");
+      } catch (error) {
+        console.error("오류 : ", error);
+      }
+    }
+  };
+
+  const exitProject = async (roomid, email) => {
+    const isConfirmed = window.confirm(
+      `프로젝트를 삭제하시겠습니까? 
+(삭제해도 채팅방&게시물은 남게 됩니다.)`
+    );
+    if (isConfirmed) {
+      try {
+        await AxiosApi.ProjectExit(roomid, email);
+        window.alert("삭제 완료.");
       } catch (error) {
         console.error("오류 : ", error);
       }
@@ -341,7 +371,7 @@ const Mypj = () => {
                         </span>
                       )}
                     </h2>
-                    <Skill>Skill : {manage.member.skill}</Skill>
+                    <Skill>Skill</Skill> {manage.member.skill}
                     {hostStatus[projectIndex] && !manage.host && (
                       <ButtonStyle
                         onClick={() =>
@@ -356,6 +386,20 @@ const Mypj = () => {
                         강퇴
                       </ButtonStyle>
                     )}
+                    {!manage.host && userInfo === manage.member.email && (
+                      <ButtonStyle
+                        onClick={() =>
+                          handleKickOut(
+                            manage.chatRoom.roomId,
+                            manage.member.email,
+                            manage.projectId,
+                            manage.member.nickname
+                          )
+                        }
+                      >
+                        나가기
+                      </ButtonStyle>
+                    )}
                   </Item>
                 ))}
                 <GoEndBtn>
@@ -366,7 +410,19 @@ const Mypj = () => {
                   >
                     입장
                   </Gobutton>
-                  <Endbutton>프로젝트 종료</Endbutton>
+                  {/* 방장 나가기 */}
+                  {hostStatus[projectIndex] && (
+                    <Endbutton
+                      onClick={() =>
+                        exitProject(
+                          project.chatManages[0]?.chatRoom.roomId,
+                          project.chatManages[0]?.member.email
+                        )
+                      }
+                    >
+                      프로젝트 삭제
+                    </Endbutton>
+                  )}
                 </GoEndBtn>
               </ProjectItem>
             </ProjectContainer>
@@ -375,30 +431,36 @@ const Mypj = () => {
       )}
 
       {showApp && (
-        <ReqContainer>
+        <div>
           {projectReq.map((apply, index) => (
-            <div key={index}>
-              <h1>{apply.projectName}</h1>
+            <ReqContainer key={index}>
+              <ProjectTitle>
+                <h1>{apply.projectName}</h1>
+              </ProjectTitle>
               <ImgNickNameBox>
                 <ProfileImage>
                   <img src={apply.applicant.profileImgPath} alt="이미지x" />
                 </ProfileImage>
-                <h4>
-                  닉네임: {apply.applicant.nickname} / Skill :{" "}
-                  {apply.applicant.skill}
-                </h4>
+                <h2>{apply.applicant.nickname}</h2>
+                <Skill>Skill</Skill>
+                {apply.applicant.skill}
+
                 <ReqBtn>
-                  <ButtonStyle onClick={() => requestAccept(apply.applyId)}>
-                    수락
+                  <ButtonStyle>
+                    <AcceptBtn onClick={() => requestAccept(apply.applyId)}>
+                      수락
+                    </AcceptBtn>
                   </ButtonStyle>
-                  <ButtonStyle onClick={() => requestReject(apply.applyId)}>
-                    거절
+                  <ButtonStyle>
+                    <RejectBtn onClick={() => requestReject(apply.applyId)}>
+                      거절
+                    </RejectBtn>
                   </ButtonStyle>
                 </ReqBtn>
               </ImgNickNameBox>
-            </div>
+            </ReqContainer>
           ))}
-        </ReqContainer>
+        </div>
       )}
 
       <ExitWrap>

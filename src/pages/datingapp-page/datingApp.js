@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa6";
 import { UserContext } from "../../context/UserStore";
 import { useNavigate } from "react-router-dom";
+import defaultImage from "../../image/alien2.png";
 
 function DatingApp() {
   const [cardList, setCardList] = useState([]);
@@ -20,10 +21,43 @@ function DatingApp() {
   const [lastDirection, setLastDirection] = useState();
   const [isSubscribed, setIsSubscribed] = useState(false); // 구독 여부 상태
   const [hasUsedFreeTrial, setHasUsedFreeTrial] = useState(false); // 비구독자의 무료 사용 여부
+  const [showLimitModal, setShowLimitModal] = useState(false); // 모달 상태 추가
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [confirmAction, setConfirmAction] = useState(null);
   // used for outOfFrame closure
   const currentIndexRef = useRef(currentIndex);
 
-  // 로그인 안 할시에 로그인 창으로 이동
+  //429 에러 핸들링
+  const handleError = (error) => {
+    if (error.response && error.response.status === 429) {
+      setShowLimitModal(true); 
+    }
+  };
+  // 모달 관리
+  const handleCloseLimitModalYes = () => {
+    setShowLimitModal(false);
+    navigate("/apueda/subinfo");
+  };
+  const handleCloseLimitModalNo = () => {
+    setShowLimitModal(false);
+    navigate("/");
+  };
+
+  const handleConfirmYes = () => {
+    if (confirmAction) {
+      confirmAction();
+    }
+    setShowConfirmModal(false);
+  };
+
+  const handleConfirmNo = () => {
+    setShowConfirmModal(false);
+    if (!isSubscribed) {
+      navigate("/");
+    }
+  };
+
   const navigate = useNavigate();
   const context = useContext(UserContext);
   const { loginStatus } = context;
@@ -42,6 +76,7 @@ function DatingApp() {
   );
 
   useEffect(() => {
+    // 2. 정기구독여부 확인
     const checkSubscription = async () => {
       try {
         const response = await AxiosApi.checkSubscribe();
@@ -50,9 +85,10 @@ function DatingApp() {
         console.log(error);
       }
     };
-
     checkSubscription();
 
+
+    // 3.유저정보 가져오기
     const showUserInfo = async () => {
       try {
         const response = await AxiosApi.getCardList(myEmail); // AxiosApi에서 사용자 정보를 가져옴
@@ -65,9 +101,16 @@ function DatingApp() {
         }));
         setCardList(userList); // 변환된 데이터를 카드에 넣어줌
         setCurrentIndex(userList.length - 1);
-        currentIndexRef.current = userList.length - 1;
-      } catch (error) {
+        currentIndexRef.current = userList.length - 1; 
+      } catch (error) { // 백앤드에서도 구독여부를 확인하여 1회 이용후 다시 페이지에 접속하면 429 error 반환해줌
         console.log(error);
+        if (error.response){
+          switch (error.response.status){
+            case 429:
+              setShowLimitModal(true); 
+              break;
+          }
+        }
       }
     };
     showUserInfo();
@@ -76,43 +119,55 @@ function DatingApp() {
     if (currentIndex === -1) {
       // 카드가 더이상 없으면 마지막카드가 사라지고 알림 출력위해 지연시간 설정
       setTimeout(() => {
+        // 비구독자가 무료 사용 이미 한 경우
         if (!isSubscribed && hasUsedFreeTrial) {
-          // 비구독자 처리 및 무료 사용 이미 한 경우
-          alert("더이상 카드가 없습니다. 24시간 후에 다시 이용해 주세요.");
+          setModalMessage("더이상 카드가 없습니다. 24시간 후에 다시 이용해 주세요.");
+          setShowConfirmModal(true);
+          setConfirmAction(() => () => navigate("/"));
         } else {
-          // 구독자 처리 또는 비구독자의 첫 무료 사용
-          if (
-            window.confirm(
-              "더이상 카드가 없습니다. 모든 친구 신청을 보내고 메인페이지로 이동하시겠습니까? (취소 시 페이지이동 X)"
-            )
-          ) {
-            likedList.forEach(async (user) => {
-              try {
-                const response = await AxiosApi.friendRequest(
-                  myEmail,
-                  user.email
-                );
-                console.log("Response:", response.data);
-              } catch (error) {
-                console.error("Error sending friend request:", error);
-              }
-            });
-            unlikedList.forEach(async (user) => {
-              try {
-                const response = await AxiosApi.unlikeFriendRequest(
-                  myEmail,
-                  user.email
-                );
-                console.log("Response:", response.data);
-              } catch (error) {
-                console.error("Error sending friend request:", error);
-              }
-            });
-            navigate("/"); // 메인 페이지로 이동
-          }
           if (!isSubscribed) {
-            setHasUsedFreeTrial(true); // 비구독자의 첫 무료 사용을 기록
+            setModalMessage(
+              "모든 친구 신청을 보내고 메인페이지로 이동하시겠습니까? (취소 시 페이지이동 X)"
+            );
+            setConfirmAction(() => async () => {
+              likedList.forEach(async (user) => {
+                try {
+                  await AxiosApi.friendRequest(myEmail, user.email);
+                } catch (error) {
+                  console.error("Error sending friend request:", error);
+                }
+              });
+              unlikedList.forEach(async (user) => {
+                try {
+                  await AxiosApi.unlikeFriendRequest(myEmail, user.email);
+                } catch (error) {
+                  console.error("Error sending friend request:", error);
+                }
+              });
+              navigate("/");
+              setHasUsedFreeTrial(true);
+            });
+          } else {
+            setModalMessage("추가로 유저를 확인하겠습니까?");
+            setConfirmAction(() => async () => {
+              likedList.forEach(async (user) => {
+                try {
+                  await AxiosApi.friendRequest(myEmail, user.email);
+                } catch (error) {
+                  console.error("Error sending friend request:", error);
+                }
+              });
+              unlikedList.forEach(async (user) => {
+                try {
+                  await AxiosApi.unlikeFriendRequest(myEmail, user.email);
+                } catch (error) {
+                  console.error("Error sending friend request:", error);
+                }
+              });
+              window.location.reload();
+            });
           }
+          setShowConfirmModal(true);
         }
       }, 1500);
     }
@@ -190,12 +245,7 @@ function DatingApp() {
               onSwipe={(dir) => swiped(dir, character.nickname, index)}
               onCardLeftScreen={() => outOfFrame(character.nickname, index)}
             >
-              <CardImage
-                style={{
-                  backgroundImage: "url(" + character.url + ")",
-                }}
-                className="card"
-              >
+              <CardImage imageUrl={character.url || defaultImage} className="card">
                 <SpanBox>
                   <Span>
                     {character.nickname}
@@ -249,6 +299,25 @@ function DatingApp() {
           )}
         </ButtonArea>
       </PhoneFrame>
+      {showLimitModal && (
+        <ModalOverlay>
+          <ModalContent>
+            <p>일일 이용횟수를 초과했습니다.</p>
+            <p>정기구독 페이지로 이동하시겠습니까?</p>
+            <button onClick={handleCloseLimitModalYes}>예</button>
+            <button onClick={handleCloseLimitModalNo}>아니요</button>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+      {showConfirmModal && (
+        <ModalOverlay>
+          <ModalContent>
+            <p>{modalMessage}</p>
+            <button onClick={handleConfirmYes}>예</button>
+            <button onClick={handleConfirmNo}>아니요</button>
+          </ModalContent>
+        </ModalOverlay>
+      )}
     </Body>
   );
 }
@@ -369,10 +438,7 @@ const CardImage = styled.div`
   overflow: hidden;
   top: 50%;
   left: 50%;
-  transform: translate(
-    -50%,
-    -50%
-  ); // 절대위치의 카드를 가운데 정렬하기 위해 사용
+  transform: translate(-50%, -50%); // 절대위치의 카드를 가운데 정렬하기 위해 사용
   width: 20vw;
   height: 55vh;
   border-radius: 2vh;
@@ -381,7 +447,8 @@ const CardImage = styled.div`
   background-size: cover;
   background-position: center;
   background-repeat: space;
-  @media (max-width:500px){
+  background-image: url(${(props) => props.imageUrl});
+  @media (max-width:500px) {
     width: 70vw;
     height: 65vh;
   }
@@ -452,7 +519,7 @@ const Buttons = styled.div`
 const ResultBox = styled.div`
   display: flex;
   justify-content: center;
-  font-size: 3vmin;
+  font-size: 1.5vw;
   color: #000;
   animation-name: popup;
   animation-duration: 800ms;
@@ -483,11 +550,11 @@ const SpanBox = styled.div`
   ); // %는 처음기준 위치
 
   & span:nth-child(1){
-    font-size: 3vw;
+    font-size: 2vw;
     margin-bottom: 1vh;
   }
   & span:nth-child(2){
-    font-size: 2vw;
+    font-size: 1.8vw;
     margin-bottom: 1vh;
   }
   & span:nth-child(3){
@@ -516,5 +583,43 @@ const Span = styled.span`
   margin-left: 1vw;
   @media (max-width:500px){
     margin-left: 5vw;
+  }
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  & p {
+    font-size: 1.5em;
+    margin-bottom: 2vh;
+  }
+  & button {
+    padding: 1vh 5vw;
+    font-size: 1em;
+    background: #ff5253;
+    color: white;
+    border: none;
+    border-radius: 5vw;
+    cursor: pointer;
+    margin: 0 2vw;
+  }
+  @media (max-width: 500px){
+    font-size: 2.5vw;
+    width: 80vw;
   }
 `;

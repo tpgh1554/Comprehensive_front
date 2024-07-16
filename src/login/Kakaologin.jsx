@@ -10,16 +10,14 @@ const Kalogbox = styled.div`
   color: black;
   font-size: 16px;
   text-align: center;
-  margin-top: 20px;
 `;
 
 const Button = styled.button`
-  background-color: #ffeb00;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 5px;
+  border: 0;
+  height: 40px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  /* background-color: #ffffde; */
 `;
 
 const Kakaologin = () => {
@@ -160,18 +158,8 @@ const Kakaologin = () => {
 
   return (
     <Kalogbox>
-      {userInfo ? (
-        <div>
-          <h2>{userInfo.kakao_account.profile.nickname}님 환영합니다!</h2>
-          <img
-            src={userInfo.kakao_account.profile.profile_image_url}
-            alt="Profile"
-          />
-          <pre>{JSON.stringify(userInfo, null, 2)}</pre>
-        </div>
-      ) : (
-        <Button onClick={kakaoLogin}>카카오 로그인</Button>
-      )}
+      <Button onClick={kakaoLogin}>카카오 로그인</Button>
+
       <Addinfomodal
         open={addinfomodal}
         close={closeAddSub}

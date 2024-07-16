@@ -190,13 +190,11 @@ const Mysub = () => {
         setDeadLine(response.data[0].validUntil);
         setSubstatus(response.data[0].status);
         setMerchantuid(response.data[0].merchantuid);
-        console.log("값", response);
+        console.log(response.data[0]);
       } else {
         console.error("No deadline data in response");
       }
     } catch (error) {
-      setSubstatus("null");
-      console.log("구독상태", substatus);
       console.error("Error fetching deadline:", error);
     }
   };
@@ -228,13 +226,14 @@ const Mysub = () => {
   };
 
   const buttonText = handleSubscriptionAction();
-  const deline = deadLine.substring(0, 10);
+
+  // const deline = deadLine.substring(0, 10);
 
   return (
     <Subpage>
       <Subinfobox>
         <Logoimg />
-        <Deadline>{deline}</Deadline>
+        <Deadline>{deadLine}</Deadline>
         <Subbutt onClick={subnav}>{buttonText}</Subbutt>
       </Subinfobox>
       <Datails onClick={onAdClickSub}>결제내역</Datails>

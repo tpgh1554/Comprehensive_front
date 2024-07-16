@@ -4,6 +4,7 @@ import AxiosApi from "../api/AxiosApi";
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserStore";
+import Kakaologin from "./Kakaologin";
 
 const Container = styled.div`
   width: 100%;
@@ -18,24 +19,14 @@ const Container = styled.div`
   & button {
     border-radius: 8px;
     cursor: pointer;
-
     &:hover {
-      background-color: white;
+      /* background-color: #c72519; */
+      background-color: white; /* hover 시 배경색 변경 */
       border: 2px solid black;
       color: black;
     }
     &:active {
-      background-color: #87160e;
-    }
-  }
-  & .findBtn {
-    border: 0;
-    background: none;
-    display: flex;
-    color: white;
-    &:hover {
-      background: none;
-      border: none;
+      background-color: #87160e; /* 클릭 시 배경색 변경 */
     }
   }
 `;
@@ -47,6 +38,7 @@ const Box = styled.div`
   justify-content: center;
   align-items: center;
   border: 3px solid #ff5353;
+  /* background: rgba(255, 83, 53, 0.8); */
   background-color: #ff5353;
   border-radius: 10px;
   padding: 30px;
@@ -97,7 +89,12 @@ const ButtonBox = styled.div`
   width: 40%;
   justify-content: right;
 `;
-
+const FindBtn = styled.button`
+  border: 0;
+  background: none;
+  display: flex;
+  color: white;
+`;
 const SummitBtnBox = styled.div`
   display: flex;
   flex-direction: column;
@@ -184,19 +181,15 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
             <ButtonBox>
-              <button onClick={handleFindId} className="findBtn">
-                아이디찾기
-              </button>
+              <FindBtn onClick={handleFindId}>아이디찾기</FindBtn>
               <span> / </span>
-              <button onClick={handleFindPw} className="findBtn">
-                비밀번호찾기
-              </button>
+              <FindBtn onClick={handleFindPw}>비밀번호찾기</FindBtn>
             </ButtonBox>
           </InputContainer>
           <SummitBtnBox>
             <LoginBtn onClick={handleLogin}>로그인</LoginBtn>
             <SignUpBtn onClick={handleSignup}>회원가입</SignUpBtn>
-            <ThirdLoginBtn>간편로그인</ThirdLoginBtn>
+            <Kakaologin />
           </SummitBtnBox>
         </Contents>
       </Box>

@@ -1,13 +1,9 @@
 // card.js
-import React, { useState, useEffect, useMemo, useRef, useContext } from "react";
+import React, { useState, useEffect, useMemo, useRef, useContext, useCallback } from "react";
 import styled from "styled-components";
 import AxiosApi from "../../api/AxiosApi";
 import TinderCard from "react-tinder-card";
-import {
-  FaRegCircleCheck,
-  FaRegCircleXmark,
-  FaArrowRotateLeft,
-} from "react-icons/fa6";
+import {FaArrowRotateLeft} from "react-icons/fa6";
 import { UserContext } from "../../context/UserStore";
 import { useNavigate } from "react-router-dom";
 import defaultImage from "../../image/alien2.png";
@@ -25,7 +21,6 @@ function DatingApp() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [confirmAction, setConfirmAction] = useState(null);
-  // used for outOfFrame closure
   const currentIndexRef = useRef(currentIndex);
 
   //429 에러 핸들링
@@ -43,7 +38,14 @@ function DatingApp() {
     setShowLimitModal(false);
     navigate("/");
   };
-
+  // 스와이프 하고 남은 카드 갯수 관리
+  const childRefs = useMemo(
+    () =>
+      Array(cardList.length)
+        .fill(0)
+        .map((i) => React.createRef()),
+    [cardList.length]
+  );
   const handleConfirmYes = () => {
     if (confirmAction) {
       confirmAction();
@@ -54,10 +56,10 @@ function DatingApp() {
   const handleConfirmNo = () => {
     setShowConfirmModal(false);
     if (!isSubscribed) {
-      navigate("/");
+      // navigate("/");
     }
   };
-
+  // 1. 로그인 여부 확인 로그인 안 할시에 로그인 창으로 이동
   const navigate = useNavigate();
   const context = useContext(UserContext);
   const { loginStatus } = context;
@@ -65,15 +67,7 @@ function DatingApp() {
     if (!loginStatus) {
       navigate("/apueda/login");
     }
-  }, []);
-
-  const childRefs = useMemo(
-    () =>
-      Array(cardList.length)
-        .fill(0)
-        .map((i) => React.createRef()),
-    [cardList.length]
-  );
+  }, [loginStatus, navigate]);
 
   useEffect(() => {
     // 2. 정기구독여부 확인
@@ -81,6 +75,7 @@ function DatingApp() {
       try {
         const response = await AxiosApi.checkSubscribe();
         setIsSubscribed(response.data); // 구독 여부 상태 업데이트
+        console.log("정기구독여부 :" , isSubscribed)
       } catch (error) {
         console.log(error);
       }
@@ -104,74 +99,77 @@ function DatingApp() {
         currentIndexRef.current = userList.length - 1; 
       } catch (error) { // 백앤드에서도 구독여부를 확인하여 1회 이용후 다시 페이지에 접속하면 429 error 반환해줌
         console.log(error);
-        if (error.response){
-          switch (error.response.status){
-            case 429:
-              setShowLimitModal(true); 
-              break;
-          }
-        }
+        handleError(error);
       }
     };
     showUserInfo();
   }, [myEmail]);
+
+  const sendFriendRequests = useCallback(async () => {
+    for (const user of likedList) {
+      try {
+        await AxiosApi.friendRequest(myEmail, user.email);
+      } catch (error) {
+        console.error("Error sending friend request:", error);
+      }
+    }
+    for (const user of unlikedList) {
+      try {
+        await AxiosApi.unlikeFriendRequest(myEmail, user.email);
+      } catch (error) {
+        console.error("Error sending unlike request:", error);
+      }
+    }
+  }, [likedList, unlikedList, myEmail]);
+
+  const handleEndOfCards = useCallback(() => {
+
+    setTimeout(()=>{
+
+      if(isSubscribed){
+        setModalMessage("카드가 모두 소진되었습니다. 친구신청후 새카드를 받겠습니까?")
+        setConfirmAction(()=> async ()=>{
+          await sendFriendRequests();
+          window.location.reload();
+        })
+      } else if (!isSubscribed){
+        setModalMessage("카드가 모두 소진되었습니다. 친구신청 후 홈페이지로 이동하시겠습니까?")
+        setConfirmAction(() => async () => {
+                await sendFriendRequests();
+                navigate("/");
+                setHasUsedFreeTrial(true);
+              });
+      }
+      setShowConfirmModal(true);
+    }, 1500)
+    // setTimeout(() => {
+    //   if (!isSubscribed && hasUsedFreeTrial) {
+    //     setModalMessage("더이상 카드가 없습니다. 24시간 후에 다시 이용해 주세요.");
+    //     setShowConfirmModal(true);
+    //     setConfirmAction(() => () => navigate("/"));
+    //   } else if (!isSubscribed) {
+    //     setModalMessage("모든 친구 신청을 보내고 메인페이지로 이동하시겠습니까? (취소 시 페이지이동 X)");
+    //     setConfirmAction(() => async () => {
+    //       await sendFriendRequests();
+    //       navigate("/");
+    //       setHasUsedFreeTrial(true);
+    //     });
+    //   } else {
+    //     setModalMessage("카드가 모두 소진되었습니다. 추가카드를 받겠습니까?");
+    //     setConfirmAction(() => async () => {
+    //       await sendFriendRequests();
+    //       window.location.reload();
+    //     });
+    //   }
+    //   setShowConfirmModal(true);
+    // }, 1500);
+  }, [isSubscribed, hasUsedFreeTrial, sendFriendRequests, navigate]);
+
   useEffect(() => {
     if (currentIndex === -1) {
-      // 카드가 더이상 없으면 마지막카드가 사라지고 알림 출력위해 지연시간 설정
-      setTimeout(() => {
-        // 비구독자가 무료 사용 이미 한 경우
-        if (!isSubscribed && hasUsedFreeTrial) {
-          setModalMessage("더이상 카드가 없습니다. 24시간 후에 다시 이용해 주세요.");
-          setShowConfirmModal(true);
-          setConfirmAction(() => () => navigate("/"));
-        } else {
-          if (!isSubscribed) {
-            setModalMessage(
-              "모든 친구 신청을 보내고 메인페이지로 이동하시겠습니까? (취소 시 페이지이동 X)"
-            );
-            setConfirmAction(() => async () => {
-              likedList.forEach(async (user) => {
-                try {
-                  await AxiosApi.friendRequest(myEmail, user.email);
-                } catch (error) {
-                  console.error("Error sending friend request:", error);
-                }
-              });
-              unlikedList.forEach(async (user) => {
-                try {
-                  await AxiosApi.unlikeFriendRequest(myEmail, user.email);
-                } catch (error) {
-                  console.error("Error sending friend request:", error);
-                }
-              });
-              navigate("/");
-              setHasUsedFreeTrial(true);
-            });
-          } else {
-            setModalMessage("추가로 유저를 확인하겠습니까?");
-            setConfirmAction(() => async () => {
-              likedList.forEach(async (user) => {
-                try {
-                  await AxiosApi.friendRequest(myEmail, user.email);
-                } catch (error) {
-                  console.error("Error sending friend request:", error);
-                }
-              });
-              unlikedList.forEach(async (user) => {
-                try {
-                  await AxiosApi.unlikeFriendRequest(myEmail, user.email);
-                } catch (error) {
-                  console.error("Error sending friend request:", error);
-                }
-              });
-              window.location.reload();
-            });
-          }
-          setShowConfirmModal(true);
-        }
-      }, 1500);
+      handleEndOfCards();
     }
-  }, [currentIndex, likedList, unlikedList, myEmail, isSubscribed, hasUsedFreeTrial]);
+  }, [currentIndex, handleEndOfCards]);
 
   const swiped = (direction, nameToDelete, index) => {
     setLastDirection(direction);
@@ -201,7 +199,7 @@ function DatingApp() {
   const canSwipe = currentIndex >= 0;
   const swipe = async (dir) => {
     if (canSwipe && currentIndex < cardList.length) {
-      await childRefs[currentIndex].current.swipe(dir); // Swipe the card!
+      await childRefs[currentIndex].current.swipe(dir);
     }
   };
 

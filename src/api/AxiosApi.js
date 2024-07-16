@@ -428,11 +428,17 @@ const AxiosApi = {
   // 정기구독 여부 확인
   checkSubscribe: async () => {
     const accessToken = AxiosApi.getAccessToken();
-    return await AxiosInstance.post(`/check-subscribe`, null, {
-      params: {
+    console.log("AccessToken:", accessToken); // 콘솔 로그 추가
+    try {
+      const response = await AxiosInstance.post(`/datingapp/check-subscribe`, {
         accessToken: accessToken,
-      },
-    });
+      });
+      console.log("Response from server:", response.data); // 서버 응답 로그 추가
+      return response;
+    } catch (error) {
+      console.error("Error in checkSubscribe:", error);
+      throw error;
+    }
   },
   // -----------------------데이트 어플-----------------------
 };

@@ -145,7 +145,7 @@ const Payment = ({ isChecked1, isChecked2, close }) => {
 
     IMP.request_pay(paymentData, async (response) => {
       if (response.success) {
-        alert("결제해주셔서 갑사합니다");
+        alert("결제해주셔서 감사합니다");
         confirm();
       } else {
         close();

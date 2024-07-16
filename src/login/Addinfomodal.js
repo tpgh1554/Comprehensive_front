@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import Useterms from "../components/Useterms";
 import Privacy from "../components/Privacy";
+import { useNavigate } from "react-router-dom";
 
 const ModalStyle = styled.div`
   .modal {
@@ -169,13 +170,17 @@ const Addinfomodal = ({ open, close, header, handleAddInfoConfirm }) => {
   const [primodalContent, setPrimodalContent] = useState("");
   const [isHovered, setIsHovered] = useState(false);
   const [isHovered1, setIsHovered1] = useState(false);
+  const navigate = useNavigate();
   const skill = ["java"];
 
   const handleInputChange = (e, targetRef) => {
     if (e.target.value.length === 1 && targetRef.current) {
       targetRef.current.focus();
+      updateBirth();
+      console.log(identityNumber);
     }
   };
+
   const handleClose = () => {
     window.Kakao.API.request({
       url: "/v1/user/unlink",
@@ -187,6 +192,7 @@ const Addinfomodal = ({ open, close, header, handleAddInfoConfirm }) => {
       .catch(function (error) {
         console.error(error);
       });
+    navigate("/apueda");
   };
 
   const updateBirth = () => {
@@ -206,19 +212,24 @@ const Addinfomodal = ({ open, close, header, handleAddInfoConfirm }) => {
     setMyInfo(e.target.value);
     console.log(myInfo);
   };
+
   const handlenameChange = (e) => {
     setName(e.target.value);
     console.log(name);
   };
 
   const handleButtonClick = () => {
+    updateBirth();
     if (isChecked1 && isChecked2) {
       updateBirth();
-      handleConfirm();
+      setTimeout(() => {
+        handleConfirm();
+      }, 0);
     } else {
       alert("약관동의를 전부 체크해 주세요");
     }
   };
+
   const handleConfirm = () => {
     handleAddInfoConfirm(identityNumber, name, myInfo, skill);
     close();
@@ -227,21 +238,26 @@ const Addinfomodal = ({ open, close, header, handleAddInfoConfirm }) => {
   const handleCheckboxChange1 = (event) => {
     setIsChecked1(event.target.checked);
   };
+
   const handleCheckboxChange2 = (event) => {
     setIsChecked2(event.target.checked);
   };
+
   const onClickSub = (e) => {
     setTerOpen(true);
     document.body.style.overflow = "hidden"; //모달창 열렸을 때 스크롤 금지
   };
+
   const closeTer = () => {
     setTerOpen(false);
     document.body.style.overflow = "unset";
   };
+
   const onClickSub1 = (e) => {
     setPriOpen(true);
     document.body.style.overflow = "hidden"; //모달창 열렸을 때 스크롤 금지
   };
+
   const closeTer1 = () => {
     setPriOpen(false);
     document.body.style.overflow = "unset";
@@ -304,15 +320,7 @@ const Addinfomodal = ({ open, close, header, handleAddInfoConfirm }) => {
                   type="text"
                   maxLength="1"
                   placeholder="X"
-                  onKeyDown={(e) => {
-                    if (
-                      e.key === "Backspace" &&
-                      part2Ref.current &&
-                      part2Ref.current.value.length === 0
-                    ) {
-                      part1Ref.current.focus();
-                    }
-                  }}
+                  onKeyDown={(e) => handleInputChange(e, part7Ref)}
                 />
                 <Separator>******</Separator>
               </InputContainer>

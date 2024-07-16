@@ -31,7 +31,7 @@ const Kakaologin = () => {
   const [addinfomodal, setAddinfomodal] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [profileimgPath, setProfileImgPath] = useState("");
+  const [profileImgPath, setProfileImgPath] = useState("");
   const [nickname, setNickname] = useState("");
 
   const onAddClickSub = () => {
@@ -49,11 +49,13 @@ const Kakaologin = () => {
       nickname,
       identityNumber,
       myInfo,
-      profileimgPath,
+      profileImgPath,
       skill,
     };
     try {
       const response = await AxiosApi.signup(user);
+      console.log("생년월일", identityNumber);
+      console.log("사진", profileImgPath);
       console.log("Signup 성공:", response);
 
       const rsp = await AxiosApi.login(email, password);

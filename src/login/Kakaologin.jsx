@@ -64,8 +64,8 @@ const Kakaologin = () => {
       localStorage.setItem("accessToken", rsp.data.accessToken);
       localStorage.setItem("refreshToken", rsp.data.refreshToken);
       console.log(accToken);
-      navigate("/apueda");
       setLoginStatus(true);
+      navigate("/apueda");
     } catch (error) {
       console.error("Signup Error:", error);
     }

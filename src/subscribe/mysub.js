@@ -190,11 +190,13 @@ const Mysub = () => {
         setDeadLine(response.data[0].validUntil);
         setSubstatus(response.data[0].status);
         setMerchantuid(response.data[0].merchantuid);
-        console.log(response.data[0]);
+        console.log("값", response);
       } else {
         console.error("No deadline data in response");
       }
     } catch (error) {
+      setSubstatus("null");
+      console.log("구독상태", substatus);
       console.error("Error fetching deadline:", error);
     }
   };

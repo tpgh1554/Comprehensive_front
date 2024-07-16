@@ -63,7 +63,7 @@ const ListWrapper = styled.div`
   display: flex;
   justify-content: space-between; /* 내부 요소들을 양쪽에 배치 */
   align-items: center; /* 수직으로 가운데 정렬 */
-  min-width: 450px;
+  width: 500px;
   padding: 20px;
   background-color: white;
   border: 3px solid #ff5353;

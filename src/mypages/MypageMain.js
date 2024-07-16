@@ -38,6 +38,7 @@ const ButtonContainer = styled.div`
 
   @media (max-width: 500px) {
     display: grid;
+
     grid-template-columns: repeat(1, 1fr);
     gap: 30px;
   }
@@ -53,6 +54,10 @@ const Button = styled.button`
   transition: all 0.2s ease-in;
   cursor: pointer;
   text-decoration: none; //하이퍼링크 밑줄 때문에
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
   &:hover {
     background-color: #ff5353;
     transition: all 0.2s ease-in;
@@ -61,8 +66,9 @@ const Button = styled.button`
   }
   @media (max-width: 500px) {
     border-radius: 20px;
-    padding: 15px 60px;
-    font-size: 15px;
+    font-size: 20px;
+    width: 70vw;
+    height: 13vw;
   }
 `;
 
@@ -107,7 +113,9 @@ const MypageMain = () => {
           <Button as={Link} to="/apueda/mypage/mypj">
             나의 프로젝트
           </Button>
-          <Button>나의 오픈 채팅방</Button>
+          <Button as={Link} to="/apueda/chatmanage">
+            나의 오픈 채팅방
+          </Button>
           <Button as={Link} to="/apueda/mypage/mywrite">
             내가 쓴 글
           </Button>

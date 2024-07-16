@@ -81,28 +81,44 @@ const ProfileImage = styled.div`
 
 const ProjectContainer = styled.div`
   display: flex;
-  width: 70vw;
+  width: 75vw;
   border-radius: 30px;
   border: 3px solid #ff5353;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
+  @media (max-width: 1300px) {
+    width: 80vw;
+    height: auto;
+  }
 `;
 
 const ProjectTitle = styled.div`
   display: flex;
   justify-content: left;
   padding-left: 20px;
+  h1 {
+    @media (max-width: 1300px) {
+      font-size: 25px;
+    }
+  }
 `;
 
 const ProjectItem = styled.div`
   display: flex;
-  padding-left: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
   flex-direction: column;
 `;
 
 const Item = styled.div`
   display: flex;
   align-items: center;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+  @media (max-width: 1300px) {
+    flex-direction: column;
+    justify-items: left;
+    align-items: flex-start;
+  }
 `;
 
 const Skill = styled.div`
@@ -112,9 +128,32 @@ const Skill = styled.div`
   margin-right: 10px;
   background-color: #ff5353;
   border-radius: 30px;
-  width: 50px;
+  min-width: 50px;
   padding-top: 3px;
   color: white;
+
+  @media (max-width: 500px) {
+    margin-left: 0px;
+  }
+`;
+
+const SkillBox = styled.div`
+  font-size: 13px;
+  @media (max-width: 500px) {
+    font-size: 11px;
+  }
+`;
+
+const BtnBox = styled.div`
+  margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @media (max-width: 500px) {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
 `;
 
 const GoEndBtn = styled.div`
@@ -122,12 +161,12 @@ const GoEndBtn = styled.div`
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;
+  margin-top: 20px;
 `;
 
 const Gobutton = styled.button`
   width: 150px;
   height: 50px;
-  margin-right: 30px;
   background-color: white;
   font-size: 20px;
   cursor: pointer;
@@ -145,6 +184,7 @@ const Endbutton = styled.button`
   height: 50px;
   background-color: white;
   font-size: 20px;
+  margin-left: 30px;
   cursor: pointer;
   border: 3px solid #ff5353;
   border-radius: 30px;
@@ -157,13 +197,16 @@ const Endbutton = styled.button`
 
 const ReqContainer = styled.div`
   display: flex;
-  text-align: left;
-  width: 60vw;
+  width: 70vw;
   border: 3px solid #ff5353;
   border-radius: 20px;
   min-height: 10vw;
   flex-direction: column;
   margin-bottom: 20px;
+
+  @media (max-width: 500px) {
+    width: 80vw;
+  }
 `;
 
 const ImgNickNameBox = styled.div`
@@ -172,23 +215,41 @@ const ImgNickNameBox = styled.div`
   align-items: center;
   text-align: center;
   padding: 10px;
+  white-space: nowrap;
+
+  h2 {
+    font-size: 25px;
+    @media (max-width: 500px) {
+      font-size: 20px;
+    }
+  }
+`;
+
+const SkillContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
 `;
 
 const ReqBtn = styled.div`
-  margin-left: auto;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  gap: 20px;
   @media (max-width: 500px) {
-    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    margin-left: auto;
   }
 `;
 
 const ButtonStyle = styled.button`
   min-width: 5vw;
   height: 30px;
-  margin-left: auto;
-  margin-right: 10px;
   color: white;
   background-color: #ff5353;
   border: none;
@@ -197,8 +258,16 @@ const ButtonStyle = styled.button`
     cursor: pointer;
   }
   @media (max-width: 500px) {
-    width: 50px;
+    width: 60px;
     height: 25px;
+  }
+`;
+
+const ImgNickSkill = styled.div`
+  display: flex;
+  flex-direction: row;
+  @media (max-width: 500px) {
+    flex-direction: column;
   }
 `;
 
@@ -272,7 +341,34 @@ const Mypj = () => {
     if (isConfirmed) {
       try {
         await AxiosApi.ProjectKickOut(roomid, email, projectId);
+        const updatedProject = projectList.map((project) => {
+          if (project.chatManages[0]?.chatRoom.roomId === roomid) {
+            return {
+              ...project,
+              chatManages: project.chatManages.filter(
+                (manage) => manage.member.email !== email
+              ),
+            };
+          }
+          return project;
+        });
+        setProjectList(updatedProject);
         window.alert("Exit Successful.");
+      } catch (error) {
+        console.error("오류 : ", error);
+      }
+    }
+  };
+
+  const handleMemberExit = async (roomid, email, projectId, nickname) => {
+    const isConfirmed = window.confirm(
+      `${nickname}님 정말 프로젝트를 나가시겠습니까?`
+    );
+    if (isConfirmed) {
+      try {
+        await AxiosApi.ProjectKickOut(roomid, email, projectId);
+        window.alert("Exit Successful.");
+        window.location.reload();
       } catch (error) {
         console.error("오류 : ", error);
       }
@@ -287,6 +383,15 @@ const Mypj = () => {
     if (isConfirmed) {
       try {
         await AxiosApi.ProjectExit(roomid, email);
+        const updatedProject = projectList.filter(
+          (project) =>
+            !(
+              project.chatManages[0]?.chatRoom.roomId &&
+              project.chatManages[0]?.member.email === email &&
+              project.chatManages[0]?.chatRoom.roomId === roomid
+            )
+        );
+        setProjectList(updatedProject);
         window.alert("삭제 완료.");
       } catch (error) {
         console.error("오류 : ", error);
@@ -299,7 +404,7 @@ const Mypj = () => {
     if (isConfirmed) {
       try {
         await AxiosApi.ProjectRequestAccept(applyid);
-        window.alert("추가 완료");
+        window.alert("수락 완료");
         window.location.reload();
       } catch (error) {
         console.error("오류 : ", error);
@@ -356,49 +461,59 @@ const Mypj = () => {
               <ProjectItem>
                 {project.chatManages.map((manage, manageIndex) => (
                   <Item key={manageIndex}>
-                    <ProfileImage>
-                      <img src={manage.member.profileImgPath} alt="이미지x" />
-                    </ProfileImage>
-                    <h2>
-                      {manage.member.nickname}
-                      {manage.host && (
-                        <span
-                          style={{
-                            fontWeight: "bold",
-                          }}
-                        >
-                          (리더)
-                        </span>
-                      )}
-                    </h2>
-                    <Skill>Skill</Skill> {manage.member.skill}
+                    <ImgNickNameBox>
+                      <ProfileImage>
+                        <img src={manage.member.profileImgPath} alt="이미지x" />
+                      </ProfileImage>
+                      <h2>
+                        {manage.member.nickname}
+                        {manage.host && (
+                          <span
+                            style={{
+                              fontWeight: "bold",
+                            }}
+                          >
+                            (리더)
+                          </span>
+                        )}
+                      </h2>
+                    </ImgNickNameBox>
+                    <SkillContainer>
+                      {" "}
+                      <Skill>Skill</Skill>{" "}
+                      <SkillBox>{manage.member.skill}</SkillBox>
+                    </SkillContainer>
                     {hostStatus[projectIndex] && !manage.host && (
-                      <ButtonStyle
-                        onClick={() =>
-                          handleKickOut(
-                            manage.chatRoom.roomId,
-                            manage.member.email,
-                            manage.projectId,
-                            manage.member.nickname
-                          )
-                        }
-                      >
-                        강퇴
-                      </ButtonStyle>
+                      <BtnBox>
+                        <ButtonStyle
+                          onClick={() =>
+                            handleKickOut(
+                              manage.chatRoom.roomId,
+                              manage.member.email,
+                              manage.projectId,
+                              manage.member.nickname
+                            )
+                          }
+                        >
+                          강퇴
+                        </ButtonStyle>
+                      </BtnBox>
                     )}
                     {!manage.host && userInfo === manage.member.email && (
-                      <ButtonStyle
-                        onClick={() =>
-                          handleKickOut(
-                            manage.chatRoom.roomId,
-                            manage.member.email,
-                            manage.projectId,
-                            manage.member.nickname
-                          )
-                        }
-                      >
-                        나가기
-                      </ButtonStyle>
+                      <BtnBox>
+                        <ButtonStyle
+                          onClick={() =>
+                            handleMemberExit(
+                              manage.chatRoom.roomId,
+                              manage.member.email,
+                              manage.projectId,
+                              manage.member.nickname
+                            )
+                          }
+                        >
+                          나가기
+                        </ButtonStyle>
+                      </BtnBox>
                     )}
                   </Item>
                 ))}
@@ -437,14 +552,19 @@ const Mypj = () => {
               <ProjectTitle>
                 <h1>{apply.projectName}</h1>
               </ProjectTitle>
-              <ImgNickNameBox>
-                <ProfileImage>
-                  <img src={apply.applicant.profileImgPath} alt="이미지x" />
-                </ProfileImage>
-                <h2>{apply.applicant.nickname}</h2>
-                <Skill>Skill</Skill>
-                {apply.applicant.skill}
-
+              <ProjectItem>
+                <ImgNickSkill>
+                  <ImgNickNameBox>
+                    <ProfileImage>
+                      <img src={apply.applicant.profileImgPath} alt="이미지x" />
+                    </ProfileImage>
+                    <h2>{apply.applicant.nickname}</h2>
+                  </ImgNickNameBox>
+                  <SkillContainer>
+                    <Skill>Skill</Skill>
+                    <SkillBox> {apply.applicant.skill}</SkillBox>
+                  </SkillContainer>
+                </ImgNickSkill>
                 <ReqBtn>
                   <ButtonStyle>
                     <AcceptBtn onClick={() => requestAccept(apply.applyId)}>
@@ -457,7 +577,7 @@ const Mypj = () => {
                     </RejectBtn>
                   </ButtonStyle>
                 </ReqBtn>
-              </ImgNickNameBox>
+              </ProjectItem>
             </ReqContainer>
           ))}
         </div>

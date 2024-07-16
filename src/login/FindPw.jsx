@@ -3,6 +3,7 @@ import {
   Box,
   Contents,
   InputContainer,
+  ShortInputContainer,
   EmailBox,
   ShortInput,
   CheckBtn,
@@ -107,14 +108,16 @@ const FindPw = () => {
           <h2>비밀번호 찾기</h2>
           <InputContainer>
             <EmailBox>
-              <ShortInput
-                placeholder="이메일"
-                value={email}
-                onChange={onChangeEmail}
-              />
-              <CheckBtn onClick={authorizeMail} disabled={!emailValid}>
-                인증
-              </CheckBtn>
+              <ShortInputContainer>
+                <ShortInput
+                  placeholder="이메일"
+                  value={email}
+                  onChange={onChangeEmail}
+                />
+                <CheckBtn onClick={authorizeMail} disabled={!emailValid}>
+                  인증
+                </CheckBtn>
+              </ShortInputContainer>
               <span id="hint">
                 {email.length > 0 && (
                   <p className={emailValid ? "success" : "error"}>
@@ -124,14 +127,16 @@ const FindPw = () => {
               </span>
             </EmailBox>
             <EmailBox>
-              <ShortInput
-                placeholder="인증번호"
-                value={inputCode}
-                onChange={onChangeEmailCode}
-              />
-              <CheckBtn onClick={checkCode} disabled={codeValid}>
-                확인
-              </CheckBtn>
+              <ShortInputContainer>
+                <ShortInput
+                  placeholder="인증번호"
+                  value={inputCode}
+                  onChange={onChangeEmailCode}
+                />
+                <CheckBtn onClick={checkCode} disabled={codeValid}>
+                  확인
+                </CheckBtn>
+              </ShortInputContainer>
             </EmailBox>
           </InputContainer>
           <SubmitBtn onClick={openModal}>찾기</SubmitBtn>

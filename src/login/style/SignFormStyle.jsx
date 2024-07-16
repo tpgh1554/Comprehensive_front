@@ -46,7 +46,18 @@ export const Contents = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 10px;
+  & span {
+    position: relative;
+    height: 12px;
+    margin-bottom: -44px;
+    padding-bottom: -20px;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+  }
+  & #hint {
+    color: black;
+  }
 `;
 
 export const ProfileBox = styled.div`
@@ -54,7 +65,6 @@ export const ProfileBox = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 10px;
   /* &.profile {
     width: 100%;
     display: flex;
@@ -98,18 +108,24 @@ export const ProfileBox = styled.div`
 export const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
   width: 40%;
+  gap: 36px;
 `;
 
 export const EmailBox = styled.div`
-  gap: 10px;
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
 `;
 export const ShortInputContainer = styled.div`
   display: flex;
-  /* flex-direction: row; */
+  justify-content: space-between;
+  margin-top: 26px;
+`;
+
+export const LongInputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 export const ShortInput = styled.input`
@@ -126,12 +142,20 @@ export const CheckBtn = styled.button`
 
 export const LongInput = styled.input`
   height: 40px;
+  margin-top: 26px;
   background-color: rgba(0, 0, 0, 0.8);
+  &.password {
+    margin-top: -6px;
+  }
+  &.nickname {
+    margin-top: -6px;
+  }
+  &.identityNumber {
+    margin-top: -12px;
+  }
 `;
 
-export const SkillCheck = styled.div`
-  /* display: flex; */
-`;
+export const SkillCheck = styled.div``;
 
 export const SkillContext = styled.div`
   display: flex;
@@ -148,6 +172,11 @@ export const TextBox = styled.div``;
 
 export const Text = styled.textarea`
   width: 100%;
+  height: 100px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.8);
+  border: none;
+  border-radius: 8px;
 `;
 
 export const SubmitBtn = styled.button`
@@ -174,4 +203,5 @@ export const PrivacyBox = styled.div`
 export const PrivacyBtn = styled.button`
   border: 0;
   background: none;
+  color: white;
 `;

@@ -4,9 +4,8 @@ import {
   Contents,
   ProfileBox,
   InputContainer,
+  LongInputContainer,
   EmailBox,
-  ShortInput,
-  CheckBtn,
   LongInput,
   SkillCheck,
   SkillContext,
@@ -20,6 +19,27 @@ import { useNavigate } from "react-router-dom";
 import { storage } from "../api/firebase/Firebase";
 import AxiosApi from "../api/AxiosApi";
 import basicProfile from "../image/person-icon2.png";
+import styled from "styled-components";
+const EmailTag = styled.p`
+  margin-bottom: -20px;
+`;
+const PasswordTag = styled.p`
+  margin-bottom: 12px;
+  margin-top: -14px;
+`;
+const PasswordConcordTag = styled.p`
+  margin-bottom: -20px;
+`;
+const NameTag = styled.p`
+  margin-bottom: -20px;
+`;
+const NicknameTag = styled.p`
+  margin-top: -14px;
+  margin-bottom: 10px;
+`;
+const IdentityTag = styled.p`
+  margin-top: -10px;
+`;
 
 const MemberUpdate = () => {
   // 입력하는 값을 저장하기 위한 것들
@@ -267,7 +287,7 @@ const MemberUpdate = () => {
       <Box>
         <Contents>
           <h1>회원 정보 수정</h1>
-          <ProfileBox className="profileImgPath">
+          <ProfileBox className="profile">
             <div className="imgBox">
               <img src={imgSrc} alt="프로필이미지" />
             </div>
@@ -279,44 +299,67 @@ const MemberUpdate = () => {
           </ProfileBox>
 
           <InputContainer>
-            <span>이메일</span>
-            <LongInput placeholder={userInfo.email} disabled />
-            <LongInput
-              type="password"
-              placeholder="비밀번호"
-              value={password}
-              onChange={onChangePassword}
-            />
-            <span id="hint">
-              {password.length > 0 && (
-                <p className={pwdValid ? "success" : "error"}>
-                  {passwordError}
-                </p>
-              )}
-            </span>
-            <LongInput
-              type="password"
-              placeholder="비밀번호 확인"
-              value={password2}
-              onChange={onChangePassword2}
-            />
-            <span id="hint">
-              {password2.length > 0 && (
-                <p className={pwdConcord ? "success" : "error"}>
-                  {passwordError2}
-                </p>
-              )}
-            </span>
-            <span>이름</span>
-            <LongInput placeholder={userInfo.name} disabled />
-            <span>닉네임</span>
-            <LongInput
-              value={nickname}
-              placeholder={userInfo.nickname}
-              onChange={onChangeNickname}
-            />
-            주민번호
-            <LongInput placeholder={userInfo.identityNumber} disabled />
+            <EmailBox>
+              <LongInputContainer>
+                <EmailTag>이메일</EmailTag>
+                <LongInput placeholder="이메일" value={email} disabled />
+              </LongInputContainer>
+            </EmailBox>
+            <LongInputContainer>
+              <PasswordTag>비밀번호</PasswordTag>
+              <LongInput
+                type="password"
+                placeholder="비밀번호"
+                value={password}
+                onChange={onChangePassword}
+                className="password"
+              />
+              <span id="hint">
+                {password.length > 0 && (
+                  <span className={pwdValid ? "success" : "error"}>
+                    {passwordError}
+                  </span>
+                )}
+              </span>
+            </LongInputContainer>
+            <LongInputContainer>
+              <PasswordConcordTag>비밀번호 확인</PasswordConcordTag>
+              <LongInput
+                type="password"
+                placeholder="비밀번호 확인"
+                value={password2}
+                onChange={onChangePassword2}
+              />
+              <span id="hint">
+                {password2.length > 0 && (
+                  <span className={pwdConcord ? "success" : "error"}>
+                    {passwordError2}
+                  </span>
+                )}
+              </span>
+            </LongInputContainer>
+            <LongInputContainer>
+              <NameTag>이름</NameTag>
+              <LongInput placeholder="이름" value={name} disabled />
+            </LongInputContainer>
+            <LongInputContainer>
+              <NicknameTag>닉네임</NicknameTag>
+              <LongInput
+                placeholder="닉네임"
+                value={nickname}
+                onChange={onChangeNickname}
+                className="nickname"
+              />
+            </LongInputContainer>
+            <LongInputContainer>
+              <IdentityTag>주민번호</IdentityTag>
+              <LongInput
+                placeholder="주민번호(앞자리 6자리와 뒷자리 첫번째만)"
+                value={identityNumber}
+                className="identityNumber"
+                disabled
+              />
+            </LongInputContainer>
             <SkillCheck>
               <p>사용스킬</p>
               {skills.map((skill, index) => (
@@ -332,17 +375,12 @@ const MemberUpdate = () => {
             </SkillCheck>
             <TextBox>
               <p>자기소개</p>
-              <Text
-                value={myInfo}
-                onChange={onChangeMyinfo}
-                placeholder={userInfo.myInfo}
-              />
+              <Text value={myInfo} onChange={onChangeMyinfo} />
             </TextBox>
           </InputContainer>
           <SubmitBtn onClick={onSubmit} disabled={isFormValid ? false : true}>
-            수정
+            가입
           </SubmitBtn>
-          {/* <SubmitBtn onClick={memberDel}>탈퇴</SubmitBtn> */}
         </Contents>
       </Box>
     </Container>

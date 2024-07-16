@@ -6,6 +6,7 @@ import {
   InputContainer,
   EmailBox,
   ShortInputContainer,
+  LongInputContainer,
   ShortInput,
   CheckBtn,
   LongInput,
@@ -393,9 +394,9 @@ const SignUp = ({ profile }) => {
               </ShortInputContainer>
               <span id="hint">
                 {email.length > 0 && (
-                  <p className={emailValid ? "success" : "error"}>
+                  <span className={emailValid ? "success" : "error"}>
                     {emailError}
-                  </p>
+                  </span>
                 )}
               </span>
             </EmailBox>
@@ -411,56 +412,67 @@ const SignUp = ({ profile }) => {
                 </CheckBtn>
               </ShortInputContainer>
             </EmailBox>
-            <LongInput
-              type="password"
-              placeholder="비밀번호"
-              value={password}
-              onChange={onChangePassword}
-            />
-            <span id="hint">
-              {password.length > 0 && (
-                <p className={pwdValid ? "success" : "error"}>
-                  {passwordError}
-                </p>
-              )}
-            </span>
-            <LongInput
-              type="password"
-              placeholder="비밀번호 확인"
-              value={password2}
-              onChange={onChangePassword2}
-            />
-            <span id="hint">
-              {password2.length > 0 && (
-                <p className={pwdConcord ? "success" : "error"}>
-                  {passwordError2}
-                </p>
-              )}
-            </span>
-
-            <LongInput
-              placeholder="이름"
-              value={name}
-              onChange={onChangeName}
-            />
-            <LongInput
-              placeholder="닉네임"
-              value={nickname}
-              onChange={onChangeNickname}
-            />
-            <LongInput
-              placeholder="주민번호(앞자리 6자리와 뒷자리 첫번째만)"
-              value={formattedIdentityNumber}
-              onChange={onChangeIdentityNumber}
-            />
-            <span id="hint">
-              {formattedIdentityNumber.length > 0 && (
-                <p className={identifyNumberValid ? "success" : "error"}>
-                  {identityNumberError}
-                </p>
-              )}
-            </span>
-
+            <LongInputContainer>
+              <LongInput
+                type="password"
+                placeholder="비밀번호"
+                value={password}
+                onChange={onChangePassword}
+                className="password"
+              />
+              <span id="hint">
+                {password.length > 0 && (
+                  <span className={pwdValid ? "success" : "error"}>
+                    {passwordError}
+                  </span>
+                )}
+              </span>
+            </LongInputContainer>
+            <LongInputContainer>
+              <LongInput
+                type="password"
+                placeholder="비밀번호 확인"
+                value={password2}
+                onChange={onChangePassword2}
+              />
+              <span id="hint">
+                {password2.length > 0 && (
+                  <span className={pwdConcord ? "success" : "error"}>
+                    {passwordError2}
+                  </span>
+                )}
+              </span>
+            </LongInputContainer>
+            <LongInputContainer>
+              <LongInput
+                placeholder="이름"
+                value={name}
+                onChange={onChangeName}
+              />
+            </LongInputContainer>
+            <LongInputContainer>
+              <LongInput
+                placeholder="닉네임"
+                value={nickname}
+                onChange={onChangeNickname}
+                className="nickname"
+              />
+            </LongInputContainer>
+            <LongInputContainer>
+              <LongInput
+                placeholder="주민번호(앞자리 6자리와 뒷자리 첫번째만)"
+                value={formattedIdentityNumber}
+                onChange={onChangeIdentityNumber}
+                className="identityNumber"
+              />
+              <span id="hint">
+                {formattedIdentityNumber.length > 0 && (
+                  <span className={identifyNumberValid ? "success" : "error"}>
+                    {identityNumberError}
+                  </span>
+                )}
+              </span>
+            </LongInputContainer>
             <SkillCheck>
               <p>사용스킬</p>
               {skills.map((skill, index) => (

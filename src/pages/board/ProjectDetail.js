@@ -146,6 +146,7 @@ const ProjectDetail = () => {
   const [replyContent, setReplyContent] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModify, setIsModify] = useState(true);
+  const [currentCount, setCurrenCount] = useState();
   const navigate = useNavigate();
   const modalRef = useRef(null);
   const email = localStorage.getItem("email");
@@ -197,6 +198,7 @@ const ProjectDetail = () => {
           projectTime: formatDate(response.data.projectTime),
         };
         setProjectContent(formattedData);
+        numberOfRecruit(formattedData.projectName);
         // setBoardList(rsp.data); // 필터링된 데이터를 상태에 저장
       } catch (e) {
         console.log(e.response);
@@ -244,19 +246,29 @@ const ProjectDetail = () => {
   };
   const request = (pId) => {
     console.log("실행", pId);
+    if (currentCount == projectContent.recruitNum) {
+      alert("신청인원이 다 찼습니다.");
+      return;
+    }
+    if (projectContent.memberId.email === email) {
+      alert("작성자는 신청 할 수 없습니다.");
+      return;
+    }
     const postData = {
       projectId: { projectId: pId },
     };
+    console.log("신청 중복 ", postData);
     requestProject(postData);
   };
 
   const requestProject = async (postData) => {
-    const isRequest = await AxiosApi.searchRequest();
-    // console.log("isRequest.data.memberId", isRequest.data[0].memberId);
-    if (isRequest.data[0]) {
+    const isRequest = await AxiosApi.searchAllRequest(projectId, email);
+    console.log("isRequest 객체", isRequest);
+    if (!isRequest.data) {
       alert("이미 신청한 프로젝트 입니다.");
       return;
     } else {
+      console.log(isRequest.data, "isRequest.data[0]");
       try {
         const rsp = await AxiosApi.requestProject(postData);
         if (rsp.status === 200) {
@@ -267,6 +279,18 @@ const ProjectDetail = () => {
       }
     }
   };
+  // 현재 참여중인 인원 수 가지고 오기
+
+  const numberOfRecruit = async (roomName) => {
+    try {
+      const rsp = await AxiosApi.findRoomByRoomName(roomName);
+      setCurrenCount(rsp.data.currentCount);
+      console.log("currentCount", rsp.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <BoardLayout>
       <Container>
@@ -281,7 +305,9 @@ const ProjectDetail = () => {
                 <Recruit>
                   <Notice>모집 정보</Notice>
                   <ProjectTime>{projectContent.projectTime}까지</ProjectTime>
-                  <RecruitMemNum>{projectContent.recruitNum}명</RecruitMemNum>
+                  <RecruitMemNum>
+                    {currentCount}/{projectContent.recruitNum}명
+                  </RecruitMemNum>
                 </Recruit>
               </UpHead>
               <UnderHead>

@@ -109,6 +109,9 @@ const AxiosApi = {
   getProjectList: async (page) => {
     return await AxiosInstance.get(`/project/list?page=${page}`);
   },
+  getProjectAllList: async () => {
+    return await AxiosInstance.get(`/project/list-all`);
+  },
 
   boardDelete: async (id) => {
     return await AxiosInstance.get("/board/delete", {
@@ -327,17 +330,17 @@ const AxiosApi = {
       throw new Error("Error fetching joined rooms: " + error.message);
     }
   },
-    // 입장 중인 오픈채팅방 리스트 찾기
-    getJoinedOpenChatRooms: async (memberId) => {
-      try {
-        const response = await AxiosInstance.get("/chat/find-my-open-chat", {
-          params: { memberId: memberId },
-        });
-        return response;
-      } catch (error) {
-        throw new Error("Error fetching joined rooms: " + error.message);
-      }
-    },
+  // 입장 중인 오픈채팅방 리스트 찾기
+  getJoinedOpenChatRooms: async (memberId) => {
+    try {
+      const response = await AxiosInstance.get("/chat/find-my-open-chat", {
+        params: { memberId: memberId },
+      });
+      return response;
+    } catch (error) {
+      throw new Error("Error fetching joined rooms: " + error.message);
+    }
+  },
   // 전체 오픈채팅방 조회 postType을 false로 보내야 오픈채팅방이 조회됨
   getOpenChatList: async (postType) => {
     return await AxiosInstance.post("/chat/find-open-chat-list", { postType });
@@ -355,6 +358,10 @@ const AxiosApi = {
   // 프로젝트 요청 조회
   searchRequest: async () => {
     return await AxiosInstance.get(`/apply/list/`);
+  },
+  // 프로젝트 전체 요청 조회(신청한 사람 재 신청 막기위해 생성 )
+  searchAllRequest: async (projectId, email) => {
+    return await AxiosInstance.get(`/apply/all-list/${projectId}/${email}`);
   },
 
   // 프로젝트 요청

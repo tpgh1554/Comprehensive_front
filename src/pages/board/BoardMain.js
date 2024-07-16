@@ -13,6 +13,9 @@ const BoardLayout = styled.div`
   align-items: center;
   height: auto;
   margin: 0 15vw;
+  @media screen and (max-width: 1400px) {
+    margin: 0 10vw;
+  }
 `;
 const Container = styled.div`
   display: flex;

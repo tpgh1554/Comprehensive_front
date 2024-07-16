@@ -45,14 +45,30 @@ const ProjectNameModal = ({
   return (
     <ContainerBack>
       <Container ref={modalRef} style={{ width: "500px", height: "500px" }}>
-        <Notice>
-          <span>프로젝트 채팅방의 이름을 입력해주세요</span>
-        </Notice>
-        방이름
-        <Input
-          onChange={(e) => setInputRoomName(e.target.value)}
-          value={inputRoomName}
-        ></Input>
+        {modifyData ? (
+          <>
+            <Notice>
+              <span>채팅방의 이름은 수정이 불가능합니다.</span>
+            </Notice>
+            <p></p>
+            <Input
+              onChange={(e) => setInputRoomName(e.target.value)}
+              value={inputRoomName}
+              disabled
+            ></Input>
+          </>
+        ) : (
+          <>
+            <Notice>
+              <span>프로젝트 채팅방의 이름을 입력해주세요</span>
+            </Notice>
+            <p></p>
+            <Input
+              onChange={(e) => setInputRoomName(e.target.value)}
+              value={inputRoomName}
+            ></Input>
+          </>
+        )}
         <Button onClick={handleSave}>저장</Button>
       </Container>
     </ContainerBack>

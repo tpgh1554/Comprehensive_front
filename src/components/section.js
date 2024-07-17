@@ -21,7 +21,7 @@ const Section = () => {
         <ImageBox>이미지영역</ImageBox>
       </Container>
       <Container>
-        <ImageBox>이미지영역</ImageBox>
+        <ImageBox><Img src={swipe} /></ImageBox>
         <Box>
           <Item>
             <div>
@@ -52,7 +52,7 @@ const Section = () => {
           </Item2>
         </Box>
         <ImageBox>
-          <Img src={swipe} />
+          이미지영역
         </ImageBox>
       </Container>
     </Body>
@@ -93,6 +93,9 @@ const ImageBox = styled.div`
   height: auto;
   background-color: white;
   margin: 0 2vw;
+  @media(max-width: 500px){
+    order: 2;
+  }
 `;
 const Item = styled.div`
   font-size: 2.5vw;

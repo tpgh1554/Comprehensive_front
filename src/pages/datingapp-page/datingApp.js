@@ -260,7 +260,7 @@ function DatingApp() {
                       {character.nickname}
                       <br />
                     </Span>
-                    <Span>skill</Span>
+                    <Span># skill</Span>
                     <Span>
                       <Skill>{skills}</Skill>
                       {/* {remainingSkills > 0 && ` (+${remainingSkills})`} */}
@@ -460,7 +460,7 @@ const CardImage = styled.div`
   height: 55vh;
   border-radius: 2vh;
   box-sizing: border-box;
-  box-shadow: 0px 0px 60px 0px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 0px 2vw 0px rgba(0, 0, 0, 0.3);
   background-size: cover;
   background-position: center;
   background-repeat: space;
@@ -571,7 +571,7 @@ const SpanBox = styled.div`
   }
   & span:nth-child(2) {
     font-size: 1.2vw;
-    margin-bottom: 1vh;
+    margin-bottom:0.2vh;
   }
   & span:nth-child(3) {
     font-size: 0.7vw;
@@ -587,7 +587,7 @@ const SpanBox = styled.div`
       margin-bottom: 1vh;
     }
     & span:nth-child(2) {
-      font-size: 8vw;
+      font-size: 5vw;
       margin-bottom: 1vh;
     }
     & span:nth-child(3) {

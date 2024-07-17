@@ -1,13 +1,6 @@
 // card.js
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useRef,
-  useContext,
-  useCallback,
-} from "react";
-import styled from "styled-components";
+import React, {useState,useEffect,useMemo,useRef,useContext,useCallback,} from "react";
+import styled, {keyframes}from "styled-components";
 import AxiosApi from "../../api/AxiosApi";
 import TinderCard from "react-tinder-card";
 import { FaArrowRotateLeft } from "react-icons/fa6";
@@ -621,6 +614,16 @@ const Skill = styled.div`
   margin-right: 10px;
   background-color: #ff5353;
 `;
+
+// 애니메이션 정의
+const fadeIn = keyframes`
+  from {
+    backdrop-filter: brightness(1) blur(0);
+  }
+  to {
+    backdrop-filter: brightness(0.8) blur(4px);
+  }
+`;
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -630,7 +633,10 @@ const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.5);
+  //background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: brightness(0.8) blur(4px); // 밝기 조정, 반투명 드래곤효과
+  animation: ${fadeIn} 2s forwards; // 애니메이션 적용
+  transition: all 10s;
   z-index: 1000;
 `;
 

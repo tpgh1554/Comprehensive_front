@@ -551,27 +551,34 @@ const SpanBox = styled.div`
     rgb(0, 0, 0, 0.5) 40%,
     rgba(0, 0, 0, 0.8) 100%
   ); // %는 처음기준 위치
-
-  & span:nth-child(1) {
+  & span:nth-child(1) { // 닉네임 부분 
+    width: 30vw;
     font-size: 2vw;
     margin-bottom: 1vh;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   & span:nth-child(2) {
     font-size: 1.2vw;
     margin-bottom:0.2vh;
   }
-  & span:nth-child(3) {
+  & span:nth-child(3) { // 스킬부분
     font-size: 0.7vw;
     margin-bottom: 1vh;
   }
-  & span:nth-child(4) {
+  & span:nth-child(4) { // 자기소개 부분
     font-size: 1vw;
     margin-bottom: 5vh;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   @media (max-width: 500px) {
     & span:nth-child(1) {
       font-size: 8vw;
       margin-bottom: 1vh;
+      text-overflow: ellipsis;
     }
     & span:nth-child(2) {
       font-size: 5vw;
@@ -583,6 +590,7 @@ const SpanBox = styled.div`
     }
     & span:nth-child(4) {
       font-size: 4vw;
+      text-overflow: ellipsis;
     }
   }
 `;

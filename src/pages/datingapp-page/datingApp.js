@@ -102,6 +102,7 @@ function DatingApp() {
         }));
         setCardList(userList); // 변환된 데이터를 카드에 넣어줌
         setCurrentIndex(userList.length - 1);
+        console.log(`카드리트스트 :`, userList);
         currentIndexRef.current = userList.length - 1;
       } catch (error) {
         // 백앤드에서도 구독여부를 확인하여 1회 이용후 다시 페이지에 접속하면 429 error 반환해줌
@@ -236,7 +237,7 @@ function DatingApp() {
     <Body>
       <PhoneFrame>
         <Title>
-          <div>매일 새롭게 만나는 5명의 아프다맨~</div>
+          <div>매일 새롭게 5명의 인연찾기</div>
         </Title>
         <Window>
           {cardList.map((character, index) => {
@@ -588,10 +589,10 @@ const SpanBox = styled.div`
     }
     & span:nth-child(2) {
       font-size: 5vw;
-      margin-bottom: 1vh;
+      margin-bottom: 0.5vh;
     }
     & span:nth-child(3) {
-      font-size: 5vw;
+      font-size: 2.5vw;
       margin-bottom: 1vh;
     }
     & span:nth-child(4) {

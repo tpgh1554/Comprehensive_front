@@ -10,7 +10,7 @@ const ChatManage = () => {
   const [myOpenChatRooms, setMyOpenChatRooms] = useState([]);
   const [chatRooms, setChatRooms] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [Render, setRender] = useState(0); // 재렌더링을 위한 상태 추가
+  const [render, setRender] = useState(0); // 재렌더링을 위한 상태 추가
   const navigate = useNavigate();
 
   const context = useContext(UserContext);
@@ -33,7 +33,7 @@ const ChatManage = () => {
     };
 
     fetchMyOpenChatRooms();
-  }, [Render]);
+  }, [render]);
   useEffect(() => {
     const fetchOpenChatRooms = async () => {
       try {
@@ -45,7 +45,7 @@ const ChatManage = () => {
     };
 
     fetchOpenChatRooms();
-  }, [Render]);
+  }, [render]);
 
   const handleJoinRoom = async (roomId, roomName) => {
     try {
@@ -94,7 +94,7 @@ const ChatManage = () => {
 
   const handleClose = () => {
     toggleModal();
-    setRender(Render + 1); // Render 상태를 업데이트하여 재렌더링 유도
+    setRender(render + 1); // Render 상태를 업데이트하여 재렌더링 유도
   };
 
   return (

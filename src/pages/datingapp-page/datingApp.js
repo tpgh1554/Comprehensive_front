@@ -329,7 +329,7 @@ const Body = styled.div`
   align-items: center;
   overflow: hidden;
   @media (max-width: 500px) {
-    width: 95vw;
+    width: 100%;
     height: 100svh;
   }
 `;
@@ -376,14 +376,14 @@ const PhoneFrame = styled.div`
     }
   }
   @media (max-width: 500px) {
-    width: 78vw;
+    width: 100vw;
     height: 90vh;
     border-radius: 5dvi;
   }
 `;
 // 앱모양 창 내부 와이드값 Window, Title, BottonArea
 const widthvalue = "28.5vw";
-const mobilewidthvalue = "73vw";
+const mobilewidthvalue = "95vw";
 const Title = styled.div`
   font-weight: 600;
   display: flex;
@@ -450,10 +450,9 @@ const CardImage = styled.div`
   box-shadow: 0px 0px 2vw 0px rgba(0, 0, 0, 0.3);
   background-size: cover;
   background-position: center;
-  background-repeat: space;
   background-image: url(${(props) => props.imageUrl});
   @media (max-width: 500px) {
-    width: 70vw;
+    width: 78vw;
     height: 65vh;
   }
 `;
@@ -545,63 +544,63 @@ const SpanBox = styled.div`
   bottom: 0;
   margin: 5vh 0 0 0;
   color: #fff;
-  background-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgb(0, 0, 0, 0.5) 40%,
-    rgba(0, 0, 0, 0.8) 100%
-  ); // %는 처음기준 위치
-  & span:nth-child(1) { // 닉네임 부분 
-    width: 30vw;
-    font-size: 2vw;
-    margin-bottom: 1vh;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-  & span:nth-child(2) {
-    font-size: 1.2vw;
-    margin-bottom:0.2vh;
-  }
-  & span:nth-child(3) { // 스킬부분
-    font-size: 0.7vw;
-    margin-bottom: 1vh;
-  }
-  & span:nth-child(4) { // 자기소개 부분
-    font-size: 1vw;
-    margin-bottom: 5vh;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
+  background-image: linear-gradient(to bottom,transparent 0%,rgb(0, 0, 0, 0.5) 40%,rgba(0, 0, 0, 0.8) 100%); // %는 처음기준 위치  
   @media (max-width: 500px) {
-    & span:nth-child(1) {
-      font-size: 8vw;
-      margin-bottom: 1vh;
-      text-overflow: ellipsis;
-    }
-    & span:nth-child(2) {
-      font-size: 5vw;
-      margin-bottom: 0.5vh;
-    }
-    & span:nth-child(3) {
-      font-size: 2.5vw;
-      margin-bottom: 1vh;
-    }
-    & span:nth-child(4) {
-      font-size: 4vw;
-      text-overflow: ellipsis;
-    }
+    width: 78vw;
   }
 `;
 const Span = styled.span`
-  display: flex;
-  align-self: flex-start;
-  justify-content: left;
+  display: block;
+  max-width: 100%; // width 대신 max-width 사용
+  overflow-x: hidden; // overflow-x 명시
   text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   margin-left: 1vw;
+  &:nth-child(1) { // 닉네임 부분 
+    font-size: 1.5vw;
+    margin-bottom: 1vh;
+  }
+
+  &:nth-child(2) {
+    font-size: 1.2vw;
+    margin-bottom: 0.2vh;
+  }
+
+  &:nth-child(3) { // 스킬부분
+    display: inline;
+    white-space: normal;
+    font-size: 0.7vw;
+    margin-bottom: 1vh;
+  }
+
+  &:nth-child(4) { // 자기소개 부분
+    font-size: 1vw;
+    margin-bottom: 5vh;
+  }
+
   @media (max-width: 500px) {
-    margin-left: 5vw;
+    margin-left: 3vw;
+    &:nth-child(1) {
+      font-size: 8vw;
+      margin-bottom: 1vh;
+    }
+
+    &:nth-child(2) {
+      font-size: 5vw;
+      margin-bottom: 0.5vh;
+    }
+
+    &:nth-child(3) {
+      display: inline;
+      white-space: normal;
+      font-size: 2.5vw;
+      margin-bottom: 1vh;
+    }
+
+    &:nth-child(4) {
+      font-size: 4vw;
+    }
   }
 `;
 

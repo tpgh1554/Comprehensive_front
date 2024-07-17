@@ -16,22 +16,23 @@ import logout from "../image/logout.png";
 import { UserContext } from "../context/UserStore";
 
 export default function NaviBar() {
-  const email = localStorage.getItem("email");
-  const isLoginUser = localStorage.getItem("accessToken") !== null;
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+  const [myEmail, setMyEmail] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  const isLoginUser = localStorage.getItem("accessToken") !== null;
+  const [isOpen, setIsOpen] = useState(false);
+
 
   const context = useContext(UserContext);
   const { setLoginStatus } = context;
-
+  // 유저정보 갱신
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const rsp = await AxiosApi.getUserInfo2();
         setUserInfo(rsp.data); // API로부터 받은 데이터를 상태에 저장
-        console.log(rsp.data);
+        setMyEmail(rsp.data.email);
         if (rsp.data && rsp.data.profileImgPath) {
           setImageUrl(rsp.data.profileImgPath);
           localStorage.setItem("imgUrl", rsp.data.profileImgPath);
@@ -44,7 +45,7 @@ export default function NaviBar() {
       }
     };
     fetchUserInfo();
-  }, [email]);
+  }, [myEmail]);
 
   const scope = useMenuAnimation(isOpen);
 

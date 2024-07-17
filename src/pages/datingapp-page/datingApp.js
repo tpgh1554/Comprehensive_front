@@ -12,7 +12,7 @@ function DatingApp() {
   const [cardList, setCardList] = useState([]);
   const [likedList, setLikedList] = useState([]); // 좋아요 누른 사람들은 현재페이지에서 나갈때 일괄 신청 되도록 리스트에 입력
   const [unlikedList, setUnlikedList] = useState([]); // 싫어요 누른 사람들은 현재페이지에서 나갈때 일괄 신청 되도록 리스트에 입력
-  const myEmail = localStorage.getItem("email");
+  const [myEmail, setMyEmail] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0); // 겹친 카드중 선택 순서
   const [lastDirection, setLastDirection] = useState();
   const [isSubscribed, setIsSubscribed] = useState(false); // 구독 여부 상태
@@ -63,26 +63,40 @@ function DatingApp() {
   const navigate = useNavigate();
   const context = useContext(UserContext);
   const { loginStatus } = context;
+    // 2.acessTonken 으로 유저정보 반환
   useEffect(() => {
     if (!loginStatus) {
       navigate("/apueda/login");
     }
   }, [loginStatus, navigate]);
-
+  
   useEffect(() => {
-    // 2. 정기구독여부 확인
+    // 2.acessTonken 으로 유저정보 반환
+    const getMyEmail = async () => {
+      try {
+        const response = await AxiosApi.getUserInfo2();
+        setMyEmail(response.data.email);
+        console.log("myemail : ",response.data.email); // 여기서 myEmail이 아닌 response.data.email로 출력해야함
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getMyEmail();
+  }, []); // 초기 한 번만 실행되도록 빈 배열 사용
+  useEffect(() => {
+    // 3. 정기구독여부 확인
     const checkSubscription = async () => {
       try {
         const response = await AxiosApi.checkSubscribe();
         setIsSubscribed(response.data); // 구독 여부 상태 업데이트
-        console.log("정기구독여부 :", isSubscribed);
+        console.log("정기구독여부 :", response.data);
       } catch (error) {
         console.log(error);
       }
     };
     checkSubscription();
 
-    // 3.유저정보 가져오기
+    // 4.유저정보 가져오기
     const showUserInfo = async () => {
       try {
         const response = await AxiosApi.getCardList(myEmail); // AxiosApi에서 사용자 정보를 가져옴
@@ -145,27 +159,6 @@ function DatingApp() {
       }
       setShowConfirmModal(true);
     }, 1500);
-    // setTimeout(() => {
-    //   if (!isSubscribed && hasUsedFreeTrial) {
-    //     setModalMessage("더이상 카드가 없습니다. 24시간 후에 다시 이용해 주세요.");
-    //     setShowConfirmModal(true);
-    //     setConfirmAction(() => () => navigate("/"));
-    //   } else if (!isSubscribed) {
-    //     setModalMessage("모든 친구 신청을 보내고 메인페이지로 이동하시겠습니까? (취소 시 페이지이동 X)");
-    //     setConfirmAction(() => async () => {
-    //       await sendFriendRequests();
-    //       navigate("/");
-    //       setHasUsedFreeTrial(true);
-    //     });
-    //   } else {
-    //     setModalMessage("카드가 모두 소진되었습니다. 추가카드를 받겠습니까?");
-    //     setConfirmAction(() => async () => {
-    //       await sendFriendRequests();
-    //       window.location.reload();
-    //     });
-    //   }
-    //   setShowConfirmModal(true);
-    // }, 1500);
   }, [isSubscribed, hasUsedFreeTrial, sendFriendRequests, navigate]);
 
   useEffect(() => {

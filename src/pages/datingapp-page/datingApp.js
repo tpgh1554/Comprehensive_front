@@ -22,6 +22,7 @@ function DatingApp() {
   const [modalMessage, setModalMessage] = useState("");
   const [confirmAction, setConfirmAction] = useState(null);
   const currentIndexRef = useRef(currentIndex);
+  const [render, setRender] = useState(0); // 현재 페이지로 렌더링하기 위한 상태관리
 
   //429 에러 핸들링
   const handleError = (error) => {
@@ -145,7 +146,7 @@ function DatingApp() {
         );
         setConfirmAction(() => async () => {
           await sendFriendRequests();
-          window.location.reload();
+          setRender(prevKey => prevKey + 1); // 렌더링 강제 상태 변경
         });
       } else if (!isSubscribed) {
         setModalMessage(
@@ -220,7 +221,7 @@ function DatingApp() {
   };
 
   return (
-    <Body>
+    <Body key={render}>
       <PhoneFrame>
         <Title>
           <div>매일 새롭게 5명의 인연찾기</div>

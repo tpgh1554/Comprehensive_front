@@ -75,7 +75,7 @@ const List = styled.div`
 
 const ListResult = styled.div`
   display: flex;
-  width: 46%;
+  width: 29%;
   border-bottom: 4.5px solid #c1c1c1;
   border-right: 3px solid #c1c1c1;
   height: 30%;
@@ -89,14 +89,14 @@ const ListResult = styled.div`
   flex-direction: column;
   position: relative;
   @media screen and (max-width: 1400px) {
-    width: 44%;
+    width: 43%;
     height: 510px;
     /* height: 520px; */
     justify-content: space-around;
   }
   @media screen and (max-width: 860px) {
     display: flex;
-    width: 90%;
+    width: 70%;
     height: auto;
     justify-content: center;
   }
@@ -159,6 +159,7 @@ const Content = styled.div`
   padding: 0 10px;
   & span {
     font-size: 1rem;
+    overflow: hidden;
   }
 `;
 
@@ -208,7 +209,7 @@ const NoResult = styled.div`
 
 const ProjectList = () => {
   const [projectList, setProjectList] = useState([]);
-  const [sortBy, setSortBy] = useState(true);
+  const [sortBy, setSortBy] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPageSize, setTotalPageSize] = useState(0); // 총 페이지 수
   const [imgUrl, setImgUrl] = useState("");
@@ -216,6 +217,7 @@ const ProjectList = () => {
   const [isSearchModal, setIsSearchModal] = useState(false);
   const [isRecruitmentComplete, setIsRecruitmentComplete] = useState(true); // 모집 완료 상태
   const email = localStorage.getItem("email");
+  const [isRecruit, setIsRecruit] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     const fetchProjectList = async () => {
@@ -230,6 +232,7 @@ const ProjectList = () => {
         setTotalPageSize(rsp.data.totalPages);
         setProjectList((prevProjects) => [...prevProjects, ...sortedProjects]);
         setIsRecruitmentComplete(sortedProjects.existStatus);
+        numberOfRecruit(sortedProjects.projectName);
         console.log(isRecruitmentComplete, "isRecruitmentComplete");
         setImgUrl(sortedProjects.imgPath);
         console.log(projectList, "imgPath");
@@ -240,16 +243,44 @@ const ProjectList = () => {
     fetchProjectList();
   }, [currentPage]);
 
+  // const sortByCreatedAt = () => {
+  //   const sortedProjects = [...projectList].sort((a, b) => {
+  //     if (sortBy) {
+  //       return new Date(b.regDate) - new Date(a.regDate);
+  //     } else {
+  //       return new Date(a.regDate) - new Date(b.regDate);
+  //     }
+  //   });
+  //   setProjectList(sortedProjects);
+  //   setSortBy(!sortBy); // Toggle sort order
+  // };
   const sortByCreatedAt = () => {
-    const sortedProjects = [...projectList].sort((a, b) => {
-      if (sortBy) {
-        return new Date(b.regDate) - new Date(a.regDate);
-      } else {
-        return new Date(a.regDate) - new Date(b.regDate);
-      }
-    });
-    setProjectList(sortedProjects);
-    setSortBy(!sortBy); // Toggle sort order
+    let sortedProjects;
+
+    if (!inputValue && !clickArray) {
+      // projectList를 정렬합니다.
+      sortedProjects = [...projectList].sort((a, b) => {
+        if (sortBy) {
+          return new Date(b.regDate) - new Date(a.regDate);
+        } else {
+          return new Date(a.regDate) - new Date(b.regDate);
+        }
+      });
+      setProjectList(sortedProjects);
+    } else {
+      // projectAllList를 정렬합니다.
+      sortedProjects = [...projectAllList].sort((a, b) => {
+        if (sortBy) {
+          return new Date(b.regDate) - new Date(a.regDate);
+        } else {
+          return new Date(a.regDate) - new Date(b.regDate);
+        }
+      });
+      setProjectAllList(sortedProjects);
+    }
+
+    // 정렬 순서를 토글합니다.
+    setSortBy(!sortBy);
   };
   // 플젝 상세보기 페이지 이동
   const projectClick = (projectId) => {
@@ -298,30 +329,27 @@ const ProjectList = () => {
     setInputValue(event.target.value);
   };
   const [clickArray, setClickArray] = useState([]);
-  // 스킬 클릭 핸들러 - useCallback을 사용하여 부모 컴포넌트가 리렌더링되더라도
-  // 이 함수는 재생성되지 않도록 합니다.
+  //useCallback을 사용하여 부모 컴포넌트가 리렌더링되더라도 이 함수는 재생성되지 않도록 합니다.
   const handleSkillClick = useCallback((skills) => {
     setClickArray(skills);
-  }, []);
-
-  useEffect(() => {
-    console.log("clickArray 실행 : ", clickArray);
   }, []);
 
   const [substatus, setSubstatus] = useState("");
   const [filteredResults, setFilteredResults] = useState([]);
   const [projectAllList, setProjectAllList] = useState([]);
+  const [currentCount, setCurrenCount] = useState();
 
   // 초기 데이터 로드
   useEffect(() => {
     const fetchProjectList = async () => {
       try {
         const rsp = await AxiosApi.getProjectAllList();
-        console.log(rsp.data, "!@#");
         const sortedProjects = rsp.data.sort(
           (a, b) => new Date(b.regDate) - new Date(a.regDate)
         );
+        console.log("sortedProjects", sortedProjects.projectName);
         setProjectAllList(sortedProjects);
+        numberOfRecruit(sortedProjects.projectName);
       } catch (e) {
         console.error("Error fetching project list:", e);
       }
@@ -357,6 +385,24 @@ const ProjectList = () => {
   useEffect(() => {
     console.log("filteredResults  : ", filteredResults);
   }, [filteredResults]);
+
+  const numberOfRecruit = async (roomName) => {
+    try {
+      const rsp = await AxiosApi.findRoomByRoomName(roomName);
+      setCurrenCount(rsp.data.currentCount);
+
+      console.log("currentCount", rsp.data.currentCount);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    if (currentCount === 0) {
+      setIsRecruit(false);
+    } else {
+      setIsRecruit(true);
+    }
+  }, [currentCount]);
   return (
     <Container>
       <ListContainer>
@@ -416,7 +462,11 @@ const ProjectList = () => {
                   )}
                   <Content>
                     <span>{project.projectTitle}</span>
-                    {formatTimestamp(project.regDate)}
+                    {isRecruit === false ? (
+                      <span>모집 종료</span>
+                    ) : (
+                      <> {formatTimestamp(project.regDate)}</>
+                    )}
                   </Content>
                   <ProfileContainer>
                     <span>
@@ -477,7 +527,11 @@ const ProjectList = () => {
                       )}
                       <Content>
                         <span>{project.projectTitle}</span>
-                        {formatTimestamp(project.regDate)}
+                        {isRecruit === false ? (
+                          <span>모집 종료</span>
+                        ) : (
+                          <> {formatTimestamp(project.regDate)}</>
+                        )}
                       </Content>
                       <ProfileContainer>
                         <span>
@@ -537,7 +591,11 @@ const ProjectList = () => {
                         )}
                         <Content>
                           <span>{project.projectTitle}</span>
-                          {formatTimestamp(project.regDate)}
+                          {isRecruit === false ? (
+                            <span>모집 종료</span>
+                          ) : (
+                            <> {formatTimestamp(project.regDate)}</>
+                          )}
                         </Content>
                         <ProfileContainer>
                           <span>

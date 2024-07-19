@@ -160,7 +160,7 @@ const MemberUpdate = () => {
       /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}:;',.?/\\-]).{8,}$/; // 수정된 정규식
 
     if (!passwordRegex.test(newPassword)) {
-      setPasswordError("숫자, 영어 소문자, 특수문자를 모두 포함 8자 이상");
+      setPasswordError("숫자,영어 소문자,특수문자 포함 8자 이상");
       setPwdValid(false);
     } else {
       setPasswordError("");

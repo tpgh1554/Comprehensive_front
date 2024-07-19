@@ -145,6 +145,7 @@ const SignUp = ({ profile }) => {
   const authorizeMail = async () => {
     try {
       const rsp = await AxiosApi.mail(email);
+      console.log(rsp.data);
       setEmailValid("");
       setEmailError("");
       if (rsp.data !== null) {
@@ -164,10 +165,10 @@ const SignUp = ({ profile }) => {
     }
     if (inputCode === sentCode) {
       setCodeValid(true);
-      console.log("인증되었습니다");
+      alert("인증되었습니다");
     } else {
       setCodeValid(false);
-      console.log("다시 입력해 주세요");
+      alert("다시 인증 해주세요");
     }
   };
 
@@ -213,7 +214,7 @@ const SignUp = ({ profile }) => {
       /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}:;',.?/\\-]).{8,}$/; // 수정된 정규식
 
     if (!passwordRegex.test(newPassword)) {
-      setPasswordError("숫자, 영어 소문자, 특수문자 포함하여 8자 이상");
+      setPasswordError("숫자,영어 소문자,특수문자 포함 8자 이상");
       setPwdValid(false);
     } else {
       setPasswordError("");

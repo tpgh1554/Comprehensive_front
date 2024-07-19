@@ -171,7 +171,6 @@ const LoginPage = () => {
       setAccToken(rsp.data.accessToken);
       localStorage.setItem("accessToken", rsp.data.accessToken);
       localStorage.setItem("refreshToken", rsp.data.refreshToken);
-      console.log(accToken);
       navigate("/apueda");
       setLoginStatus(true);
     } catch (e) {
@@ -182,7 +181,6 @@ const LoginPage = () => {
     try {
       const rsp = await PaymentApi.deadline(email);
       if (rsp.data[0].status) {
-        console.log(rsp.data[0].status);
         setSubscribeStatus(true);
       } else {
         setSubscribeStatus(false);

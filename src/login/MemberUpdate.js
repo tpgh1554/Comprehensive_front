@@ -83,7 +83,6 @@ const MemberUpdate = () => {
         setName(rsp.data.name);
         setIdentityNumber(rsp.data.identityNumber);
         setMyInfo(rsp.data.myInfo);
-        console.log(rsp.data);
       } catch (e) {
         console.log(e);
       }
@@ -139,7 +138,6 @@ const MemberUpdate = () => {
       fileRef.put(file).then(() => {
         console.log("저장성공!");
         fileRef.getDownloadURL().then((url) => {
-          console.log("저장경로 확인 : " + url);
           localStorage.setItem("imgUrl", url);
           regist(url);
         });
@@ -226,7 +224,6 @@ const MemberUpdate = () => {
     const originImage = imgSrc === basicProfile ? "" : imgSrc;
     const image = url !== "" ? url : originImage;
     const profileImgPath = image;
-    console.log("프로필 이미지 경로는 : " + image);
     const user = {
       email,
       name,
@@ -238,12 +235,10 @@ const MemberUpdate = () => {
       myInfo,
     };
     try {
-      console.log(user);
       localStorage.setItem("imgUrl", image);
       const rsp = await AxiosApi.memberUpdate(user);
       if (rsp.data) {
         alert("회원 정보 수정에 성공했습니다.");
-        console.log(user);
         setProfileChange(true);
         navigate("/apueda/mypage");
       } else {

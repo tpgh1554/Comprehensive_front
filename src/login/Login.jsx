@@ -13,7 +13,7 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 450px;
+  min-width: 375px;
 `;
 const Box = styled.div`
   width: 60%;
@@ -27,6 +27,9 @@ const Box = styled.div`
   border-radius: 10px;
   padding: 30px;
   box-sizing: border-box;
+  @media screen and (max-width: 500px) {
+    width: 75vw;
+  }
 `;
 const Contents = styled.div`
   width: 100%;

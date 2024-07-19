@@ -92,6 +92,10 @@ const Skills = styled.div`
   border: solid #b9b9b9;
   border-width: 0 0 1px;
   padding: 12px;
+  @media screen and (max-width: 500px) {
+    overflow: scroll;
+  }
+
   & button {
     margin-left: 4px;
 
@@ -411,10 +415,7 @@ const ProjectDetail = () => {
               <Skills>
                 {projectContent.skillName &&
                   projectContent.skillName.map((skills, index) => (
-                    <Button
-                      key={index}
-                      style={{ width: "auto", padding: "0 10px" }}
-                    >
+                    <Button key={index} style={{ width: "auto" }}>
                       {skills.skillName}
                     </Button>
                   ))}

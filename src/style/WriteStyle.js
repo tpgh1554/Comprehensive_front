@@ -39,7 +39,6 @@ export const Button = styled.button`
 
   height: 32px;
   width: 40px;
-  overflow: hidden;
   &:last-child {
     /* margin-right: 0; */
   }

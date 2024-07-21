@@ -228,14 +228,11 @@ const ProjectList = () => {
         const sortedProjects = rsp.data.projects.sort(
           (a, b) => new Date(b.regDate) - new Date(a.regDate)
         );
-        console.log("sortedProjects", sortedProjects);
         setTotalPageSize(rsp.data.totalPages);
         setProjectList((prevProjects) => [...prevProjects, ...sortedProjects]);
         setIsRecruitmentComplete(sortedProjects.existStatus);
         numberOfRecruit(sortedProjects.projectName);
-        console.log(isRecruitmentComplete, "isRecruitmentComplete");
         setImgUrl(sortedProjects.imgPath);
-        console.log(projectList, "imgPath");
       } catch (e) {
         console.error("Error fetching project list:", e);
       }
@@ -256,7 +253,6 @@ const ProjectList = () => {
   // };
   const sortByCreatedAt = () => {
     let sortedProjects;
-
     if (!inputValue && !clickArray) {
       // projectList를 정렬합니다.
       sortedProjects = [...projectList].sort((a, b) => {
@@ -284,7 +280,6 @@ const ProjectList = () => {
   };
   // 플젝 상세보기 페이지 이동
   const projectClick = (projectId) => {
-    console.log(projectId, "플젝id값");
     navigate(`/apueda/board/projectDetail/${projectId}`);
   };
   // 무한스크롤 다음페이지 넘기기
@@ -300,7 +295,6 @@ const ProjectList = () => {
   };
   // 플젝 리스트 카드 MouseDown 스타일
   const handleMouseDown = (e) => {
-    //console.log("!");
     e.currentTarget.style.transform = "none";
     e.currentTarget.style.transition = "transform 0.5s ease";
     e.currentTarget.style.boxShadow = "none";
@@ -308,7 +302,6 @@ const ProjectList = () => {
   const fetchDeadline = async () => {
     try {
       let response = await PaymentApi.deadline(email);
-      console.log("fetchDeadline", response.data);
       if (response && response.data) {
         setSubstatus(response.data[0].status);
       } else {
@@ -316,13 +309,11 @@ const ProjectList = () => {
       }
     } catch (error) {
       setSubstatus("null");
-      console.log("구독상태", substatus);
       console.error("Error fetching deadline:", error);
     }
   };
   useEffect(() => {
     fetchDeadline();
-    console.log("상태 확인", substatus);
   }, []);
 
   const handleSearch = (event) => {
@@ -347,7 +338,6 @@ const ProjectList = () => {
         const sortedProjects = rsp.data.sort(
           (a, b) => new Date(b.regDate) - new Date(a.regDate)
         );
-        console.log("sortedProjects", sortedProjects.projectName);
         setProjectAllList(sortedProjects);
         numberOfRecruit(sortedProjects.projectName);
       } catch (e) {
@@ -382,18 +372,14 @@ const ProjectList = () => {
   }, [inputValue, clickArray, projectAllList]);
 
   // filteredResults 상태 변경될 때마다 로그 출력
-  useEffect(() => {
-    console.log("filteredResults  : ", filteredResults);
-  }, [filteredResults]);
+  useEffect(() => {}, [filteredResults]);
 
   const numberOfRecruit = async (roomName) => {
     try {
       const rsp = await AxiosApi.findRoomByRoomName(roomName);
       setCurrenCount(rsp.data.currentCount);
-
-      console.log("currentCount", rsp.data.currentCount);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
   useEffect(() => {

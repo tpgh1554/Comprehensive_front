@@ -7,7 +7,7 @@ import styled from "styled-components";
 import defaultImage from "../image/person-icon2.png";
 import file from "../image/file.png";
 import chat from "../image/chat.png";
-import friend from "../image/friend.png";
+import laptop from "../image/laptop-icon.png";
 import phone from "../image/mobile-in-hand.png";
 import card from "../image/credit-card.png";
 import profile from "../image/profile.png";
@@ -96,7 +96,7 @@ export default function NaviBar() {
     navigate("/apueda");
     setLoginStatus("");
     setSubscribeStatus("");
-    alert("로그아웃 되었습니다. (localStorage 모두 삭제)");
+    alert("로그아웃 되었습니다.");
   };
 
   const subscribeHandler = () => {
@@ -150,11 +150,11 @@ export default function NaviBar() {
               </MenuItem>
               <MenuItem onClick={() => navigate("/apueda/chatmanage")}>
                 <Img src={chat} />
-                <Overlay>채팅</Overlay>
+                <Overlay>오픈채팅</Overlay>
               </MenuItem>
-              <MenuItem>
-                <Img src={friend} />
-                <Overlay>친구관리</Overlay>
+              <MenuItem onClick={() => navigate("/apueda/mypage/mypj")}>
+                <Img src={laptop} />
+                <Overlay>프로젝트</Overlay>
               </MenuItem>
               <MenuItem onClick={() => navigate("/apueda/datingapp")}>
                 <Img src={phone} />

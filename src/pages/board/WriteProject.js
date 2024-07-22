@@ -15,10 +15,8 @@ import {
   InputImage,
   InsertConfirm,
 } from "../../style/WriteStyle";
-import Modal from "./SkillModal";
 import AxiosApi from "../../api/AxiosApi";
 import { useNavigate, useParams } from "react-router-dom";
-import PasswordModal from "./ProjectNameModal";
 import SkillModal from "./SkillModal";
 import ProjectNameModal from "./ProjectNameModal";
 import { getCurrentTime, getFormattedDate } from "../../utils/formatDate";

@@ -177,20 +177,26 @@ const ReplyListComponent = ({ projectId, boardId, type, userInfo }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPageSize, setTotalPageSize] = useState(0); // 총 페이지 수
   const [imageUrl, setImageUrl] = useState(null);
-  const email = localStorage.getItem("email");
-  //const [userInfo, setUserInfo] = useState(null);
-  //const { userInfo } = useContext(UserContext);
   const [replyContent, setReplyContent] = useState("");
   const [repliesChanged, setRepliesChanged] = useState(false);
-  const navigate = useNavigate();
   const textareaRef = useRef(null);
   // const imageUrl = userInfo?.profileImg || "";
 
   useEffect(() => {
     getReplyList(projectId, currentPage);
   }, [projectId, repliesChanged, currentPage]);
+  // 회우원정보 가지고 오기
+  useEffect(() => {
+    const getMember = async () => {
+      try {
+        const rsp = await AxiosApi.getUserInfo2();
+        setImageUrl(rsp.data.profileImgPath);
+      } catch (e) {}
+    };
+    getMember();
+  }, []);
 
-  const getReplyList = async (id, page) => {
+  const getReplyList = async (page) => {
     try {
       if (type === "project") {
         const response = await AxiosApi.getProjectReplyList(projectId, page);
@@ -200,6 +206,7 @@ const ReplyListComponent = ({ projectId, boardId, type, userInfo }) => {
             ...reply,
             regDate: formatDate(reply.regDate),
           }));
+          console.log(formattedData);
           setReplies(formattedData);
           setTotalPageSize(response.data.totalPages);
         } else {
@@ -260,7 +267,7 @@ const ReplyListComponent = ({ projectId, boardId, type, userInfo }) => {
   };
   const prev = () => {
     if (currentPage === 0) {
-      alert("첫번째 페이지다");
+      alert("첫번째 페이지 입니다.");
     } else {
       setCurrentPage(currentPage - 1);
     }

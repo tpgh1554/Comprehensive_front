@@ -15,7 +15,7 @@ function DatingApp() {
   const [myEmail, setMyEmail] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0); // 겹친 카드중 선택 순서
   const [lastDirection, setLastDirection] = useState();
-  const [isSubscribed, setIsSubscribed] = useState(false); // 구독 여부 상태
+  const [isSubscribed, setIsSubscribed] = useState(); // 구독 여부 상태
   const [hasUsedFreeTrial, setHasUsedFreeTrial] = useState(false); // 비구독자의 무료 사용 여부
   const [showLimitModal, setShowLimitModal] = useState(false); // 모달 상태 추가
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -39,14 +39,6 @@ function DatingApp() {
     setShowLimitModal(false);
     navigate("/");
   };
-  // 스와이프 하고 남은 카드 갯수 관리
-  const childRefs = useMemo(
-    () =>
-      Array(cardList.length)
-        .fill(0)
-        .map((i) => React.createRef()),
-    [cardList.length]
-  );
   const handleConfirmYes = () => {
     if (confirmAction) {
       confirmAction();
@@ -60,6 +52,14 @@ function DatingApp() {
       // navigate("/");
     }
   };
+  // 스와이프 하고 남은 카드 갯수 관리
+  const childRefs = useMemo(
+    () =>
+      Array(cardList.length)
+        .fill(0)
+        .map((i) => React.createRef()),
+    [cardList.length]
+  );
   // 1. 로그인 여부 확인 로그인 안 할시에 로그인 창으로 이동
   const navigate = useNavigate();
   const context = useContext(UserContext);
@@ -77,30 +77,32 @@ function DatingApp() {
       try {
         const response = await AxiosApi.getUserInfo2();
         setMyEmail(response.data.email);
-        console.log("myemail : ",response.data.email); // 여기서 myEmail이 아닌 response.data.email로 출력해야함
       } catch (error) {
         console.log(error);
       }
     };
     getMyEmail();
-  }, []);
-
-  const checkSubscription = async () => {
-    try {
-      const response = await AxiosApi.checkSubscribe();
-      setIsSubscribed(response.data);
-      console.log("정기구독여부 :", response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  // 4.유저정보 가져오기
-  useEffect(() => { 
-    const showUserInfo = async () => {
+  }, []); // 초기 한 번만 실행되도록 빈 배열 사용
+  // 구독 여부 확인하기 초기에 실행안함
+    const checkSubscription = async () => {
       try {
-        console.log("isSubscribed", isSubscribed);
+        const response = await AxiosApi.checkSubscribe(); 
+        setIsSubscribed(response.data); // 구독 여부 상태 업데이트
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-        const response = await AxiosApi.getCardList(myEmail);
+
+    // 4.유저정보 가져오기
+    useEffect(() => {
+    const showUserInfo = async () => {
+      const freeTrialUsed = localStorage.getItem("freeTrialUsed"); //******************************** 비구독자일때 세션에 무료사용 여부 세션 확인
+          if (freeTrialUsed) { // 사용내역 있으면
+            setShowLimitModal(true); // 제한모달
+          }
+      try {
+        const response = await AxiosApi.getCardList(myEmail); // AxiosApi에서 사용자 정보를 가져옴
         const userList = response.data.map((user) => ({
           email: user.email,
           nickname: user.nickname,
@@ -110,10 +112,9 @@ function DatingApp() {
         }));
         setCardList(userList); // 변환된 데이터를 카드에 넣어줌
         setCurrentIndex(userList.length - 1);
-        console.log(`카드리트스트 :`, userList);
         currentIndexRef.current = userList.length - 1;
       } catch (error) {
-        // 백앤드에서도 구독여부를 확인하여 1회 이용후 다시 페이지에 접속하면 429 error 반환해줌
+        
         console.log(error);
         handle429Error(error);
       }
@@ -128,6 +129,7 @@ function DatingApp() {
       try {
         await AxiosApi.friendRequest(myEmail, user.email);
       } catch (error) {
+        // 백앤드에서도 구독여부를 확인하여 1회 이용후 친구신청을 시도하면 429 error 반환해줌
         handle429Error(error);
         console.error("Error sending friend request:", error);
       }
@@ -137,14 +139,6 @@ function DatingApp() {
         await AxiosApi.unlikeFriendRequest(myEmail, user.email);
       } catch (error) {
         console.error("Error sending unlike request:", error);
-      }
-    }
-    if (isSubscribed === false) { // 친구 신청 진행시 미구독자에 한하여 시간 시작
-      const freeTrialUsed = localStorage.getItem("freeTrialUsed");
-      if (freeTrialUsed) {
-        setShowLimitModal(true);
-      } else {
-        localStorage.setItem("freeTrialUsed", "true");
       }
     }
   }, [likedList, unlikedList, myEmail]);
@@ -163,6 +157,12 @@ function DatingApp() {
           await sendFriendRequests();
           navigate("/");
           setHasUsedFreeTrial(true);
+          const freeTrialUsed = localStorage.getItem("freeTrialUsed"); //******************************** 비구독자일때 세션에 무료사용 여부 세션 확인
+          if (freeTrialUsed) { // 사용내역 있으면
+            setShowLimitModal(true); // 제한모달
+          } else {
+            localStorage.setItem("freeTrialUsed", "true"); //없으면 무료사용내역 저장
+          }
         });
       }
       setShowConfirmModal(true);
@@ -186,7 +186,7 @@ function DatingApp() {
       setUnlikedList((prev) => [...prev, cardList[index]]);
     }
 
-    localStorage.setItem("hasInteracted", "true"); // 동작 이력 저장
+    sessionStorage.setItem("hasInteracted", "true"); // 동작 이력 저장
   };
   const updateCurrentIndex = (val) => {
     setCurrentIndex(val);
@@ -194,6 +194,7 @@ function DatingApp() {
   };
   // set last direction and decrease current index
   const outOfFrame = (nickname, idx) => {
+    checkSubscription();
     console.log(`${nickname} (${idx}) 카드 제거!`, currentIndexRef.current);
     // handle the case in which go back is pressed before card goes outOfFrame
     currentIndexRef.current >= idx && childRefs[idx].current.restoreCard();
@@ -314,7 +315,6 @@ export default DatingApp;
 
 const Body = styled.div`
   width: auto;
-  height: 90vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -322,7 +322,7 @@ const Body = styled.div`
   @media (max-width: 500px) {
     display: block;
     width: 100%;
-    height: 92svh;
+    height: 93vh;
   }
 `;
 const PhoneFrame = styled.div`
@@ -333,11 +333,7 @@ const PhoneFrame = styled.div`
   box-sizing: border-box;
   width: 30vw;
   height: 85vh;
-  background-image: linear-gradient(
-    to right,
-    #ff5253 0%,
-    rgb(255, 60, 100) 90%
-  );
+  background-image: linear-gradient(to right,#ff5253 0%,rgb(255, 60, 100) 90%);
   border-radius: 4dvi;
 
   & * {
@@ -371,6 +367,7 @@ const PhoneFrame = styled.div`
     width: 100vw;
     height: 92svh;
     border-radius: 5dvi;
+    margin-top: 1vh;
   }
 `;
 // 앱모양 창 내부 와이드값 Window, Title, BottonArea
@@ -385,7 +382,7 @@ const Title = styled.div`
   height: 10vh;
   background-color: white;
   border-radius: 3.3vi 3.3vi 0 0;
-  margin-top: 2vh;
+  margin-top: 1vh;
   padding-top: 1vh;
   & div {
     font-size: 1.5vw;
@@ -393,6 +390,7 @@ const Title = styled.div`
   @media (max-width: 500px) {
     width: ${mobilewidthvalue};
     height: 6vh;
+    margin-top: 2vh;
     & div {
       font-size: 4vw;
     }
@@ -421,7 +419,7 @@ const Window = styled.div`
   }
   @media (max-width: 500px) {
     width: ${mobilewidthvalue};
-    height: 82vh;
+    height: 72vh;
   }
 `;
 
@@ -442,8 +440,8 @@ const CardImage = styled.div`
   background-image: url(${(props) => props.imageUrl}),
     linear-gradient(to bottom, #bbb 50%, #304352 100%);
   @media (max-width: 500px) {
-    width: 70vw;
-    height: 65vh;
+    width: 75vw;
+    height: 63vh;
   }
 `;
 const ButtonArea = styled.div`
@@ -606,13 +604,13 @@ const Skill = styled.div`
   display: flex;
   align-items: center;
   text-align: center;
-  border-radius: .5vw;
-  padding: 0 .5vw;
+  border-radius: 3vw;
+  padding: 0 1vw;
   margin-right: 1vw;
   background-color: #ff5353;
   @media (max-width: 500px) {
-    border-radius: 2vw;
-    margin-right: 10vw;
+    border-radius: 5vw;
+    margin-right: 8vw;
   }
 `;
 

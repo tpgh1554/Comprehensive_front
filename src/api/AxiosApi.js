@@ -409,7 +409,6 @@ const AxiosApi = {
 
   // 싫어요 이후 DB 저장
   unlikeFriendRequest: async (memberEmail, unlikeMemberEmail) => {
-    console.log("Sending unlike request:", memberEmail, unlikeMemberEmail);
     return await AxiosInstance.post(`/datingapp/unlike`, null, {
       params: {
         memberEmail: memberEmail,
@@ -428,12 +427,10 @@ const AxiosApi = {
   // 정기구독 여부 확인
   checkSubscribe: async () => {
     const accessToken = AxiosApi.getAccessToken();
-    console.log("AccessToken:", accessToken); // 콘솔 로그 추가
     try {
       const response = await AxiosInstance.post(`/datingapp/check-subscribe`, {
         accessToken: accessToken,
       });
-      console.log("Response from server:", response.data); // 서버 응답 로그 추가
       return response;
     } catch (error) {
       console.error("Error in checkSubscribe:", error);

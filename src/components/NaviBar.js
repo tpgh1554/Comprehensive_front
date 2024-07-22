@@ -35,7 +35,7 @@ export default function NaviBar() {
   // 모달 관리
   const handleCloseModal = () => {
     setLoggoutModal(false);
-    navigate("/apueda/subinfo");
+    navigate("/apueda");
   };
   // 유저정보 갱신
   useEffect(() => {
@@ -110,7 +110,7 @@ export default function NaviBar() {
       navigate("/apueda/mysub");
     } else if (subscribeStatus === false) {
       navigate("/apueda/subinfo");
-    } else {
+    } else if (!subscribeStatus) {
       navigate("/apueda/login");
     }
   };
@@ -335,7 +335,7 @@ const ModalContent = styled.div`
   padding: 20px;
   border-radius: 8px;
   text-align: center;
-  border: .2vw solid black;
+  border: 0.2vw solid black;
   & p {
     font-size: 1.5em;
     margin-bottom: 2vh;

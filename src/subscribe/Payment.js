@@ -169,6 +169,9 @@ const Payment = ({ isChecked1, isChecked2, close }) => {
     IMP.request_pay(paymentData, async (response) => {
       if (response.success) {
         alert("결제해주셔서 감사합니다");
+        if (localStorage.getItem("freeTrialUsed") === "true") {
+          localStorage.removeItem("freeTrialUsed");
+        }
         setSubscribeStatus(true);
         confirm();
       } else {

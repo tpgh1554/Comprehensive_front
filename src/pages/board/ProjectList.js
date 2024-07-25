@@ -216,23 +216,20 @@ const ProjectList = () => {
   const [inputValue, setInputValue] = useState("");
   const [isSearchModal, setIsSearchModal] = useState(false);
   const [isRecruitmentComplete, setIsRecruitmentComplete] = useState(true); // 모집 완료 상태
-  const email = localStorage.getItem("email");
+  const [email, setEmail] = useState("");
   const [isRecruit, setIsRecruit] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     const fetchProjectList = async () => {
       try {
         const rsp = await AxiosApi.getProjectList(currentPage);
-        // Sort project list by regDate in descending order (newest first)
-        //const chatMemRsp = await AxiosApi.findRoomByRoomName(rsp.data.);
         const sortedProjects = rsp.data.projects.sort(
           (a, b) => new Date(b.regDate) - new Date(a.regDate)
         );
+
         setTotalPageSize(rsp.data.totalPages);
         setProjectList((prevProjects) => [...prevProjects, ...sortedProjects]);
         setIsRecruitmentComplete(sortedProjects.existStatus);
-        numberOfRecruit(sortedProjects.projectName);
-        setImgUrl(sortedProjects.imgPath);
       } catch (e) {
         console.error("Error fetching project list:", e);
       }
@@ -240,17 +237,6 @@ const ProjectList = () => {
     fetchProjectList();
   }, [currentPage]);
 
-  // const sortByCreatedAt = () => {
-  //   const sortedProjects = [...projectList].sort((a, b) => {
-  //     if (sortBy) {
-  //       return new Date(b.regDate) - new Date(a.regDate);
-  //     } else {
-  //       return new Date(a.regDate) - new Date(b.regDate);
-  //     }
-  //   });
-  //   setProjectList(sortedProjects);
-  //   setSortBy(!sortBy); // Toggle sort order
-  // };
   const sortByCreatedAt = () => {
     let sortedProjects;
     if (!inputValue && !clickArray) {
@@ -299,22 +285,33 @@ const ProjectList = () => {
     e.currentTarget.style.transition = "transform 0.5s ease";
     e.currentTarget.style.boxShadow = "none";
   };
-  const fetchDeadline = async () => {
-    try {
-      let response = await PaymentApi.deadline(email);
-      if (response && response.data) {
-        setSubstatus(response.data[0].status);
-      } else {
-        console.error("No deadline data in response");
-      }
-    } catch (error) {
-      setSubstatus("null");
-      console.error("Error fetching deadline:", error);
-    }
-  };
+  // 회원 정보 가지고 오기
   useEffect(() => {
-    fetchDeadline();
+    const getMember = async () => {
+      try {
+        const rsp = await AxiosApi.getUserInfo2();
+        setEmail(rsp.data.email);
+      } catch (e) {
+        console.error("Error fetching member info:", e);
+      }
+    };
+    getMember();
   }, []);
+
+  // 이메일이 업데이트되면 마감 기한 정보 가져오기
+  useEffect(() => {
+    if (!email) return;
+    const fetchDeadline = async () => {
+      try {
+        const response = await PaymentApi.deadline(email);
+        setSubstatus(response.data[0].status);
+      } catch (error) {
+        setSubstatus("null");
+        console.error("Error fetching deadline:", error);
+      }
+    };
+    fetchDeadline();
+  }, [email]);
 
   const handleSearch = (event) => {
     setInputValue(event.target.value);
@@ -339,7 +336,6 @@ const ProjectList = () => {
           (a, b) => new Date(b.regDate) - new Date(a.regDate)
         );
         setProjectAllList(sortedProjects);
-        numberOfRecruit(sortedProjects.projectName);
       } catch (e) {
         console.error("Error fetching project list:", e);
       }
@@ -371,17 +367,6 @@ const ProjectList = () => {
     setFilteredResults(filteredProjectList);
   }, [inputValue, clickArray, projectAllList]);
 
-  // filteredResults 상태 변경될 때마다 로그 출력
-  useEffect(() => {}, [filteredResults]);
-
-  const numberOfRecruit = async (roomName) => {
-    try {
-      const rsp = await AxiosApi.findRoomByRoomName(roomName);
-      setCurrenCount(rsp.data.currentCount);
-    } catch (e) {
-      console.error(e);
-    }
-  };
   useEffect(() => {
     if (currentCount === 0) {
       setIsRecruit(false);
@@ -392,7 +377,6 @@ const ProjectList = () => {
   return (
     <Container>
       <ListContainer>
-        {isSearchModal && <ProjectSearchBar isOpen={isSearchModal} />}
         <ContentNameList>
           {substatus === "만료" || substatus === null ? (
             <Button> 스킬필터 </Button>
@@ -401,10 +385,7 @@ const ProjectList = () => {
               <Column> 스킬필터 </Column>
             </DropdownMenu>
           )}
-          {/* <Column onClick={OpenSearchModal}>
-            스킬필터
-            {isSearchModal && <ProjectSearchBar isOpen={isSearchModal} />}
-          </Column> */}
+
           {substatus === "만료" || substatus === null ? (
             <Column>
               구독하면 7개 이상의 결과물과 검색 기능을 사용할 수 있습니다.
@@ -418,7 +399,6 @@ const ProjectList = () => {
               />
             </Column>
           )}
-          {/* <Column>제목</Column> */}
           <Column>
             <Button onClick={sortByCreatedAt}>등록일자</Button>
           </Column>
